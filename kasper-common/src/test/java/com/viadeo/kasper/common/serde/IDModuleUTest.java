@@ -8,7 +8,7 @@ package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.api.*;
+import com.viadeo.kasper.api.id.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -9,9 +9,8 @@ package com.viadeo.kasper.ddd;
 /**
  * Proposal marker interface for domain services
  *
- * @see com.viadeo.kasper.ddd.UbiquitousLanguageElement
- * @see com.viadeo.kasper.ddd.Domain
+ * @see com.viadeo.kasper.api.component.Domain
  */
-public interface DomainService extends UbiquitousLanguageElement {
+public interface DomainService {
 
 }

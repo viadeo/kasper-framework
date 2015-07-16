@@ -7,7 +7,7 @@
 package com.viadeo.kasper.client;
 
 import com.sun.jersey.api.client.ClientResponse;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

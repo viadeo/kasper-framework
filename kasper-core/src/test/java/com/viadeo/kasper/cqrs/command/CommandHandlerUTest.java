@@ -7,7 +7,9 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.domain.MetaData;

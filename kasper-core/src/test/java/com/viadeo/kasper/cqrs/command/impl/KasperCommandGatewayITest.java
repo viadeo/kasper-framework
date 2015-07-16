@@ -2,12 +2,12 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.context.Tags;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.context.Tags;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWork;

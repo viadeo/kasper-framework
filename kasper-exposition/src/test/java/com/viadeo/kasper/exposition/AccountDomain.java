@@ -6,6 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 
 public class AccountDomain implements Domain { }

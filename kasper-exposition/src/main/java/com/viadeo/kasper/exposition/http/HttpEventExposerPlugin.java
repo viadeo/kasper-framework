@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.tools.ObjectMapperProvider;

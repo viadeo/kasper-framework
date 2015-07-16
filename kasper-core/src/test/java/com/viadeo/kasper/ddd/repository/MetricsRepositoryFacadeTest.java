@@ -9,7 +9,7 @@ package com.viadeo.kasper.ddd.repository;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.impl.DefaultKasperId;
+import com.viadeo.kasper.api.id.DefaultKasperId;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;

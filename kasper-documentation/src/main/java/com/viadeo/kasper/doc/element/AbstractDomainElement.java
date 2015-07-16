@@ -7,12 +7,10 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
-import com.viadeo.kasper.security.annotation.XKasperRequiresPermissions;
-import com.viadeo.kasper.security.annotation.XKasperRequiresRoles;
-import com.viadeo.kasper.security.authz.manager.AuthorizationManager;
+import com.viadeo.kasper.api.annotation.XKasperPublic;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.api.annotation.XKasperAuthz.*;
 
 public abstract class AbstractDomainElement extends AbstractElement {
 
@@ -29,13 +27,13 @@ public abstract class AbstractDomainElement extends AbstractElement {
         this.publicAccess = referenceClass.getAnnotation(XKasperPublic.class) != null;
 
         // @XKasperRequireRoles
-        if (null != referenceClass.getAnnotation(XKasperRequiresRoles.class)) {
+        if (null != referenceClass.getAnnotation(RequiresRoles.class)) {
             if(null == this.authorization){
                 this.authorization = new DocumentedAuthorization();
             }
 
-            final XKasperRequiresRoles requireRoles = (XKasperRequiresRoles)
-                    referenceClass.getAnnotation(XKasperRequiresRoles.class);
+            final RequiresRoles requireRoles = (RequiresRoles)
+                    referenceClass.getAnnotation(RequiresRoles.class);
 
             AuthorizationElement authorizationElement = new AuthorizationElement();
             if (null != requireRoles.value()) {
@@ -54,13 +52,13 @@ public abstract class AbstractDomainElement extends AbstractElement {
         }
 
         // @XKasperRequirePermissions
-        if (null != referenceClass.getAnnotation(XKasperRequiresPermissions.class)) {
+        if (null != referenceClass.getAnnotation(RequiresPermissions.class)) {
             if(null == this.authorization){
                 this.authorization = new DocumentedAuthorization();
             }
 
-            final XKasperRequiresPermissions requirePermissions = (XKasperRequiresPermissions)
-                    referenceClass.getAnnotation(XKasperRequiresPermissions.class);
+            final RequiresPermissions requirePermissions = (RequiresPermissions)
+                    referenceClass.getAnnotation(RequiresPermissions.class);
 
             AuthorizationElement authorizationElement = new AuthorizationElement();
             if (null != requirePermissions.value()) {

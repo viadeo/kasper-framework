@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 
 public abstract class CommandInterceptorFactory implements InterceptorFactory<Command, CommandResponse> {
 

@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.QueryHandlerDescriptor;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;

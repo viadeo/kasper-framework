@@ -10,7 +10,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.query.exposition.Bundle;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;

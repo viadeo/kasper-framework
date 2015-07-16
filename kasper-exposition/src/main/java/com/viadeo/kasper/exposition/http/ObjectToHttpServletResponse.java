@@ -9,7 +9,7 @@ package com.viadeo.kasper.exposition.http;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.api.response.KasperResponse;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;

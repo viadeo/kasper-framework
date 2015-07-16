@@ -7,11 +7,11 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.component.Domain;
 
 import java.util.Collection;
 

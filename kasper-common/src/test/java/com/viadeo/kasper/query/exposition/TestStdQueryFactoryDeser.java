@@ -8,7 +8,7 @@ package com.viadeo.kasper.query.exposition;
 
 import com.google.common.collect.*;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
 import com.viadeo.kasper.query.exposition.query.*;
 import org.joda.time.DateTime;

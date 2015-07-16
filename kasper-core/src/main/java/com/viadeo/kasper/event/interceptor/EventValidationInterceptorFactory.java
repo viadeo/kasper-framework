@@ -11,7 +11,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

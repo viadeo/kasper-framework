@@ -8,8 +8,8 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.KasperRelationID;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.id.KasperRelationID;
 
 public class KasperIdAdapter extends SimpleDeserializers {
 

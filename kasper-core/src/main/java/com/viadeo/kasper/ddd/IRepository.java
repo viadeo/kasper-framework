@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.id.KasperID;
 
 /**
  *
@@ -20,12 +20,11 @@ import com.viadeo.kasper.KasperID;
  * dedicated storage index.
  *
  * @param <AGR> Aggregate root
- * 
- * @see UbiquitousLanguageElement
- * @see Domain
+ *
+ * @see com.viadeo.kasper.api.component.Domain
  * @see AggregateRoot
  */
-public interface IRepository<AGR extends AggregateRoot> extends org.axonframework.repository.Repository<AGR>, UbiquitousLanguageElement {
+public interface IRepository<AGR extends AggregateRoot> extends org.axonframework.repository.Repository<AGR> {
 
 	/**
 	 * Generic parameter position of the AGR

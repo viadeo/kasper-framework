@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureEventExecutor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureQueryExecutor;

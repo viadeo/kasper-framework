@@ -7,15 +7,15 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.QueryInterceptor;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryFilter;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -23,7 +23,7 @@ import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptor;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;

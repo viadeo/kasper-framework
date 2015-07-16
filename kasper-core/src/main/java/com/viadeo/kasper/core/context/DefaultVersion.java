@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.core.context;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.context.Version;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.context.Version;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

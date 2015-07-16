@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.ids;
 
-import com.viadeo.kasper.api.Format;
+import com.viadeo.kasper.api.id.Format;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

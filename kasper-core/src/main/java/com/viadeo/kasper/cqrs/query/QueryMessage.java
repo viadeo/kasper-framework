@@ -6,7 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.context.Context;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;

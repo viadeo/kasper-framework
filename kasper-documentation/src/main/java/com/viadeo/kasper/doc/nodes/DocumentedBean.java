@@ -9,12 +9,12 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.annotation.XKasperField;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.annotation.XKasperAuthz;
+import com.viadeo.kasper.api.annotation.XKasperField;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.doc.nodes.validation.DefaultPropertyValidator;
 import com.viadeo.kasper.doc.nodes.validation.PropertyValidationProcessor;
 import com.viadeo.kasper.er.LinkedConcept;
-import com.viadeo.kasper.security.annotation.XKasperAuthorizationTargetId;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +160,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
     private static Set<DocumentedConstraint> getDocumentedConstraints(final Field field) {
         final Set<DocumentedConstraint> constraints = Sets.<DocumentedConstraint>newHashSet();
-        if(field.isAnnotationPresent(XKasperAuthorizationTargetId.class)) {
+        if(field.isAnnotationPresent(XKasperAuthz.TargetId.class)) {
             constraints.add(new DocumentedConstraint("Authorization", "Authorization's targetId"));
         }
         return constraints;

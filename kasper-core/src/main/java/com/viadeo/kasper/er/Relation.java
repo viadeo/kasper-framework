@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.er;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.KasperRelationID;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.id.KasperRelationID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.er.annotation.XBidirectional;

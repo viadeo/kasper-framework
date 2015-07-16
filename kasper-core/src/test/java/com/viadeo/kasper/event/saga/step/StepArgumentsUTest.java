@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.EventMessage;
 import org.junit.Rule;
 import org.junit.Test;

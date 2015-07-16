@@ -10,7 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.jayway.awaitility.Awaitility;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.exception.SagaPersistenceException;
