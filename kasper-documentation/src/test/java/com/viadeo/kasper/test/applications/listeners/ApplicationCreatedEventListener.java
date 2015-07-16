@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.applications.listeners;
 
-import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.core.component.event.EventListener;
 import com.viadeo.kasper.test.applications.events.ApplicationCreatedEvent;
 
 public class ApplicationCreatedEventListener extends EventListener<ApplicationCreatedEvent> {

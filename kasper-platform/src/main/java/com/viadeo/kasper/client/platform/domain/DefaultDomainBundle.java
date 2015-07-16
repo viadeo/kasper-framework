@@ -12,12 +12,12 @@ import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.ddd.repository.Repository;
-import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.EventListener;
+import com.viadeo.kasper.core.component.saga.Saga;
 
 import java.util.List;
 

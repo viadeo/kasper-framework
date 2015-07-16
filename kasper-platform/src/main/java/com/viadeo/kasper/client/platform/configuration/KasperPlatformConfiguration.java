@@ -12,22 +12,22 @@ import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
-import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
-import com.viadeo.kasper.event.interceptor.EventValidationInterceptorFactory;
-import com.viadeo.kasper.event.saga.SagaManager;
-import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
-import com.viadeo.kasper.event.saga.step.StepProcessor;
+import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInterceptorFactory;
+import com.viadeo.kasper.core.component.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.query.interceptor.CacheInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.QueryFilterInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
+import com.viadeo.kasper.core.component.saga.SagaManager;
+import com.viadeo.kasper.core.component.saga.spring.SagaConfiguration;
+import com.viadeo.kasper.core.component.saga.step.StepProcessor;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.List;
 import java.util.Map;
 
-import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
+import static com.viadeo.kasper.core.component.eventbus.KasperEventBus.Policy;
 
 /**
  * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.client.platform.Platform}.

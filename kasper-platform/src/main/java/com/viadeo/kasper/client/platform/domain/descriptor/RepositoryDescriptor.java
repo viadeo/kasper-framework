@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

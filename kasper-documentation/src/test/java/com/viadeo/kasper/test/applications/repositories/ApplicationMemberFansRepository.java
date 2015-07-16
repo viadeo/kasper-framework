@@ -8,8 +8,8 @@ package com.viadeo.kasper.test.applications.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.core.component.annotation.XKasperRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
 
 @XKasperRepository
