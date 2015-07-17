@@ -6,15 +6,21 @@
 // ============================================================================
 package com.viadeo.kasper.api.id;
 
+import java.util.Collection;
+
 /**
  * Implemented by objects that can be able to build an <code>ID</code> from an URN.
  */
 public interface IDBuilder {
 
     /**
-     *
      * @param urn a chain of chars representing an URN
      * @return a corresponding id from the specified URN
      */
     ID build(String urn);
+
+    /**
+     * @return all supported <code>Format</code> by this instance of builder
+     */
+    Collection<Format> getSupportedFormats();
 }
