@@ -6,9 +6,9 @@ include ':kasper-api',
         ':kasper-platform',
         ':kasper-exposition',
         ':kasper-client', 
-        ':kasper-spring', 
-        ':kasper-exposition-jetty',
+        ':kasper-spring',
         ':kasper-common', 
         ':kasper-test', 
-        ':kasper-documentation'
+        ':kasper-documentation',
+        ':kasper-domain-sample'
 
