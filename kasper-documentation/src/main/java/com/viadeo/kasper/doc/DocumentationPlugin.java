@@ -12,7 +12,6 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
-import com.viadeo.kasper.doc.web.KasperDocResource;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -48,9 +47,9 @@ public class DocumentationPlugin implements Plugin {
         initialized = true;
     }
 
-    public KasperDocResource getKasperDocResource() {
+    public DocumentedPlatform getDocumentedPlatform() {
         checkState(initialized, "The documentation plugin must be initialized");
-        return new KasperDocResource(documentedPlatform);
+        return documentedPlatform;
     }
 
     protected boolean isInitialized() {
