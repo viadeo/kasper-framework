@@ -4,21 +4,19 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.id;
-
-import com.viadeo.kasper.api.id.FormatAdapter;
+package com.viadeo.kasper.api.id;
 
 import java.util.UUID;
 
-public class UUIDFormat extends FormatAdapter {
+public class UuidFormat extends FormatAdapter {
 
-    public UUIDFormat() {
+    public UuidFormat() {
         super("uuid", UUID.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <E> E parseIdentifier(final String identifier) {
-        return (E) java.util.UUID.fromString(identifier);
+    public <E> E parseIdentifier(String identifier) {
+        return (E) UUID.fromString(identifier);
     }
-
 }

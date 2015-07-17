@@ -41,10 +41,10 @@ public class DefaultIDTransformer implements IDTransformer {
         }
     };
 
-    private final KasperIDsConverterRegistry kasperIDsConverterRegistry;
+    private final ConverterRegistry converterRegistry;
 
-    public DefaultIDTransformer(KasperIDsConverterRegistry kasperIDsConverterRegistry) {
-        this.kasperIDsConverterRegistry = checkNotNull(kasperIDsConverterRegistry);
+    public DefaultIDTransformer(ConverterRegistry converterRegistry) {
+        this.converterRegistry = checkNotNull(converterRegistry);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class DefaultIDTransformer implements IDTransformer {
         final Format currentFormat = firstElement.getFormat();
         final String currentVendor = firstElement.getVendor();
 
-        final Collection<Converter> converters = kasperIDsConverterRegistry.getConverters(currentVendor, format);
+        final Collection<Converter> converters = converterRegistry.getConverters(currentVendor, format);
 
         for (final Converter converter : converters) {
             if (accept(converter, currentVendor, currentFormat, format)) {
@@ -111,6 +111,11 @@ public class DefaultIDTransformer implements IDTransformer {
         return transformedIds.get(id);
     }
 
+    @Override
+    public List<ID> toList(final Format format, final Collection<ID> ids) {
+        return newArrayList(to(format, ids).values());
+    }
+
     private Map<ID, ID> doNothing(final Collection<ID> ids) {
         return Maps.uniqueIndex(ids, new Function<ID, ID>() {
             @Override
@@ -120,27 +125,14 @@ public class DefaultIDTransformer implements IDTransformer {
         });
     }
 
-    protected boolean accept(final Converter converter, final String vendor, final Format sourceFormat, final Format targetFormat) {
+    public boolean accept(final Converter converter, final String vendor, final Format sourceFormat, final Format targetFormat) {
         return  converter.getSource() == sourceFormat &&
                 converter.getTarget() == targetFormat &&
                 converter.getVendor().equals(vendor);
     }
 
-    protected <T> boolean hasSameValue(final Collection<ID> ids, final Function<ID, T> function) {
+    public <T> boolean hasSameValue(final Collection<ID> ids, final Function<ID, T> function) {
         return ids.isEmpty() || Sets.newHashSet(Iterables.transform(ids, function)).size() == 1;
-    }
-
-    public <T> List<T> parseIdentifiers(final List<ID> ids) {
-        return Lists.transform(ids, new Function<ID, T>() {
-            @Override
-            public T apply(ID input) {
-                return input.<T>parseIdentifier();
-            }
-        });
-    }
-
-    public List<ID> toList(final Format format, final Collection<ID> ids) {
-        return newArrayList(to(format, ids).values());
     }
 
 }

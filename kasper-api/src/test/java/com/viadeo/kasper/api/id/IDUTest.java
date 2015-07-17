@@ -1,16 +1,18 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.api.id;
 
-import com.viadeo.kasper.api.id.Format;
-import com.viadeo.kasper.api.id.ID;
-import com.viadeo.kasper.api.id.IDTransformer;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-import static com.viadeo.kasper.api.id.TestFormats.DB_ID;
-import static com.viadeo.kasper.api.id.TestFormats.UUID;
 import static org.junit.Assert.*;
 
 public class IDUTest {
@@ -20,6 +22,28 @@ public class IDUTest {
     @Before
     public void setUp() throws Exception {
         givenId = new ID("viadeo", "member", TestFormats.DB_ID, 42);
+    }
+
+    @Test
+    public void test_id_integrity() {
+        // When
+        ID id = new ID("viadeo", "member", TestFormats.DB_ID, 42);
+
+        // Then
+        assertEquals("viadeo", id.getVendor());
+        assertEquals("member", id.getType());
+        assertEquals(TestFormats.DB_ID, id.getFormat());
+        assertEquals("42", id.getIdentifier());
+        assertEquals(42, (int) id.<Integer>parseIdentifier());
+    }
+
+    @Test
+    public void test_toString_method() {
+        // When
+        ID id = new ID("viadeo", "member", TestFormats.DB_ID, 42);
+
+        // Then
+        assertEquals("urn:viadeo:member:db-id:42", id.toString());
     }
 
     @Test
@@ -82,8 +106,12 @@ public class IDUTest {
             }
 
             @Override
-            public ID to(Format format, ID id) {
+            public List<ID> toList(Format format, Collection<ID> ids) {
+                throw new UnsupportedOperationException();
+            }
 
+            @Override
+            public ID to(Format format, ID id) {
                 return expectedID;
             }
         };

@@ -12,11 +12,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
-import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.core.id.spring.IDConfiguration;
 import com.viadeo.kasper.spring.config.KasperSpringConfigPropertySource;
 import com.viadeo.kasper.spring.config.KasperSpringConfiguration;
-import com.viadeo.kasper.spring.starters.*;
+import com.viadeo.kasper.spring.starters.KasperMetricsConfiguration;
+import com.viadeo.kasper.spring.starters.KasperObjectMapperConfiguration;
+import com.viadeo.kasper.spring.starters.KasperPlatformConfiguration;
+import com.viadeo.kasper.spring.starters.KasperSimpleComponentsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -84,7 +88,7 @@ public class KasperSpringPlatformBuilder {
         this.parents.add(KasperPlatformConfiguration.class);
         this.parents.add(KasperObjectMapperConfiguration.class);
         this.parents.add(KasperMetricsConfiguration.class);
-        this.parents.add(KasperIdsConfiguration.class);
+        this.parents.add(IDConfiguration.class);
         this.parents.add(KasperSimpleComponentsConfiguration.class);
         return this;
     }

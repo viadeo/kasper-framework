@@ -1,8 +1,5 @@
 package com.viadeo.kasper.api.id;
 
-import com.viadeo.kasper.api.id.Format;
-import com.viadeo.kasper.api.id.FormatAdapter;
-
 public final class TestFormats {
 
     private TestFormats() { }

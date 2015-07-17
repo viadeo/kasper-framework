@@ -1,8 +1,5 @@
 package com.viadeo.kasper.api.id;
 
-import com.viadeo.kasper.api.id.ID;
-import com.viadeo.kasper.api.id.IDTransformer;
-import com.viadeo.kasper.api.id.TransformableIDBuilder;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.api.id;
 
-import com.viadeo.kasper.api.id.AbstractKasperID;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

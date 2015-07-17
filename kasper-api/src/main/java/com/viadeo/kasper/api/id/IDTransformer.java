@@ -1,6 +1,13 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.api.id;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,6 +33,15 @@ public interface IDTransformer {
      * @return a map of old vs transformed
      */
     Map<ID,ID> to(Format format, ID firstId,  ID... restIds);
+
+    /**
+     * Transform the <code>ID</code>s according to the specified <code>Format</code>
+     *
+     * @param format the targeted format
+     * @param ids the list of initial ids
+     * @return a list of transformed id
+     */
+    List<ID> toList(Format format, Collection<ID> ids);
 
     /**
      * Transform the <code>ID</code> according to the specified <code>Format</code>
