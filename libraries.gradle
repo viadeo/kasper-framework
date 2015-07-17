@@ -19,7 +19,12 @@ ext.libraries = [
         JERSEY_TEST_HTTP: 'com.sun.jersey.jersey-test-framework:jersey-test-framework-http:1.16',
         JERSEY_TEST_GRIZZLY: 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.0',
 
-        JETTY_SERVLET: 'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312',
+        JETTY                    : [
+                'org.eclipse.jetty:jetty-http:8.1.10.v20130312',
+                'org.eclipse.jetty:jetty-server:8.1.10.v20130312',
+                'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312'
+        ],
+        JETTY_MANAGEMENT         : 'org.eclipse.jetty:jetty-jmx:8.1.8.v20121106',
 
         PARANAMER: 'com.thoughtworks.paranamer:paranamer:2.5.2',
         REFLECTIONS: 'org.reflections:reflections:0.9.9-RC1',

@@ -10,20 +10,39 @@ dependencies {
 
     // Projects
     compile project(':kasper-platform')
+    compile project(':kasper-documentation')
 
     // Third-party dependencies
     compile libraries.METRICS_JSON
+
+    compile libraries.JERSEY_SERVER
     compile libraries.JERSEY_CORE
+    compile libraries.JERSEY_JSON
+    compile libraries.JERSEY_SERVLET
+
     compile libraries.SPRING_WEB
+
     compile libraries.SERVLET
+
+    compile libraries.JETTY
+    compile libraries.JETTY_MANAGEMENT
+
+    compile libraries.METRICS_JETTY
+    compile libraries.METRICS_SERVLET
 
     // Test projects
     testCompile project(':kasper-client')
+    testCompile project(':kasper-domain-sample')
 
     // Test dependencies
+    testCompile libraries.DIFFUTILS
+    testCompile libraries.JERSEY_TEST_CORE
+    testCompile libraries.JERSEY_TEST_HTTP
+    testCompile libraries.JERSEY_GRIZZLY
+    testCompile libraries.JERSEY_GRIZZLY_SERVLET
+    testCompile libraries.JERSEY_CLIENT
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
-    testCompile libraries.JETTY_SERVLET
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.TYPESAFE_CONFIG

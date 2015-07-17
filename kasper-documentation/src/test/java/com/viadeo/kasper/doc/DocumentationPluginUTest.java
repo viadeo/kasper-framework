@@ -11,7 +11,6 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
-import com.viadeo.kasper.doc.web.KasperDocResource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +38,10 @@ public class DocumentationPluginUTest {
     @Test(expected = IllegalStateException.class)
     public void getKasperDocResource_fromNonInitializedPlugin_shouldThrowException(){
         // Given
-        final DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
+        final DocumentationPlugin documentationPlugin = new DocumentationPlugin();
 
         // When
-        documentationPlugin.getKasperDocResource();
+        documentationPlugin.getDocumentedPlatform();
 
         // Then throws an exception
     }
@@ -50,15 +49,15 @@ public class DocumentationPluginUTest {
     @Test
     public void getKasperDocResource_fromInitializedPlugin_shouldReturnDocumentation(){
         // Given
-        final DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
+        final DocumentationPlugin documentationPlugin = new DocumentationPlugin();
         documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class));
 
         // When
-        final KasperDocResource kasperDocResource = documentationPlugin.getKasperDocResource();
+        final DocumentedPlatform documentedPlatform = documentationPlugin.getDocumentedPlatform();
 
         // Then
         assertTrue(documentationPlugin.isInitialized());
-        Assert.assertNotNull(kasperDocResource);
+        Assert.assertNotNull(documentedPlatform);
     }
 
     @Test

@@ -4,7 +4,7 @@
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-description = 'KASPER DOCUMENTATION'
+description = 'KASPER DOMAIN SAMPLE'
 
 dependencies {
 
@@ -23,17 +23,8 @@ dependencies {
     compile libraries.JACKSON_GUAVA_TYPES
 
     // Test dependencies
-    testCompile project(':kasper-domain-sample')
-
     testCompile libraries.REFLECTIONS
     testCompile libraries.JSON
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
 }
-
-task (run, dependsOn: 'test', type: JavaExec)  {
-    main = 'com.viadeo.kasper.test.doc.web.KasperDocStandalone'
-    classpath = sourceSets.test.runtimeClasspath
-    standardInput = System.in
-}
-
