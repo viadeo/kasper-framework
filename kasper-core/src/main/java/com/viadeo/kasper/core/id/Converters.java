@@ -20,17 +20,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Converters {
 
-    private Converters() { /* utility class */ }
+    private Converters() { }
 
-    // ------------------------------------------------------------------------
-
-    public static Converter chain(final Converter firstConverter, final Converter nextConverter) {
+    public static Converter chain(Converter firstConverter, Converter nextConverter) {
         checkNotNull(firstConverter);
         checkNotNull(nextConverter);
-        checkArgument(
-                firstConverter.getVendor().equals(nextConverter.getVendor()),
-                "firstConverter and nextConverter must share the same vendor"
-        );
+        checkArgument(firstConverter.getVendor().equals(nextConverter.getVendor()), "firstConverter and nextConverter must share the same vendor");
 
         if (firstConverter.getSource().equals(nextConverter.getTarget())) {
             return newIdentityConverter(firstConverter.getVendor(), firstConverter.getSource());
@@ -39,15 +34,13 @@ public final class Converters {
         return new ChainedConverter(firstConverter, nextConverter);
     }
 
-    // ------------------------------------------------------------------------
-
     private static class ChainedConverter
             extends AbstractConverter {
 
         private final Converter firstConverter;
         private final Converter nextConverter;
 
-        public ChainedConverter(final Converter firstConverter, final Converter nextConverter) {
+        public ChainedConverter(Converter firstConverter, Converter nextConverter) {
             super(firstConverter.getVendor(), firstConverter.getSource(), nextConverter.getTarget());
             checkArgument(firstConverter.getVendor().equals(nextConverter.getVendor()), "firstConverter and nextConverter must share the same vendor");
             checkArgument(firstConverter.getTarget().equals(nextConverter.getSource()), "the source format for nextConverter must be the target format for firstConverter");
@@ -56,18 +49,18 @@ public final class Converters {
         }
 
         @Override
-        public Map<ID,ID> convert(final Collection<ID> ids) {
+        public Map<ID,ID> convert(Collection<ID> ids) {
             // givenId -> firstConversionId
             final Map<ID,ID> firstConversion = firstConverter.convert(ids);
 
             // firstConversionId -> nextConversionId
             final Map<ID, ID> nextConversion = nextConverter.convert(firstConversion.values());
 
-            final Map<ID, ID> result = Maps.newHashMap();
+            Map<ID, ID> result = Maps.newHashMap();
 
-            for (final ID id : ids) {
-                final ID firstConvertedId = firstConversion.get(id);
-                if (null != firstConvertedId) {
+            for (ID id : ids) {
+                ID firstConvertedId = firstConversion.get(id);
+                if (firstConvertedId != null) {
                     result.put(id, nextConversion.get(firstConvertedId));
                 }
             }
@@ -80,14 +73,14 @@ public final class Converters {
         }
 
         @Override
-        public boolean equals(final Object obj) {
+        public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }
-            if ((null == obj) || (getClass() != obj.getClass())) {
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
-            final ChainedConverter other = (ChainedConverter) obj;
+            ChainedConverter other = (ChainedConverter) obj;
             return Objects.equal(this.firstConverter, other.firstConverter) && Objects.equal(this.nextConverter, other.nextConverter);
         }
 
@@ -100,9 +93,7 @@ public final class Converters {
         }
     }
 
-    // ------------------------------------------------------------------------
-
-    public static Converter newIdentityConverter(final String vendor, final Format format) {
+    public static Converter newIdentityConverter(String vendor, Format format) {
         return new IdentityConverter(vendor, format);
     }
 
@@ -112,7 +103,7 @@ public final class Converters {
         private final String vendor;
         private final Format format;
 
-        public IdentityConverter(final String vendor, final Format format) {
+        public IdentityConverter(String vendor, Format format) {
             this.vendor = checkNotNull(vendor);
             this.format = checkNotNull(format);
         }
@@ -132,7 +123,7 @@ public final class Converters {
         }
 
         @Override
-        public Map<ID,ID> convert(final Collection<ID> ids) {
+        public Map<ID,ID> convert(Collection<ID> ids) {
             return Maps.uniqueIndex(ids, new Function<ID, ID>() {
                 @Override
                 public ID apply(ID input) {
@@ -147,14 +138,14 @@ public final class Converters {
         }
 
         @Override
-        public boolean equals(final Object obj) {
+        public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }
-            if ((null == obj) || (getClass() != obj.getClass())) {
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
-            final IdentityConverter other = (IdentityConverter) obj;
+            IdentityConverter other = (IdentityConverter) obj;
             return Objects.equal(this.vendor, other.vendor) && Objects.equal(this.format, other.format);
         }
 
@@ -166,5 +157,4 @@ public final class Converters {
                     .toString();
         }
     }
-
 }

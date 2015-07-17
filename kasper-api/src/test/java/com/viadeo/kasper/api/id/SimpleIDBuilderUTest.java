@@ -1,12 +1,11 @@
 package com.viadeo.kasper.api.id;
 
-import com.viadeo.kasper.api.id.ID;
-import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import java.util.Collection;
+
+import static org.junit.Assert.*;
 
 public class SimpleIDBuilderUTest {
 
@@ -18,6 +17,16 @@ public class SimpleIDBuilderUTest {
                 TestFormats.DB_ID,
                 TestFormats.UUID
         );
+    }
+
+    @Test
+    public void get_supported_formats_is_Ok() {
+        // When
+        Collection<Format> supportedFormats = builder.getSupportedFormats();
+
+        // Then
+        assertTrue(supportedFormats.contains(TestFormats.DB_ID));
+        assertTrue(supportedFormats.contains(TestFormats.UUID));
     }
 
     @Test(expected = IllegalArgumentException.class)

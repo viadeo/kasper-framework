@@ -7,8 +7,10 @@
 package com.viadeo.kasper.api.id;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,5 +58,10 @@ public class SimpleIDBuilder implements IDBuilder {
                 format,
                 format.parseIdentifier(checkNotNull(matcher.group(4)))
         );
+    }
+
+    @Override
+    public Collection<Format> getSupportedFormats() {
+        return Lists.newArrayList(formatByName.values());
     }
 }
