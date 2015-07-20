@@ -88,6 +88,14 @@ configure(subprojects) {
         }
     }
 
+    test {
+        // Ensure we don't write where the task 'test' already writes
+        def junitXmlDestination = System.getenv("CIRCLE_TEST_REPORTS") ?: "${rootProject.buildDir}"
+        reports {
+            junitXml.destination = "${junitXmlDestination}/test-results"
+        }
+    }
+
     // Adding javadoc and sources jars, it is really nice to have! --------------
     // custom tasks for creating source jar
     task sourcesJar(type: Jar, dependsOn: classes) {
@@ -179,3 +187,6 @@ task alljavadoc(type: Javadoc) {
     classpath = files(rootProject.subprojects.collect { project -> project.sourceSets.main.compileClasspath })
     destinationDir = file('build/javadoc')
 }
+
+apply from: "${gradleDir}/circleci.gradle"
+
