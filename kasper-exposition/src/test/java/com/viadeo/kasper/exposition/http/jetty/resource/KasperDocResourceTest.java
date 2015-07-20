@@ -16,7 +16,7 @@ import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.client.platform.bundle.descriptor.*;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;

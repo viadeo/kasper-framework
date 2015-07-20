@@ -4,20 +4,20 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.domain;
+package com.viadeo.kasper.client.platform.bundle;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.client.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import org.junit.Test;
 
 import java.util.List;
 
-import static com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox.MyCustomDomain;
-import static com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox.MyCustomDomainSpringConfiguration;
+import static com.viadeo.kasper.client.platform.bundle.sample.MyCustomDomainBox.MyCustomDomain;
+import static com.viadeo.kasper.client.platform.bundle.sample.MyCustomDomainBox.MyCustomDomainSpringConfiguration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
