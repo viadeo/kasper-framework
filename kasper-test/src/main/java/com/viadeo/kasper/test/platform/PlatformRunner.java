@@ -8,10 +8,10 @@ package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.client.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;

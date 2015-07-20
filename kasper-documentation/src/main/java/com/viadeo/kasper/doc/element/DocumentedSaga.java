@@ -7,7 +7,7 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.bundle.descriptor.SagaDescriptor;
+import com.viadeo.kasper.platform.bundle.descriptor.SagaDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 
 import java.io.Serializable;

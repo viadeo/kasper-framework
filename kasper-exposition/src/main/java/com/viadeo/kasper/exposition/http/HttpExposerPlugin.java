@@ -7,7 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.client.platform.plugin.Plugin;
+import com.viadeo.kasper.platform.plugin.Plugin;
 
 import javax.servlet.http.HttpServlet;
 
