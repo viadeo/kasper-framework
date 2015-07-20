@@ -15,7 +15,7 @@ import com.google.common.io.CharStreams;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperResponse;
 import com.viadeo.kasper.api.annotation.XKasperUnexposed;
-import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;

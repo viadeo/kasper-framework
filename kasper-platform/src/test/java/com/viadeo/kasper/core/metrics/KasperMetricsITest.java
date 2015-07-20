@@ -7,9 +7,9 @@
 package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.event.EventListener;
@@ -172,7 +172,7 @@ public class KasperMetricsITest {
         final String name = KasperMetrics.name(MetricNameStyle.NONE, MyCustomDomainBox.MyCustomCommand.class, "bip");
 
         // Then
-        assertEquals("com.viadeo.kasper.client.platform.bundle.sample.mycustomdomainbox$mycustomcommand.bip", name);
+        assertEquals("com.viadeo.kasper.platform.bundle.sample.mycustomdomainbox$mycustomcommand.bip", name);
     }
 
     @Test

@@ -8,8 +8,8 @@ package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.annotation.XKasperUnexposed;
-import com.viadeo.kasper.client.platform.Meta;
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.platform.Meta;
+import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.CommandHandler;
