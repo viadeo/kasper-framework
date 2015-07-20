@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.component.gateway;
+package com.viadeo.kasper.core.component.command.gateway;
 
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;

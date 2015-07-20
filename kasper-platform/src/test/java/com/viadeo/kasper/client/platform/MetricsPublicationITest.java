@@ -15,7 +15,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
 import org.junit.Before;
 import org.junit.Test;

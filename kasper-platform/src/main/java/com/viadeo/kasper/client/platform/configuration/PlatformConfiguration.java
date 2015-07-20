@@ -13,8 +13,8 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFacto
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.saga.SagaManager;
 
 import java.util.List;

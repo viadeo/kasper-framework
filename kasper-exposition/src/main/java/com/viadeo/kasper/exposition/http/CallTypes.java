@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 
 import java.io.Serializable;

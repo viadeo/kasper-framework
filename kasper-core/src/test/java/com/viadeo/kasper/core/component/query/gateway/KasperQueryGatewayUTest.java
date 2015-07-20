@@ -4,11 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.component.gateway;
+package com.viadeo.kasper.core.component.query.gateway;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.QueryInterceptor;

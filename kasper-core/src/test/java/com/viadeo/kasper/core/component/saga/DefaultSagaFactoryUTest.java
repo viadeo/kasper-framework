@@ -7,11 +7,9 @@
 package com.viadeo.kasper.core.component.saga;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.saga.Saga;
-import com.viadeo.kasper.core.component.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.saga.exception.SagaInstantiationException;
 import com.viadeo.kasper.core.component.saga.factory.DefaultSagaFactory;
 import org.junit.Before;

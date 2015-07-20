@@ -13,7 +13,7 @@ import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.api.exception.KasperCommandException;
