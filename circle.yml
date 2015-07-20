@@ -14,17 +14,22 @@ dependencies:
     - "~/.gradle"
 
   override:
-    - ./gradlew assemble --parallel-threads=2:
+    - ./gradlew --no-daemon compileJava compileTestJava findbugsMain assemble --parallel --max-workers=2:
         timeout: 300
 
 test:
   override:
-    - ./gradlew check:
+    - ./gradlew --no-daemon -a circleCheck --parallel --max-workers=2:
         parallel: true
+  post:
+      # Delete useless report files that would slow the Collect phase of CircleCi
+      - echo "Delete success report"
+      - grep -lRL "failure message" $CIRCLE_TEST_REPORTS | xargs rm -f
+
 
 deployment:
   nexus:
     branch: [develop, prepare_1.0.0]
     owner: viadeo
     commands:
-      - ./gradlew build uploadArchives --parallel-threads=2
+      - ./gradlew --no-daemon -a circleUploadArchives --parallel-threads=2

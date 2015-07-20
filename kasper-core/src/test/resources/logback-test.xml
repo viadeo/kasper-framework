@@ -1,0 +1,12 @@
+<configuration>
+    <property name="CONSOLE_LOG_PATTERN" value="[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="OFF">
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
