@@ -19,7 +19,7 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.client.platform.Build;
 import com.viadeo.kasper.client.platform.Meta;
-import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.client.platform.bundle.descriptor.*;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.event.EventListener;
 import com.viadeo.kasper.core.component.eventbus.KasperEventBus;

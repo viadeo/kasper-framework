@@ -9,7 +9,7 @@ package com.viadeo.kasper.client.platform.configuration;
 import com.codahale.metrics.MetricRegistry;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.client.platform.bundle.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;

@@ -9,7 +9,7 @@ package com.viadeo.kasper.spring;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.component.command.CommandHandler;

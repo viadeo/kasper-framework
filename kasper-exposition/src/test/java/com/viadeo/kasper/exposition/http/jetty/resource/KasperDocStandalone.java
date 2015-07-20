@@ -12,7 +12,7 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.client.platform.bundle.descriptor.*;
 import com.viadeo.kasper.core.component.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.saga.step.Scheduler;
 import com.viadeo.kasper.core.component.saga.step.Steps;

@@ -4,13 +4,13 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.domain;
+package com.viadeo.kasper.client.platform.bundle;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
-import com.viadeo.kasper.client.platform.domain.sample2.SampleDomainBox2;
+import com.viadeo.kasper.client.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.client.platform.bundle.sample2.SampleDomainBox2;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 import static com.viadeo.kasper.client.platform.Platform.ExtraComponentKey;
-import static com.viadeo.kasper.client.platform.domain.SpringDomainBundle.BeanDescriptor;
+import static com.viadeo.kasper.client.platform.bundle.SpringDomainBundle.BeanDescriptor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

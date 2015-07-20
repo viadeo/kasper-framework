@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.domain;
+package com.viadeo.kasper.client.platform.bundle;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import java.util.Collection;
 import java.util.List;
 
-import static com.viadeo.kasper.client.platform.domain.DiscoveryDomainHelper.findComponents;
+import static com.viadeo.kasper.client.platform.bundle.DiscoveryDomainHelper.findComponents;
 
 public class DiscoveryDomainBundle extends SpringDomainBundle {
 

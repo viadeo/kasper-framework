@@ -8,7 +8,7 @@ package com.viadeo.kasper.client.platform.plugin;
 
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.client.platform.bundle.descriptor.DomainDescriptor;
 
 /**
  * The Plugin interface represents an extension way to the platform useful to add new functionality like : documentation,
