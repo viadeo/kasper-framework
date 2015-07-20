@@ -12,7 +12,6 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.client.platform.bundle.descriptor.*;
 import com.viadeo.kasper.core.component.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.saga.step.Scheduler;
 import com.viadeo.kasper.core.component.saga.step.Steps;
@@ -39,6 +38,7 @@ import com.viadeo.kasper.domain.sample.root.command.repository.MemberConnections
 import com.viadeo.kasper.domain.sample.root.command.repository.MemberRepository;
 import com.viadeo.kasper.domain.sample.root.command.saga.ConfirmEmailSaga;
 import com.viadeo.kasper.domain.sample.timelines.api.Timelines;
+import com.viadeo.kasper.platform.bundle.descriptor.*;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 

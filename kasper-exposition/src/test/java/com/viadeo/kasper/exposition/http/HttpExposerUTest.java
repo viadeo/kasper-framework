@@ -3,7 +3,7 @@ package com.viadeo.kasper.exposition.http;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse;
-import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.api.context.Context;
 import org.junit.Before;
 import org.junit.Test;
