@@ -6,9 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.saga.factory;
 
-import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.saga.factory.DefaultSagaFactoryProvider;
-import com.viadeo.kasper.core.component.saga.factory.SagaFactory;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.saga.TestFixture;
 import org.junit.Before;
 import org.junit.Test;

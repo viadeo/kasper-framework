@@ -8,9 +8,7 @@ package com.viadeo.kasper.core.component.saga;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.saga.Saga;
-import com.viadeo.kasper.core.component.saga.SagaMapper;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.saga.factory.DefaultSagaFactory;
 import com.viadeo.kasper.core.component.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.saga.factory.SagaFactoryProvider;

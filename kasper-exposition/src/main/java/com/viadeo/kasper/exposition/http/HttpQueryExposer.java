@@ -13,7 +13,7 @@ import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.gateway.QueryGateway;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.exposition.ExposureDescriptor;

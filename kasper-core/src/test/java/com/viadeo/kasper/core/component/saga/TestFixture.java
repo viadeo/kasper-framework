@@ -9,12 +9,10 @@ package com.viadeo.kasper.core.component.saga;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.annotation.XKasperDomain;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.saga.Saga;
-import com.viadeo.kasper.core.component.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.EventMessage;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
 

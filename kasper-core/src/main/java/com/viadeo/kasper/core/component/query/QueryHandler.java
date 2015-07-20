@@ -10,7 +10,7 @@ import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.gateway.QueryGateway;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.api.exception.KasperQueryException;
 import com.viadeo.kasper.api.component.event.Event;
