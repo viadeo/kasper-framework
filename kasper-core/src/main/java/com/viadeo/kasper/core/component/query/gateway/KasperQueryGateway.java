@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.component.gateway;
+package com.viadeo.kasper.core.component.query.gateway;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;

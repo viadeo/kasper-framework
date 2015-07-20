@@ -1,11 +1,11 @@
-package com.viadeo.kasper.core.component.gateway;
+package com.viadeo.kasper.core.component.command.gateway;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.context.Tags;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
-import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.CommandHandler;

@@ -4,19 +4,19 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.component.gateway;
+package com.viadeo.kasper.core.component.command.gateway;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
-import com.viadeo.kasper.core.component.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;

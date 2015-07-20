@@ -8,7 +8,7 @@ package com.viadeo.kasper.core.component.event;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
