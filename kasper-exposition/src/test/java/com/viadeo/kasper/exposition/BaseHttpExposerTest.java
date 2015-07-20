@@ -14,7 +14,7 @@ import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.client.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.exposition.http.HttpExposerPlugin;

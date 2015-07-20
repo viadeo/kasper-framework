@@ -7,8 +7,8 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.domain.descriptor.AggregateDescriptor;
-import com.viadeo.kasper.client.platform.domain.descriptor.RepositoryDescriptor;
+import com.viadeo.kasper.client.platform.bundle.descriptor.AggregateDescriptor;
+import com.viadeo.kasper.client.platform.bundle.descriptor.RepositoryDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.api.component.event.Event;
 

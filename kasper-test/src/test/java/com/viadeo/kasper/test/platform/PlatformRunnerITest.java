@@ -7,7 +7,7 @@
 package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.api.component.Domain;

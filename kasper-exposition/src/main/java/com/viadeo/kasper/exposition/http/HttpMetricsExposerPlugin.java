@@ -9,7 +9,7 @@ package com.viadeo.kasper.exposition.http;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.client.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.util.concurrent.TimeUnit;

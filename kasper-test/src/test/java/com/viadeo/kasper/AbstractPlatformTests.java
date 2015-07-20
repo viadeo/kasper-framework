@@ -9,7 +9,7 @@ package com.viadeo.kasper;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.client.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 

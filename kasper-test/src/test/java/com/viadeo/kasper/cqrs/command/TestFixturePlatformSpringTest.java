@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.viadeo.kasper.client.platform.domain.SpringDomainBundle;
+import com.viadeo.kasper.client.platform.bundle.SpringDomainBundle;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
 import org.axonframework.domain.DomainEventMessage;
 import org.axonframework.domain.DomainEventStream;

@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.domain;
+package com.viadeo.kasper.client.platform.bundle;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
@@ -14,7 +14,7 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
+import com.viadeo.kasper.client.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
