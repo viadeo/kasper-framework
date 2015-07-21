@@ -13,11 +13,11 @@ import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.config.ConfigPropertySource;
+import com.viadeo.kasper.core.config.spring.KasperTypesafeConfigConfiguration;
+import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.core.id.spring.IDConfiguration;
-import com.viadeo.kasper.spring.config.KasperSpringConfigPropertySource;
-import com.viadeo.kasper.spring.config.KasperSpringConfiguration;
-import com.viadeo.kasper.spring.starters.KasperMetricsConfiguration;
+import com.viadeo.kasper.core.metrics.spring.KasperMetricsConfiguration;
 import com.viadeo.kasper.spring.starters.KasperObjectMapperConfiguration;
 import com.viadeo.kasper.spring.starters.KasperPlatformConfiguration;
 import com.viadeo.kasper.spring.starters.KasperSimpleComponentsConfiguration;
@@ -88,7 +88,7 @@ public class KasperSpringPlatformBuilder {
         this.parents.add(KasperPlatformConfiguration.class);
         this.parents.add(KasperObjectMapperConfiguration.class);
         this.parents.add(KasperMetricsConfiguration.class);
-        this.parents.add(IDConfiguration.class);
+        this.parents.add(KasperIDConfiguration.class);
         this.parents.add(KasperSimpleComponentsConfiguration.class);
         return this;
     }
@@ -144,7 +144,7 @@ public class KasperSpringPlatformBuilder {
         try {
 
             if (null == this.config) {
-                this.config = KasperSpringConfiguration.configuration();
+                this.config = KasperTypesafeConfigConfiguration.configuration();
             }
 
             if (this.bundles.isEmpty()) {
@@ -181,7 +181,7 @@ public class KasperSpringPlatformBuilder {
 
         final AnnotationConfigApplicationContext platform = new AnnotationConfigApplicationContext();
         final ConfigurableEnvironment environment = platform.getEnvironment();
-        environment.getPropertySources().addLast(new KasperSpringConfigPropertySource(config, "config"));
+        environment.getPropertySources().addLast(new ConfigPropertySource(config, "config"));
 
         try {
             for (final String activeProfile : config.getStringList("runtime.spring.profiles.actives")) {

@@ -21,7 +21,7 @@ public class IDConfigurationITest {
     @Test
     public void refresh_an_application_context_with_id_configuration_and_without_converters() {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(IDConfiguration.class);
+        applicationContext.register(KasperIDConfiguration.class);
         applicationContext.refresh();
 
         ConverterRegistry converterRegistry = applicationContext.getBean(ConverterRegistry.class);
@@ -34,7 +34,7 @@ public class IDConfigurationITest {
         Converter uuidToIdConverter = TestConverters.mockConverter("viadeo", TestFormats.UUID, TestFormats.ID);
 
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(IDConfiguration.class);
+        applicationContext.register(KasperIDConfiguration.class);
         applicationContext.getBeanFactory().registerSingleton("uuidToIdConverter", uuidToIdConverter);
         applicationContext.refresh();
 
@@ -47,7 +47,7 @@ public class IDConfigurationITest {
     @Test
     public void refresh_an_application_context_with_id_configuration_and_without_formats() {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(IDConfiguration.class);
+        applicationContext.register(KasperIDConfiguration.class);
         applicationContext.refresh();
 
         IDBuilder idBuilder = applicationContext.getBean(IDBuilder.class);
@@ -58,7 +58,7 @@ public class IDConfigurationITest {
     @Test
     public void refresh_an_application_context_with_id_configuration_and_with_available_formats() {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(IDConfiguration.class);
+        applicationContext.register(KasperIDConfiguration.class);
         applicationContext.getBeanFactory().registerSingleton("uuidFormat", TestFormats.UUID);
         applicationContext.getBeanFactory().registerSingleton("idFormat", TestFormats.ID);
         applicationContext.refresh();
