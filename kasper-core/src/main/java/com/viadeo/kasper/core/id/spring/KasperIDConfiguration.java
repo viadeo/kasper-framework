@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class IDConfiguration {
+public class KasperIDConfiguration {
 
     @Autowired(required = false)
     List<Format> formats;
