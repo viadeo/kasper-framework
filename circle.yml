@@ -14,7 +14,7 @@ dependencies:
     - "~/.gradle"
 
   override:
-    - ./gradlew --no-daemon compileJava compileTestJava findbugsMain assemble --parallel --max-workers=2:
+    - ./gradlew --no-daemon compileJava compileTestJava assemble --parallel --max-workers=2:
         timeout: 300
 
 test:
