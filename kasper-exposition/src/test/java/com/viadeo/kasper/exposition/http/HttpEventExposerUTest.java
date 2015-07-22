@@ -4,11 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.exposition;
+package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
+import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
