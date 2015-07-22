@@ -4,91 +4,93 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.exposition;
+package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.core.component.command.KasperCommandMessage;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
+import com.viadeo.kasper.exposition.http.HttpQueryExposerPlugin;
 import org.junit.Test;
 
 import java.util.Locale;
-import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
+public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
 
-    public static final String RETURNED_SECURITY_TOKEN = UUID.randomUUID().toString();
+    // ------------------------------------------------------------------------
 
-    public HttpCommandExposerContextTest() {
+    public HttpQueryExposerContextTest() {
         Locale.setDefault(Locale.US);
     }
 
     @Override
-    protected HttpCommandExposerPlugin createExposerPlugin() {
-        return new HttpCommandExposerPlugin();
+    protected HttpQueryExposerPlugin createExposerPlugin() {
+        return new HttpQueryExposerPlugin();
     }
 
     @Override
     protected DomainBundle getDomainBundle(){
         return new DefaultDomainBundle(
-                Lists.<CommandHandler>newArrayList(new ContextCheckCommandHandler())
-                , Lists.<QueryHandler>newArrayList()
+                Lists.<CommandHandler>newArrayList()
+                , Lists.<QueryHandler>newArrayList(new ContextCheckQueryHandler())
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
                 , Lists.<Saga>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
                 , Lists.<EventInterceptorFactory>newArrayList()
-                , new TestDomain()
-                , "TestDomain"
+                , new AccountDomain()
+                , "AccountDomain"
         );
     }
 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testCommandNotFound() throws Exception {
+    public void testQueryHandler() {
         // Given
-        final Command command = new ContextCheckCommand(getContextName());
+        final ContextCheckQuery query = new ContextCheckQuery(getContextName());
 
         // When
-        final CommandResponse response = client().send(getFullContext(), command);
+        final QueryResponse<ContextCheckResult> actual = client().query(
+                getFullContext(), query, ContextCheckResult.class);
 
         // Then
-        assertTrue(response.isOK());
-        assertTrue(response.getSecurityToken().isPresent());
-        assertEquals(RETURNED_SECURITY_TOKEN, response.getSecurityToken().get());
+        assertTrue(actual.isOK());
     }
 
     // ------------------------------------------------------------------------
 
-    public class TestDomain implements Domain { }
+    public static class TestDomain implements Domain { }
 
-    public static class ContextCheckCommand implements Command {
-        private static final long serialVersionUID = 674842094842929150L;
+    public static class ContextCheckResult implements QueryResult {
+        private static final long serialVersionUID = 6219709753203593506L;
+    }
+
+    public static class ContextCheckQuery implements Query {
+        private static final long serialVersionUID = 674422094842929150L;
 
         private String contextName;
 
         @JsonCreator
-        public ContextCheckCommand(@JsonProperty("contextName") final String contextName) {
+        public ContextCheckQuery(@JsonProperty("contextName") final String contextName) {
             this.contextName = contextName;
         }
 
@@ -98,13 +100,12 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
 
     }
 
-    @XKasperCommandHandler(domain = TestDomain.class)
-    public static class ContextCheckCommandHandler extends CommandHandler<ContextCheckCommand> {
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    public static class ContextCheckQueryHandler extends QueryHandler<ContextCheckQuery, ContextCheckResult> {
         @Override
-        public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
-            return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
+        public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
+            return QueryResponse.of(new ContextCheckResult());
         }
     }
 
 }
-
