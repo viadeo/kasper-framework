@@ -1,12 +1,14 @@
 ext.libraries = [
         // Third party dependencies ----------------------------------------------
-        JACKSON_DATABIND: dependencies.create("com.fasterxml.jackson.core:jackson-databind:2.3.0"),
-        JACKSON_ANNOTATIONS: dependencies.create("com.fasterxml.jackson.core:jackson-annotations:2.3.0"),
-        JACKSON_CORE: dependencies.create("com.fasterxml.jackson.core:jackson-core:2.3.0"),
-        JACKSON_PARANAMER: dependencies.create("com.fasterxml.jackson.module:jackson-module-paranamer:2.3.0"),
-        JACKSON_JSON: dependencies.create("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.1.2"),
-        JACKSON_GUAVA_TYPES: dependencies.create("com.fasterxml.jackson.datatype:jackson-datatype-guava:2.1.2"),
-        JACKSON_JODA_TYPES: dependencies.create("com.fasterxml.jackson.datatype:jackson-datatype-joda:2.1.2"),
+        JACKSON_DATABIND: dependencies.create("com.fasterxml.jackson.core:jackson-databind:2.4.2"),
+        JACKSON_ANNOTATIONS: dependencies.create("com.fasterxml.jackson.core:jackson-annotations:2.4.2"),
+        JACKSON_CORE: dependencies.create("com.fasterxml.jackson.core:jackson-core:2.4.2"),
+        JACKSON_PARANAMER: dependencies.create("com.fasterxml.jackson.module:jackson-module-paranamer:2.4.2"),
+        JACKSON_JSON: dependencies.create("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.4.2"),
+        JACKSON_GUAVA_TYPES: dependencies.create("com.fasterxml.jackson.datatype:jackson-datatype-guava:2.4.2") {
+            exclude group: 'com.google.guava'
+        },
+        JACKSON_JODA_TYPES: dependencies.create("com.fasterxml.jackson.datatype:jackson-datatype-joda:2.4.2"),
 
         JERSEY_SERVER: 'com.sun.jersey:jersey-server:1.16',
         JERSEY_CLIENT: 'com.sun.jersey:jersey-client:1.16',
@@ -20,13 +22,13 @@ ext.libraries = [
         JERSEY_TEST_GRIZZLY: 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.0',
 
         JETTY                    : [
-                'org.eclipse.jetty:jetty-http:8.1.10.v20130312',
-                'org.eclipse.jetty:jetty-server:8.1.10.v20130312',
-                'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312'
+                'org.eclipse.jetty:jetty-http:8.1.11.v20130520',
+                'org.eclipse.jetty:jetty-server:8.1.11.v20130520',
+                'org.eclipse.jetty:jetty-servlet:8.1.11.v20130520'
         ],
-        JETTY_MANAGEMENT         : 'org.eclipse.jetty:jetty-jmx:8.1.8.v20121106',
+        JETTY_MANAGEMENT         : 'org.eclipse.jetty:jetty-jmx:8.1.11.v20130520',
 
-        PARANAMER: 'com.thoughtworks.paranamer:paranamer:2.5.2',
+        PARANAMER: 'com.thoughtworks.paranamer:paranamer:2.6',
         REFLECTIONS: 'org.reflections:reflections:0.9.9-RC1',
         MYSQL: 'mysql:mysql-connector-java:5.1.24',
         COMMONS_DBCP: 'commons-dbcp:commons-dbcp:1.4',
@@ -50,13 +52,6 @@ ext.libraries = [
         METRICS_JETTY            : 'io.dropwizard.metrics:metrics-jetty8:3.1.0',
         METRICS_GRAPHITE         : 'io.dropwizard.metrics:metrics-graphite:3.1.0',
         METRICS_SERVLET          : 'io.dropwizard.metrics:metrics-servlets:3.1.0',
-
-        JETTY_MANAGEMENT         : 'org.eclipse.jetty:jetty-jmx:8.1.8.v20121106',
-        JETTY                    : [
-                'org.eclipse.jetty:jetty-http:8.1.10.v20130312',
-                'org.eclipse.jetty:jetty-server:8.1.10.v20130312',
-                'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312'
-        ],
 
         AXON_TEST: 'org.axonframework:axon-test:2.2',
         AXON_CORE: [
@@ -82,8 +77,8 @@ ext.libraries = [
         JAVAX_EL: 'javax.el:javax.el-api:3.0.0',
         JAVAX_INJECT: 'javax.inject:javax.inject:1',
 
-        SLF4J: 'org.slf4j:slf4j-api:1.7.5',
-        LOG4J_OVER_SLF4J: 'org.slf4j:log4j-over-slf4j:1.7.5',
+        SLF4J: 'org.slf4j:slf4j-api:1.7.7',
+        LOG4J_OVER_SLF4J: 'org.slf4j:log4j-over-slf4j:1.7.7',
         HAMCREST: 'org.hamcrest:hamcrest-all:1.3',
         JUNIT: [
                 'junit:junit:4.11',
@@ -92,10 +87,13 @@ ext.libraries = [
         MOCKITO: 'org.mockito:mockito-all:1.9.5',
         JODA_TIME: 'joda-time:joda-time:2.3',
         JODA_MONEY: 'org.joda:joda-money:0.9',
-        GUAVA: 'com.google.guava:guava:14.0',
+        GUAVA: [
+                'com.google.guava:guava:14.0',
+                'com.google.code.findbugs:jsr305:1.3.9'
+        ],
 
         LOGBACK: [
-                'org.slf4j:slf4j-api:1.7.5',
+                'org.slf4j:slf4j-api:1.7.7',
                 'ch.qos.logback:logback-classic:1.0.13',
                 'ch.qos.logback:logback-core:1.0.13'
         ],
