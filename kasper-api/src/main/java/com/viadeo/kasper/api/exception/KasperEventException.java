@@ -1,7 +1,5 @@
 package com.viadeo.kasper.api.exception;
 
-import com.viadeo.kasper.api.exception.KasperException;
-
 public class KasperEventException extends KasperException {
 
     public KasperEventException(String message, Throwable cause) {
