@@ -13,13 +13,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
-import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
@@ -69,7 +69,7 @@ public abstract class EventListener<E extends Event>
 		final Optional<Class<E>> eventClassOpt =
 				(Optional<Class<E>>)
 				ReflectionGenericsResolver.getParameterTypeFromClass(
-						this.getClass(),
+                        this.getClass(),
                         EventListener.class,
                         EventListener.EVENT_PARAMETER_POSITION
                 );

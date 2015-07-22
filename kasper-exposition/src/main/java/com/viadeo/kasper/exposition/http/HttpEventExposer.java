@@ -21,7 +21,7 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 

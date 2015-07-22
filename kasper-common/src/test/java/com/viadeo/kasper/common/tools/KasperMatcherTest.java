@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.tools;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.id.KasperID;
@@ -12,6 +12,7 @@ import com.viadeo.kasper.api.component.query.CollectionQueryResult;
 import com.viadeo.kasper.api.component.query.IndexedEntity;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.joda.time.DateTime;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.tools.KasperMatcher.*;
+import static com.viadeo.kasper.common.tools.KasperMatcher.*;
 import static org.junit.Assert.*;
 
 public class KasperMatcherTest {

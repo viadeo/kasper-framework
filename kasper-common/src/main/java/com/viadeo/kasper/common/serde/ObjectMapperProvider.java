@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -62,7 +62,7 @@ public final class ObjectMapperProvider {
         /* Register a specific module for Kasper Ser/Deser */
         mapper.registerModule(new KasperIdModule());
         mapper.registerModule(new KasperResponseModule());
-        mapper.registerModule(new KasperImmutabilityParanamerModule());
+        mapper.registerModule(new ImmutabilityModule());
 
         /* Third-party modules */
         mapper.registerModule(new GuavaModule());

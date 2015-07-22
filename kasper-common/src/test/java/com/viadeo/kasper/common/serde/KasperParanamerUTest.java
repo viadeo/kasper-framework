@@ -4,12 +4,13 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.serde;
 
 import org.junit.Test;
 
 import java.util.Date;
 
+import static com.viadeo.kasper.common.serde.ImmutabilityModule.KasperParanamer;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

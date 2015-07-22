@@ -16,22 +16,22 @@ import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.response.KasperReason;
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.exception.KasperQueryAdapterException;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
-import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -47,8 +47,8 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_ACCESS_TOKEN;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
+import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_ACCESS_TOKEN;
+import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
  * <p>

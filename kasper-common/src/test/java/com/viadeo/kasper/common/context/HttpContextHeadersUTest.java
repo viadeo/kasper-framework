@@ -1,6 +1,7 @@
-package com.viadeo.kasper.context;
+package com.viadeo.kasper.common.context;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.common.context.HttpContextHeaders;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

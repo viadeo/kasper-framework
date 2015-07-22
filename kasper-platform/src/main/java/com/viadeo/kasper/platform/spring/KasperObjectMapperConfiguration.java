@@ -15,7 +15,7 @@ import com.viadeo.kasper.common.serde.IDModule;
 import com.viadeo.kasper.common.serde.MetaDataDeserializer;
 import com.viadeo.kasper.common.serde.TrimDeserializer;
 import com.viadeo.kasper.api.context.ContextHelper;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.axonframework.domain.MetaData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

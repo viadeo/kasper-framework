@@ -12,7 +12,7 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
-import com.viadeo.kasper.tools.KasperMatcher;
+import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.mockito.ArgumentCaptor;
 
 import java.util.List;

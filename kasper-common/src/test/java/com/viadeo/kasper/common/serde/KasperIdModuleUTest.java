@@ -4,10 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.api.id.*;
+import com.viadeo.kasper.common.serde.KasperIdModule;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -8,14 +8,14 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.LinkedConcept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 

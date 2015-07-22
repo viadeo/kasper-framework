@@ -9,7 +9,7 @@ package com.viadeo.kasper.exposition.http;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.context.HttpContextHeaders;
+import com.viadeo.kasper.common.context.HttpContextHeaders;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
