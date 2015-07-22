@@ -14,7 +14,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.QueryInterceptor;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

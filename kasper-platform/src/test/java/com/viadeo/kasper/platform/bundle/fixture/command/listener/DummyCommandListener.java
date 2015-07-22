@@ -5,9 +5,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.platform.bundle.fixture.api.DummyDomain;
 import com.viadeo.kasper.platform.bundle.fixture.api.DummyEvent;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
-import com.viadeo.kasper.core.component.event.EventListener;
-import com.viadeo.kasper.platform.bundle.fixture.api.DummyDomain;
-import com.viadeo.kasper.platform.bundle.fixture.api.DummyEvent;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 
 @XKasperEventListener(description = "test", domain = DummyDomain.class)
 public class DummyCommandListener extends EventListener<DummyEvent> {

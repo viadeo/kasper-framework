@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.annotation;
 
-import com.viadeo.kasper.core.interceptor.QueryInterceptor;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -15,10 +15,10 @@ import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.EventListener;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.Domain;
@@ -29,7 +29,7 @@ import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConc
 import com.viadeo.kasper.api.annotation.XKasperEvent;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.api.component.event.EntityCreatedEvent;
-import com.viadeo.kasper.core.component.saga.Saga;
+import com.viadeo.kasper.core.component.event.saga.Saga;
 import org.junit.Test;
 
 import java.util.List;

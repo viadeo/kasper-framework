@@ -8,8 +8,8 @@ package com.viadeo.kasper.domain.sample.root.command.saga;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.saga.Saga;
-import com.viadeo.kasper.core.component.saga.SagaIdReconciler;
+import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 import com.viadeo.kasper.domain.sample.root.api.event.MemberCreatedEvent;
 import com.viadeo.kasper.domain.sample.root.api.event.MemberHasConfirmedEmailEvent;
