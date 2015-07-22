@@ -8,7 +8,6 @@ package com.viadeo.kasper.core.component.event.interceptor;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.api.component.event.Event;

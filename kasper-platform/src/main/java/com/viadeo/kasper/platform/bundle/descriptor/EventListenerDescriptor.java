@@ -8,7 +8,7 @@ package com.viadeo.kasper.platform.bundle.descriptor;
 
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

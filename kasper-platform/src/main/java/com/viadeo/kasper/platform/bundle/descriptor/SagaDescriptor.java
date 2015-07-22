@@ -9,7 +9,7 @@ package com.viadeo.kasper.platform.bundle.descriptor;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.saga.Saga;
+import com.viadeo.kasper.core.component.event.saga.Saga;
 
 import java.util.List;
 

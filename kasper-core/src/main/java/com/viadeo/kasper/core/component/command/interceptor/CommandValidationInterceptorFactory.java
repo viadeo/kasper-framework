@@ -8,7 +8,7 @@ package com.viadeo.kasper.core.component.command.interceptor;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.api.component.command.Command;

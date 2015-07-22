@@ -14,17 +14,17 @@ import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
-import com.viadeo.kasper.core.component.query.interceptor.CacheInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryFilterInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryValidationInterceptorFactory;
-import com.viadeo.kasper.core.component.saga.SagaManager;
-import com.viadeo.kasper.core.component.saga.spring.SagaConfiguration;
-import com.viadeo.kasper.core.component.saga.step.StepProcessor;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.validation.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.core.component.event.saga.SagaManager;
+import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
+import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
@@ -35,7 +35,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import java.util.List;
 
-import static com.viadeo.kasper.core.component.eventbus.KasperEventBus.Policy;
+import static com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.Policy;
 
 /**
  * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.platform.Platform}.

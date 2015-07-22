@@ -9,12 +9,12 @@ package com.viadeo.kasper.platform.configuration;
 import com.codahale.metrics.MetricRegistry;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
-import com.viadeo.kasper.core.component.saga.SagaManager;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.component.event.saga.SagaManager;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 

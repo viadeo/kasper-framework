@@ -22,11 +22,9 @@ import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
-import com.viadeo.kasper.platform.bundle.descriptor.*;
-import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.junit.Test;
 

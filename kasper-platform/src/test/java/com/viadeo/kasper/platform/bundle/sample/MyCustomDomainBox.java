@@ -26,7 +26,7 @@ import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.api.component.event.DomainEvent;

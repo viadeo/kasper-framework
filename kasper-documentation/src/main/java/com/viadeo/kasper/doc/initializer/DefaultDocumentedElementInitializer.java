@@ -22,8 +22,8 @@ import com.viadeo.kasper.doc.element.*;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.EventListener;
-import com.viadeo.kasper.core.component.saga.Saga;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.saga.Saga;
 
 import java.util.List;
 import java.util.Map;
