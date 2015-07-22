@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
@@ -85,4 +86,20 @@ public class DomainDescriptor implements KasperComponentDescriptor {
         return domainName;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(domainName, domainClass, queryHandlerDescriptors, commandHandlerDescriptors, repositoryDescriptor, eventListenerDescriptor, sagaDescriptor, eventClasses);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final DomainDescriptor other = (DomainDescriptor) obj;
+        return Objects.equal(this.domainName, other.domainName) && Objects.equal(this.domainClass, other.domainClass) && Objects.equal(this.queryHandlerDescriptors, other.queryHandlerDescriptors) && Objects.equal(this.commandHandlerDescriptors, other.commandHandlerDescriptors) && Objects.equal(this.repositoryDescriptor, other.repositoryDescriptor) && Objects.equal(this.eventListenerDescriptor, other.eventListenerDescriptor) && Objects.equal(this.sagaDescriptor, other.sagaDescriptor) && Objects.equal(this.eventClasses, other.eventClasses);
+    }
 }

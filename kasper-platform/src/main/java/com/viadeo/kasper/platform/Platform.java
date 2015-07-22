@@ -13,34 +13,25 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
+import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
+import com.viadeo.kasper.core.component.command.RepositoryManager;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
-import com.viadeo.kasper.platform.KasperPlatform;
-import com.viadeo.kasper.platform.plugin.Plugin;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
+import com.viadeo.kasper.core.component.saga.SagaManager;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
-import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.RepositoryManager;
-import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
-import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
-import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.component.event.CommandEventListener;
-import com.viadeo.kasper.core.component.event.EventListener;
-import com.viadeo.kasper.core.component.saga.Saga;
-import com.viadeo.kasper.core.component.saga.SagaExecutor;
-import com.viadeo.kasper.core.component.saga.SagaManager;
-import com.viadeo.kasper.core.component.saga.SagaWrapper;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
+import com.viadeo.kasper.platform.plugin.Plugin;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +87,7 @@ public interface Platform {
         private final List<QueryInterceptorFactory> queryInterceptorFactories;
         private final List<CommandInterceptorFactory> commandInterceptorFactories;
         private final List<EventInterceptorFactory> eventInterceptorFactories;
-        private final Map<ExtraComponentKey, Object> extraComponents;
+        private final List<ExtraComponent> extraComponents;
 
         private DomainDescriptorFactory domainDescriptorFactory;
         private DomainHelper domainHelper;
@@ -108,6 +99,7 @@ public interface Platform {
         private MetricRegistry metricRegistry;
         private Meta meta;
         private SagaManager sagaManager;
+        private PlatformWirer platformWirer;
 
         // --------------------------------------------------------------------
 
@@ -119,13 +111,15 @@ public interface Platform {
             this(checkNotNull(domainDescriptorFactory), new DefaultRepositoryManager());
         }
 
-        protected Builder(final DomainDescriptorFactory domainDescriptorFactory,
-                          final RepositoryManager repositoryManager) {
+        protected Builder(
+                final DomainDescriptorFactory domainDescriptorFactory,
+                final RepositoryManager repositoryManager
+        ) {
             this.domainDescriptorFactory = checkNotNull(domainDescriptorFactory);
             this.repositoryManager = checkNotNull(repositoryManager);
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
-            this.extraComponents = Maps.newHashMap();
+            this.extraComponents = Lists.newArrayList();
             this.queryInterceptorFactories = Lists.newArrayList();
             this.commandInterceptorFactories = Lists.newArrayList();
             this.eventInterceptorFactories = Lists.newArrayList();
@@ -141,7 +135,7 @@ public interface Platform {
             this.configuration = checkNotNull(platformConfiguration.configuration());
             this.metricRegistry = checkNotNull(platformConfiguration.metricRegistry());
             this.sagaManager = checkNotNull(platformConfiguration.sagaManager());
-            this.extraComponents.putAll(checkNotNull(platformConfiguration.extraComponents()));
+            this.extraComponents.addAll(checkNotNull(platformConfiguration.extraComponents()));
             this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
             this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
             this.eventInterceptorFactories.addAll(checkNotNull(platformConfiguration.eventInterceptorFactories()));
@@ -184,7 +178,7 @@ public interface Platform {
             checkNotNull(name);
             checkNotNull(clazz);
             checkNotNull(component);
-            this.extraComponents.put(new ExtraComponentKey(name, clazz), component);
+            this.extraComponents.add(new ExtraComponent(name, clazz, component));
             return this;
         }
 
@@ -252,17 +246,29 @@ public interface Platform {
             checkState((null != metricRegistry), "the metric registry cannot be null");
             checkState((null != sagaManager), "the saga manager cannot be null");
 
+            this.platformWirer = new PlatformWirer(
+                    configuration,
+                    metricRegistry,
+                    eventBus,
+                    commandGateway,
+                    queryGateway,
+                    sagaManager,
+                    repositoryManager
+            );
+
+            for (final ExtraComponent extraComponent : extraComponents) {
+                this.platformWirer.register(extraComponent);
+            }
+
             this.meta = Objects.firstNonNull(meta, new Meta("unknown", DateTime.now(), DateTime.now()));
 
-            final BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
-
-            registerInterceptors();
+            registerGlobalInterceptors(platformWirer);
 
             registerShutdownHook();
 
             initializeKasperMetrics(domainHelper);
 
-            final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
+            final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(platformWirer);
 
             final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus, meta);
 
@@ -281,81 +287,36 @@ public interface Platform {
             }
         }
 
-        protected void registerInterceptors() {
-            for (final DomainBundle bundle : domainBundles) {
-                commandInterceptorFactories.addAll(bundle.getCommandInterceptorFactories());
-                queryInterceptorFactories.addAll(bundle.getQueryInterceptorFactories());
-                eventInterceptorFactories.addAll(bundle.getEventInterceptorFactories());
-            }
-
+        protected void registerGlobalInterceptors(PlatformWirer platformWirer) {
             for (final QueryInterceptorFactory interceptorFactory : queryInterceptorFactories) {
-                LOGGER.debug("Registering query interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
-                queryGateway.register(interceptorFactory);
+                platformWirer.wire(interceptorFactory);
             }
 
             for (final CommandInterceptorFactory interceptorFactory : commandInterceptorFactories) {
-                LOGGER.debug("Registering command interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
-                commandGateway.register(interceptorFactory);
+                platformWirer.wire(interceptorFactory);
             }
 
             for (final EventInterceptorFactory interceptorFactory : eventInterceptorFactories) {
-                LOGGER.debug("Registering event interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
-                eventBus.register(interceptorFactory);
+                platformWirer.wire(interceptorFactory);
             }
         }
 
-        protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context) {
+        protected Collection<DomainDescriptor> configureDomainBundles(PlatformWirer platformWirer) {
             final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
             for (final DomainBundle bundle : domainBundles) {
-                domainDescriptors.add(configureDomainBundle(context, bundle));
+                domainDescriptors.add(configureDomainBundle(platformWirer, bundle));
             }
 
             return domainDescriptors;
         }
 
-        protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle) {
-            LOGGER.debug("Configuring bundle : {}", bundle.getName());
+        protected DomainDescriptor configureDomainBundle(final PlatformWirer platformWirer, final DomainBundle bundle) {
+            final DomainDescriptor descriptor = platformWirer.wire(bundle);
 
-            bundle.configure(context);
+            domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(descriptor));
 
-            for (final Repository repository : bundle.getRepositories()) {
-                repository.init();
-                repository.setEventBus(eventBus);
-                repositoryManager.register(repository);
-            }
-
-            for (final CommandHandler commandHandler : bundle.getCommandHandlers()) {
-                commandHandler.setEventBus(eventBus);
-                commandHandler.setRepositoryManager(repositoryManager);
-                commandGateway.register(commandHandler);
-            }
-
-            for (final QueryHandler queryHandler : bundle.getQueryHandlers()) {
-                queryHandler.setEventBus(eventBus);
-                queryGateway.register(queryHandler);
-            }
-
-            for (final EventListener eventListener : bundle.getEventListeners()) {
-                eventListener.setEventBus(eventBus);
-
-                if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
-                    final CommandEventListener commandEventListener = (CommandEventListener) eventListener;
-                    commandEventListener.setCommandGateway(commandGateway);
-                }
-
-                eventBus.subscribe(eventListener);
-            }
-
-            for(final Saga saga : bundle.getSagas()){
-                final SagaExecutor executor = sagaManager.register(saga);
-                eventBus.subscribe(new SagaWrapper(executor));
-            }
-
-            final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
-            domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
-
-            return domainDescriptorFactory.createFrom(bundle);
+            return descriptor;
         }
 
         protected void initializePlugins(final Platform platform, final Collection<DomainDescriptor> domainDescriptors) {
@@ -432,12 +393,12 @@ public interface Platform {
         private final CommandGateway commandGateway;
         private final QueryGateway queryGateway;
         private final MetricRegistry metricRegistry;
-        private final Map<ExtraComponentKey, Object> extraComponents;
+        private final Map<ExtraComponent.Key, ExtraComponent> extraComponents;
 
         // --------------------------------------------------------------------
 
         public BuilderContext(final KasperPlatformConfiguration platformConfiguration,
-                              final Map<ExtraComponentKey, Object> extraComponents
+                              final List<ExtraComponent> extraComponents
         ) {
             this(
                 platformConfiguration.configuration(),
@@ -454,14 +415,20 @@ public interface Platform {
                               final CommandGateway commandGateway,
                               final QueryGateway queryGateway,
                               final MetricRegistry metricRegistry,
-                              final Map<ExtraComponentKey, Object> extraComponents
+                              final List<ExtraComponent> extraComponents
         ) {
             this.configuration = checkNotNull(configuration);
             this.eventBus = checkNotNull(eventBus);
             this.commandGateway = checkNotNull(commandGateway);
             this.queryGateway = checkNotNull(queryGateway);
             this.metricRegistry = checkNotNull(metricRegistry);
-            this.extraComponents = checkNotNull(extraComponents);
+
+            checkNotNull(extraComponents);
+
+            this.extraComponents = Maps.newHashMap();
+            for (final ExtraComponent extraComponent : extraComponents) {
+                this.extraComponents.put(extraComponent.getKey(), extraComponent);
+            }
         }
 
         // --------------------------------------------------------------------
@@ -488,65 +455,41 @@ public interface Platform {
 
         @SuppressWarnings("unchecked")
         public <E> Optional<E> getExtraComponent(final String name, final Class<E> clazz) {
-            return Optional.fromNullable((E) extraComponents.get(new ExtraComponentKey(name, clazz)));
+            return Optional.fromNullable((E) extraComponents.get(new ExtraComponent.Key(name, clazz)));
         }
 
-        public Map<ExtraComponentKey, Object> getExtraComponents() {
-            return extraComponents;
+        public List<ExtraComponent> getExtraComponents() {
+            return Lists.newArrayList(extraComponents.values());
         }
-
-    }
-
-    // ========================================================================
-
-    static class ExtraComponentKey {
-        private final String name;
-        private final Class clazz;
-
-        // --------------------------------------------------------------------
-
-        public ExtraComponentKey(final String name, final Class clazz) {
-            this.name = name;
-            this.clazz = clazz;
-        }
-
-        // --------------------------------------------------------------------
-
-        public Class getClazz() {
-            return clazz;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        // --------------------------------------------------------------------
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(name, clazz);
+            return Objects.hashCode(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
         }
 
         @Override
-        public boolean equals(final Object obj) {
+        public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }
-            if ((obj == null) || ( ! getClass().equals(obj.getClass()))) {
+            if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
-            final ExtraComponentKey other = (ExtraComponentKey) obj;
-            return Objects.equal(this.name, other.name) && Objects.equal(this.clazz, other.clazz);
+            final BuilderContext other = (BuilderContext) obj;
+            return Objects.equal(this.configuration, other.configuration) && Objects.equal(this.eventBus, other.eventBus) && Objects.equal(this.commandGateway, other.commandGateway) && Objects.equal(this.queryGateway, other.queryGateway) && Objects.equal(this.metricRegistry, other.metricRegistry) && Objects.equal(this.extraComponents, other.extraComponents);
         }
+
 
         @Override
         public String toString() {
             return Objects.toStringHelper(this)
-                    .add("name", name)
-                    .add("clazz", clazz)
+                    .add("configuration", configuration)
+                    .add("eventBus", eventBus)
+                    .add("commandGateway", commandGateway)
+                    .add("queryGateway", queryGateway)
+                    .add("metricRegistry", metricRegistry)
+                    .add("extraComponents", extraComponents)
                     .toString();
         }
-
     }
-
 }

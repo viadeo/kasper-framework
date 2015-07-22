@@ -7,18 +7,18 @@
 package com.viadeo.kasper.platform.utils;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.platform.utils.BuilderContextHelper;
+import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -49,7 +49,7 @@ public class BuilderContextHelperUTest {
             platformConfiguration.commandGateway(),
             platformConfiguration.queryGateway(),
             platformConfiguration.metricRegistry(),
-            Maps.<Platform.ExtraComponentKey, Object>newHashMap()
+            Lists.<ExtraComponent>newArrayList()
         );
 
         // When
@@ -70,8 +70,8 @@ public class BuilderContextHelperUTest {
         final String name = "workers";
         final ExecutorService workers = Executors.newFixedThreadPool(2);
 
-        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
-        extraComponents.put(new Platform.ExtraComponentKey(name, ExecutorService.class), workers);
+        final List<ExtraComponent> extraComponents = Lists.newArrayList();
+        extraComponents.add(new ExtraComponent(name, ExecutorService.class, workers));
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
@@ -102,9 +102,9 @@ public class BuilderContextHelperUTest {
         final String name2 = "workers2";
         final ExecutorService workers2 = Executors.newFixedThreadPool(2);
 
-        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
-        extraComponents.put(new Platform.ExtraComponentKey(name1, ExecutorService.class), workers1);
-        extraComponents.put(new Platform.ExtraComponentKey(name2, ExecutorService.class), workers2);
+        final List<ExtraComponent> extraComponents = Lists.newArrayList();
+        extraComponents.add(new ExtraComponent(name1, ExecutorService.class, workers1));
+        extraComponents.add(new ExtraComponent(name2, ExecutorService.class, workers2));
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 

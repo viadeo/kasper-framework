@@ -8,19 +8,17 @@ package com.viadeo.kasper.platform.configuration;
 
 import com.codahale.metrics.MetricRegistry;
 import com.typesafe.config.Config;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.saga.SagaManager;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
-import com.viadeo.kasper.core.component.saga.SagaManager;
+import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.viadeo.kasper.platform.Platform.ExtraComponentKey;
 
 /**
  * The PlatformConfiguration interface provides methods to define base components. These components are required in order
@@ -61,7 +59,7 @@ public interface PlatformConfiguration {
     /**
      * @return the extra components
      */
-    Map<ExtraComponentKey, Object> extraComponents();
+    List<ExtraComponent> extraComponents();
 
     /**
      * @return the list of interceptor factories dedicated to the command side

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 
@@ -35,4 +36,20 @@ public class CommandHandlerDescriptor implements KasperComponentDescriptor {
         return commandClass;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(commandHandlerClass, commandClass);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final CommandHandlerDescriptor other = (CommandHandlerDescriptor) obj;
+        return Objects.equal(this.commandHandlerClass, other.commandHandlerClass) && Objects.equal(this.commandClass, other.commandClass);
+    }
 }
