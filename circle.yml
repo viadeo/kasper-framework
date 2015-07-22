@@ -16,20 +16,19 @@ dependencies:
     - "~/.gradle"
 
   pre:
-    # pull shared scripts
-    - if [[ ! -d ~/.viadeo ]]; then git clone git@github.com:viadeo/viadeo-docker.git ~/.viadeo; fi
-    # provision docker containers
-    - ~/.viadeo/bin/docker-provision.sh docker-rabbitmq:latest
+    # install docker-compose
+    - sudo pip install docker-compose
 
   override:
     - ./gradlew --no-daemon compileJava compileTestJava assemble --parallel --max-workers=2:
         timeout: 300
 
   post:
-    # stop f***** services already started
-    - sudo /etc/init.d/rabbitmq-server stop && sudo apt-get remove -y rabbitmq-server
+    # Stop the services provided by default by CircleCI
+    - sudo /etc/init.d/rabbitmq-server stop
     # start docker containers
-    - docker run -d -p 5672:5672 -p 15672:15672 quay.io/viadeo/docker-rabbitmq:latest
+    - docker login -e "architecture@viadeoteam.com" -u "viadeo+default" -p "$QUAY_READ_PASSWORD" quay.io
+    - docker-compose up -d
 
 test:
   override:
