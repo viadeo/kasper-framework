@@ -6,10 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.platform;
 
-import com.viadeo.kasper.platform.Meta;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 
 import static com.google.common.base.Preconditions.checkNotNull;

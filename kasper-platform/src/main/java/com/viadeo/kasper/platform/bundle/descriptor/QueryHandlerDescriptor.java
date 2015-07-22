@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResult;
@@ -43,4 +44,20 @@ public class QueryHandlerDescriptor implements KasperComponentDescriptor {
         return queryClass;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(queryHandlerClass, queryResultClass, queryClass);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final QueryHandlerDescriptor other = (QueryHandlerDescriptor) obj;
+        return Objects.equal(this.queryHandlerClass, other.queryHandlerClass) && Objects.equal(this.queryResultClass, other.queryResultClass) && Objects.equal(this.queryClass, other.queryClass);
+    }
 }

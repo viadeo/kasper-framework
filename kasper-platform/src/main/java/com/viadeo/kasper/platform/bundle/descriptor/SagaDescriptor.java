@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.saga.Saga;
@@ -31,6 +32,23 @@ public class SagaDescriptor implements KasperComponentDescriptor {
 
     public List<StepDescriptor> getStepDescriptors() {
         return stepDescriptors;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(sagaClass, stepDescriptors);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final SagaDescriptor other = (SagaDescriptor) obj;
+        return Objects.equal(this.sagaClass, other.sagaClass) && Objects.equal(this.stepDescriptors, other.stepDescriptors);
     }
 
     public static class StepDescriptor implements KasperComponentDescriptor {
@@ -60,6 +78,23 @@ public class SagaDescriptor implements KasperComponentDescriptor {
 
         public List<String> getActions() {
             return actions;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(name, eventClass, actions);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final StepDescriptor other = (StepDescriptor) obj;
+            return Objects.equal(this.name, other.name) && Objects.equal(this.eventClass, other.eventClass) && Objects.equal(this.actions, other.actions);
         }
     }
 }

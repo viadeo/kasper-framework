@@ -15,11 +15,12 @@ import com.typesafe.config.ConfigException;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.config.ConfigPropertySource;
 import com.viadeo.kasper.core.config.spring.KasperTypesafeConfigConfiguration;
+import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
 import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.core.metrics.spring.KasperMetricsConfiguration;
-import com.viadeo.kasper.spring.starters.KasperObjectMapperConfiguration;
-import com.viadeo.kasper.spring.starters.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.spring.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.spring.KasperObjectMapperConfiguration;
 import com.viadeo.kasper.spring.starters.KasperSimpleComponentsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,7 @@ public class KasperSpringPlatformBuilder {
     public KasperSpringPlatformBuilder defaultCore() {
         this.parents.add(KasperPlatformConfiguration.class);
         this.parents.add(KasperObjectMapperConfiguration.class);
+        this.parents.add(KasperContextConfiguration.class);
         this.parents.add(KasperMetricsConfiguration.class);
         this.parents.add(KasperIDConfiguration.class);
         this.parents.add(KasperSimpleComponentsConfiguration.class);

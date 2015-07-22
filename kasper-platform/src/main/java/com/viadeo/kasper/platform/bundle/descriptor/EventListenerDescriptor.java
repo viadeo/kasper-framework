@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.EventListener;
 
@@ -35,4 +36,20 @@ public class EventListenerDescriptor implements KasperComponentDescriptor {
         return eventClass;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(eventListenerClass, eventClass);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final EventListenerDescriptor other = (EventListenerDescriptor) obj;
+        return Objects.equal(this.eventListenerClass, other.eventListenerClass) && Objects.equal(this.eventClass, other.eventClass);
+    }
 }
