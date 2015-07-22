@@ -11,7 +11,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.api.exception.KasperException;

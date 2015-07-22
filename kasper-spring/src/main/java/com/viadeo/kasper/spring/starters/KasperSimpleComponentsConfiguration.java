@@ -7,7 +7,7 @@
 package com.viadeo.kasper.spring.starters;
 
 import com.codahale.metrics.health.HealthCheck;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;

@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;

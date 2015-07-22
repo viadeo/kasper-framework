@@ -14,7 +14,7 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.component.event.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.hamcrest.BaseMatcher;

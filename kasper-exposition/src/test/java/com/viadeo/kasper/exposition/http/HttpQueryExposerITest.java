@@ -3,7 +3,7 @@ package com.viadeo.kasper.exposition.http;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;

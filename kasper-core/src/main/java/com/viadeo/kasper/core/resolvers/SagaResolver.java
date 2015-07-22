@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.saga.Saga;
+import com.viadeo.kasper.core.component.event.saga.Saga;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

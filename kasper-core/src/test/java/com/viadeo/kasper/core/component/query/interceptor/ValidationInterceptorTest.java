@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.component.query.interceptor;
 
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.component.query.interceptor.QueryValidationInterceptor;
+import com.viadeo.kasper.core.component.query.interceptor.validation.QueryValidationInterceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
