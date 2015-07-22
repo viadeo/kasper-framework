@@ -45,4 +45,4 @@ deployment:
     branch: [develop, prepare_1.0.0]
     owner: viadeo
     commands:
-      - ./gradlew --no-daemon -a circleUploadArchives --parallel-threads=2
+      - ./gradlew --no-daemon uploadArchives --parallel-threads=2
