@@ -11,21 +11,21 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.aggregate.Relation;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.component.command.aggregate.Relation;
-import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
 import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.slf4j.Logger;
@@ -175,9 +175,9 @@ public class DomainDescriptorFactory {
         final Class<? extends CommandHandler> commandHandlerClass = commandHandler.getClass();
         final Optional<? extends Class> commandClass =
                 ReflectionGenericsResolver.getParameterTypeFromClass(
-                    commandHandlerClass,
-                    CommandHandler.class,
-                    CommandHandler.COMMAND_PARAMETER_POSITION
+                        commandHandlerClass,
+                        CommandHandler.class,
+                        CommandHandler.COMMAND_PARAMETER_POSITION
                 );
 
         return new CommandHandlerDescriptor(commandHandlerClass, commandClass.get());

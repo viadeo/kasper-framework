@@ -17,7 +17,7 @@ import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 
 import java.util.List;
 

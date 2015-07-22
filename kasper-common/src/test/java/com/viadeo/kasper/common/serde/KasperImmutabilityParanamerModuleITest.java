@@ -4,12 +4,14 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.viadeo.kasper.common.serde.ImmutabilityModule;
+import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +26,7 @@ public class KasperImmutabilityParanamerModuleITest {
     @Before
     public void setUp() {
         mapper = new ObjectMapper();
-        mapper.registerModule(new KasperImmutabilityParanamerModule());
+        mapper.registerModule(new ImmutabilityModule());
     }
 
     @Test

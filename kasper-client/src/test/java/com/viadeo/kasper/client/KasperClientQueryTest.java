@@ -20,7 +20,7 @@ import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
