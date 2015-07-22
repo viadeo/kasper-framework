@@ -12,7 +12,7 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.ExceptionValidator;
 import com.viadeo.kasper.test.platform.validator.base.FieldValidator;
-import com.viadeo.kasper.tools.KasperMatcher;
+import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.axonframework.test.ResultValidator;
@@ -21,7 +21,7 @@ import org.hamcrest.Matcher;
 import javax.validation.ConstraintViolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.common.tools.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
 public class KasperAggregateResultValidator implements

@@ -12,16 +12,13 @@ import com.google.common.base.Optional;
 import com.jayway.awaitility.Awaitility;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +36,6 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import static com.viadeo.kasper.core.component.event.saga.TestFixture.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 

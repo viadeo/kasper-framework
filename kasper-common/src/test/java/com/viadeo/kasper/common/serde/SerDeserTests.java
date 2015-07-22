@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,6 +22,7 @@ import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.DefaultKasperRelationId;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.junit.Test;
 
 import java.io.IOException;

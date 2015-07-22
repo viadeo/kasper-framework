@@ -12,7 +12,7 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.StringKasperId;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
-import com.viadeo.kasper.tools.KasperMatcher;
+import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.junit.Before;

@@ -14,7 +14,7 @@ import org.hamcrest.StringDescription;
 import javax.validation.ConstraintViolation;
 
 import static com.viadeo.kasper.test.platform.KasperPlatformFixture.RecordingPlatform;
-import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.common.tools.KasperMatcher.equalTo;
 
 public class DefaultBaseValidator extends BaseValidator
         implements ExceptionValidator<DefaultBaseValidator>, FieldValidator<DefaultBaseValidator> {

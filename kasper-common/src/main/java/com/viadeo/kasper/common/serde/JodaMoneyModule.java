@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -20,9 +20,8 @@ import java.io.IOException;
 import static com.fasterxml.jackson.core.JsonToken.VALUE_STRING;
 
 public class JodaMoneyModule extends SimpleModule {
-    private static final String NAME = "JodaMoneyModule";
 
-    // ------------------------------------------------------------------------
+    private static final String NAME = "JodaMoneyModule";
 
     public JodaMoneyModule() {
         super(NAME);
@@ -41,6 +40,8 @@ public class JodaMoneyModule extends SimpleModule {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     private static class MoneyJsonDeserializer extends JsonDeserializer<Money> {
         @Override
         public Money deserialize(final JsonParser jp, final DeserializationContext ctxt)
@@ -51,5 +52,7 @@ public class JodaMoneyModule extends SimpleModule {
             throw ctxt.mappingException("Can only convert JSON String (ISO4217) to Joda Money object.");
         }
     }
+
+    // ------------------------------------------------------------------------
 
 }

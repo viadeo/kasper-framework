@@ -9,9 +9,9 @@ package com.viadeo.kasper.core.component.query.interceptor.cache;
 import com.google.common.base.*;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
 import org.reflections.ReflectionUtils;
 

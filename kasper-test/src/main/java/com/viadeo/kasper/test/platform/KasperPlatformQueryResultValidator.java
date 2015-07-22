@@ -15,7 +15,7 @@ import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
 import org.axonframework.test.AxonAssertionError;
 
 import static com.viadeo.kasper.api.response.KasperResponse.Status.*;
-import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.common.tools.KasperMatcher.equalTo;
 
 /**
  * FIXME: add better debugging information
