@@ -9,17 +9,16 @@ package com.viadeo.kasper.platform.bundle;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
+import com.viadeo.kasper.core.component.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
-import com.viadeo.kasper.platform.bundle.SpringDomainBundle;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
+import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.swing.text.DateFormatter;
 import javax.swing.text.DefaultFormatter;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -56,7 +55,7 @@ public class SpringDomainBundleUTest {
             mock(CommandGateway.class),
             mock(QueryGateway.class),
             mock(MetricRegistry.class),
-            Maps.<Platform.ExtraComponentKey, Object>newHashMap()
+            Lists.<ExtraComponent>newArrayList()
         );
     }
 
@@ -150,8 +149,8 @@ public class SpringDomainBundleUTest {
 
         final ExecutorService workers = Executors.newFixedThreadPool(2);
 
-        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
-        extraComponents.put(new Platform.ExtraComponentKey("workers", ExecutorService.class), workers);
+        final List<ExtraComponent> extraComponents = Lists.newArrayList();
+        extraComponents.add(new ExtraComponent("workers", ExecutorService.class, workers));
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 

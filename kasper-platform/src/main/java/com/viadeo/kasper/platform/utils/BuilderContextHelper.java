@@ -6,12 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.platform.utils;
 
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.ExtraComponent;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.platform.Platform.BuilderContext;
@@ -52,8 +50,8 @@ public final class BuilderContextHelper {
                 builderContext.getMetricRegistry()
         );
 
-        for (final Map.Entry<Platform.ExtraComponentKey, Object> entry : builderContext.getExtraComponents().entrySet()) {
-            beanFactory.registerSingleton(entry.getKey().getName(), entry.getValue());
+        for (final ExtraComponent extraComponent : builderContext.getExtraComponents()) {
+            beanFactory.registerSingleton(extraComponent.getKey().getName(), extraComponent.getInstance());
         }
 
         applicationContext.refresh();

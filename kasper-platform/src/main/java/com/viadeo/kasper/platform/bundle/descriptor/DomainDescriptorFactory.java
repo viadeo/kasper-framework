@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.query.QueryHandler;
@@ -178,6 +179,7 @@ public class DomainDescriptorFactory {
                     CommandHandler.class,
                     CommandHandler.COMMAND_PARAMETER_POSITION
                 );
+
         return new CommandHandlerDescriptor(commandHandlerClass, commandClass.get());
     }
 
@@ -189,23 +191,33 @@ public class DomainDescriptorFactory {
             QueryHandler.class,
             QueryHandler.PARAMETER_QUERY_POSITION
         );
-        final Optional<? extends Class> queryResultClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-            queryHandlerClass,
-            QueryHandler.class,
-            QueryHandler.PARAMETER_RESULT_POSITION
+        final Optional<Class> queryResultClass = (Optional<Class>) ReflectionGenericsResolver.getParameterTypeFromClass(
+                queryHandlerClass,
+                QueryHandler.class,
+                QueryHandler.PARAMETER_RESULT_POSITION
         );
-        return new QueryHandlerDescriptor(queryHandlerClass, queryClass.get(), queryResultClass.get());
+
+        if ( ! queryResultClass.isPresent()) {
+            LOGGER.warn("Failed to identify the query result event : {}", queryHandler.getClass().getName());
+        }
+
+        return new QueryHandlerDescriptor(queryHandlerClass, queryClass.get(), queryResultClass.or(QueryResult.class));
     }
 
     @SuppressWarnings("unchecked")
     public static EventListenerDescriptor toEventListenerDescriptor(final EventListener eventListener) {
         final Class<? extends EventListener> eventListenerClass = eventListener.getClass();
-        final Optional<? extends Class> eventClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-            eventListenerClass,
-            EventListener.class,
-            EventListener.EVENT_PARAMETER_POSITION
+        final Optional<Class> eventClass = (Optional<Class>) ReflectionGenericsResolver.getParameterTypeFromClass(
+                eventListenerClass,
+                EventListener.class,
+                EventListener.EVENT_PARAMETER_POSITION
         );
-        return new EventListenerDescriptor(eventListenerClass, eventClass.get());
+
+        if ( ! eventClass.isPresent()) {
+            LOGGER.warn("Failed to identify the listened event : {}", eventListener.getClass().getName());
+        }
+
+        return new EventListenerDescriptor(eventListenerClass, eventClass.or(Event.class));
     }
 
     @SuppressWarnings("unchecked")

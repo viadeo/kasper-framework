@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,4 +26,20 @@ public class DescriptorRegistry implements Iterable<DomainDescriptor> {
         return descriptors.iterator();
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(descriptors);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final DescriptorRegistry other = (DescriptorRegistry) obj;
+        return Objects.equal(this.descriptors, other.descriptors);
+    }
 }

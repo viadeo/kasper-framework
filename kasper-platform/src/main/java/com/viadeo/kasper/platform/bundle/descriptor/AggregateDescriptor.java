@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.descriptor;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
@@ -63,4 +64,20 @@ public class AggregateDescriptor implements KasperComponentDescriptor {
         return sourceEventClasses;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(aggregateClass, sourceClass, targetClass, sourceEventClasses);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final AggregateDescriptor other = (AggregateDescriptor) obj;
+        return Objects.equal(this.aggregateClass, other.aggregateClass) && Objects.equal(this.sourceClass, other.sourceClass) && Objects.equal(this.targetClass, other.targetClass) && Objects.equal(this.sourceEventClasses, other.sourceEventClasses);
+    }
 }
