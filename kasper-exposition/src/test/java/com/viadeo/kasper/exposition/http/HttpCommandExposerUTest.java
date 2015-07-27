@@ -8,14 +8,13 @@ package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.annotation.XKasperUnexposed;
+import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.exposition.http.HttpCommandExposer;
-import com.viadeo.kasper.exposition.http.HttpExposerError;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
@@ -33,12 +32,12 @@ public class HttpCommandExposerUTest {
         private static final long serialVersionUID = -4289744274328803942L;
     }
 
-    public static class CommandHandlerA extends CommandHandler<ACommand> { }
+    public static class CommandHandlerA extends AutowiredCommandHandler<ACommand> { }
 
-    public static class CommandHandlerB extends CommandHandler<ACommand> { }
+    public static class CommandHandlerB extends AutowiredCommandHandler<ACommand> { }
 
     @XKasperUnexposed
-    public static class CommandHandlerC extends CommandHandler<ACommand> { }
+    public static class CommandHandlerC extends AutowiredCommandHandler<ACommand> { }
 
     @Test(expected = HttpExposerError.class)
     public void init_withTwoHandlers_handlingTheSameCommand_throwException() throws Exception {

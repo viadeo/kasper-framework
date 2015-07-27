@@ -9,15 +9,15 @@ package com.viadeo.kasper.platform;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.core.metrics.MetricNames;
+import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,15 +27,17 @@ public class MetricsPublicationITest {
 
     private Platform platform;
     private MetricRegistry metricRegistry;
+    private MetricNames metricNames;
 
     @Before
     public void init() {
         metricRegistry = spy(new MetricRegistry());
 
-        platform = new Platform.Builder(new KasperPlatformConfiguration())
-                .withMetricRegistry(metricRegistry)
+        platform = new Platform.Builder(new KasperPlatformConfiguration(metricRegistry))
                 .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();
+
+        metricNames = MetricNames.of(CommandGateway.class);
 
         // clear caches in order to ensure test integrity
         KasperMetrics.clearCache();
@@ -44,8 +46,8 @@ public class MetricsPublicationITest {
     @Test
     public void checkMetricsPublication_onOverall_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
         // Given
-        final Meter globalRequestsNameMeter = registerSpyMeter(CommandHandler.GLOBAL_METER_REQUESTS_NAME);
-        final Timer globalRequestsNameTimer = registerSpyTimer(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME);
+        final Meter globalRequestsNameMeter = registerSpyMeter(metricNames.requests);
+        final Timer globalRequestsNameTimer = registerSpyTimer(metricNames.requestsTime);
 
         reset(metricRegistry);
 
@@ -53,16 +55,16 @@ public class MetricsPublicationITest {
         platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), Contexts.empty());
 
         // Then
-        verifyTimerInteraction(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalRequestsNameTimer);
-        verifyMeterInteraction(CommandHandler.GLOBAL_METER_REQUESTS_NAME, globalRequestsNameMeter);
+        verifyTimerInteraction(metricNames.requestsTime, globalRequestsNameTimer);
+        verifyMeterInteraction(metricNames.requests, globalRequestsNameMeter);
     }
 
     @Test
     public void checkMetricsPublication_onOverall_fromFailedCommand_shouldPublishMetrics() throws Exception {
         // Given
-        final Meter globalRequestsNameMeter = registerSpyMeter(CommandHandler.GLOBAL_METER_REQUESTS_NAME);
-        final Timer globalRequestsNameTimer = registerSpyTimer(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME);
-        final Meter globalErrorsNameMeter = registerSpyMeter(CommandHandler.GLOBAL_METER_ERRORS_NAME);
+        final Timer globalRequestsNameTimer = registerSpyTimer(metricNames.requestsTime);
+        final Meter globalRequestsNameMeter = registerSpyMeter(metricNames.requests);
+        final Meter globalErrorsNameMeter = registerSpyMeter(metricNames.errors);
 
         reset(metricRegistry);
 
@@ -74,9 +76,9 @@ public class MetricsPublicationITest {
         }
 
         // Then
-        verifyTimerInteraction(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalRequestsNameTimer);
-        verifyMeterInteraction(CommandHandler.GLOBAL_METER_REQUESTS_NAME, globalRequestsNameMeter);
-        verifyMeterInteraction(CommandHandler.GLOBAL_METER_ERRORS_NAME, globalErrorsNameMeter);
+        verifyTimerInteraction(metricNames.requestsTime, globalRequestsNameTimer);
+        verifyMeterInteraction(metricNames.requests, globalRequestsNameMeter);
+        verifyMeterInteraction(metricNames.errors, globalErrorsNameMeter);
     }
 
     @Test

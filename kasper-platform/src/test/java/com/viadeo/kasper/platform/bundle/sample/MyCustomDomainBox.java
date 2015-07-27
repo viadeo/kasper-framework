@@ -11,7 +11,7 @@ import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.query.Query;
@@ -41,7 +41,7 @@ public class MyCustomDomainBox {
     public static class MyCustomDomain implements Domain { }
 
     @XKasperCommandHandler(domain = MyCustomDomain.class)
-    public static class MyCustomCommandHandler extends CommandHandler<MyCustomCommand> {
+    public static class MyCustomCommandHandler extends AutowiredCommandHandler<MyCustomCommand> {
         @Override
         public CommandResponse handle(MyCustomCommand command) throws Exception {
             if ( ! command.isSuccessful()) {

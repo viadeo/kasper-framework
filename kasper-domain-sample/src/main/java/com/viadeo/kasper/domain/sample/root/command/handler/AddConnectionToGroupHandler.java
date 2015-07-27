@@ -7,12 +7,12 @@
 package com.viadeo.kasper.domain.sample.root.command.handler;
 
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 import com.viadeo.kasper.domain.sample.root.api.command.AddConnectionToGroupCommand;
 
 
 @XKasperCommandHandler(domain=Facebook.class)
 @Deprecated
-public class AddConnectionToGroupHandler extends CommandHandler<AddConnectionToGroupCommand> {
+public class AddConnectionToGroupHandler extends AutowiredCommandHandler<AddConnectionToGroupCommand> {
 }

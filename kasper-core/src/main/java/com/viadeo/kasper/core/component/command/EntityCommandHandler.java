@@ -6,141 +6,27 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Base implementation for Kasper entity command handlers
+ * An specialization of <code>CommandHandler</code> allowing to mutate an aggregate.
  *
- * @param <C> Command
- * @param <AGR> the entity (aggregate root)
- * @see com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot
- * @see EntityCommandHandler
- * @see CommandHandler
- * @see com.viadeo.kasper.core.component.command.aggregate.ddd.Entity
- * @see com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot
+ * @param <COMMAND> the command class handled by this <code>CommandHandler</code>.
+ * @param <AGR> the aggregate class mutated by this <code>CommandHandler</code>.
  */
-public abstract class EntityCommandHandler<C extends Command, AGR extends AggregateRoot>
-        extends CommandHandler<C> {
-
-    /**
-     * Generic parameter position for the handled command
-     */
-    public static final int COMMAND_PARAMETER_POSITION = 0;
+public interface EntityCommandHandler<COMMAND extends Command, AGR extends AggregateRoot>
+        extends CommandHandler<COMMAND>
+{
 
     /**
      * Generic parameter position for the handled entity
      */
     public static final int ENTITY_PARAMETER_POSITION = 1;
 
-    // Consistent data container for entity class and repository
-    private static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
-        private ClientRepository<E> repository;
-        private Class<E> entityClass;
-
-        @SuppressWarnings("unchecked")
-        void setEntityClass(final Class entityClass) {
-            this.entityClass = (Class<E>) entityClass;
-        }
-
-        @SuppressWarnings("unchecked")
-        void setRepository(final ClientRepository repository) {
-            this.repository = (ClientRepository<E>) repository;
-        }
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private final transient ConsistentRepositoryEntity<AGR> consistentRepositoryEntity =
-            new ConsistentRepositoryEntity();
-
-    // ------------------------------------------------------------------------
-
-    public EntityCommandHandler() {
-        super();
-
-        //- Extract entity class for further repository lookup ----------------
-        // TODO: to check if performance optimization is needed (ConcurrentMap cache)
-
-        @SuppressWarnings("unchecked")
-        // Safe
-        final Optional<Class<? extends AggregateRoot>> entityAssignClass = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
-                .getParameterTypeFromClass(
-                        this.getClass(),
-                        EntityCommandHandler.class,
-                        ENTITY_PARAMETER_POSITION
-                );
-
-        if ( ! entityAssignClass.isPresent()) {
-            throw new KasperCommandException(
-                    "Cannot determine entity type for "
-                            + this.getClass().getName()
-            );
-        }
-
-        this.consistentRepositoryEntity.setEntityClass(entityAssignClass.get());
-    }
-
-    // ------------------------------------------------------------------------
-
     /**
-     * @param repository the repository related to the aggregate handled by this instance
-     * @see EntityCommandHandler#setRepository(com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository)
+     * @return the aggregate class mutated by this <code>CommandHandler</code>.
      */
-    public void setRepository(final IRepository<AGR> repository) {
-        this.consistentRepositoryEntity.setRepository(
-                new ClientRepository<AGR>(checkNotNull(repository))
-        );
-    }
-
-    /**
-     * Get the related repository of the entity handled by this command handler
-     *
-     * @return the repository
-     */
-    @SuppressWarnings("unchecked")
-    public ClientRepository<AGR> getRepository() {
-        if (null == this.consistentRepositoryEntity.repository) {
-
-            if (null == repositoryManager) {
-                throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
-            }
-
-            final Optional<ClientRepository<AGR>> optRepo =
-                    repositoryManager.getEntityRepository(this.consistentRepositoryEntity.entityClass);
-
-            if ( ! optRepo.isPresent()) {
-                throw new KasperCommandException(String.format(
-                        "The entity %s has not been recorded on any domain",
-                        this.consistentRepositoryEntity.entityClass.getSimpleName())
-                );
-            }
-
-            this.consistentRepositoryEntity.setRepository(optRepo.get());
-        }
-
-        return this.consistentRepositoryEntity.repository;
-    }
-
-    /**
-     * Get the related repository of the specified entity class
-     *
-     * @param entityClass the class of the entity
-     * @param <E> the type of the entity
-     * @return the entity repository
-     */
-    public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(final Class<E> entityClass) {
-        if (null == repositoryManager) {
-            throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
-        }
-
-        return repositoryManager.getEntityRepository(entityClass);
-    }
+    public Class<AGR> getAggregateClass();
 
 }

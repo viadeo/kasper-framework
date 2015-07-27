@@ -31,7 +31,7 @@ import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.QueryHandler;
@@ -272,7 +272,7 @@ public class ServerITest {
     }
 
     @XKasperCommandHandler(domain = Foobar.class)
-    public static class DummyCommandHandler extends CommandHandler<DummyCommand> {
+    public static class DummyCommandHandler extends AutowiredCommandHandler<DummyCommand> {
 
         @Override
         public CommandResponse handle(DummyCommand command) throws Exception {

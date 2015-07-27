@@ -19,8 +19,9 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.EntityCommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredEntityCommandHandler;
 import com.viadeo.kasper.core.component.command.KasperCommandMessage;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
@@ -253,7 +254,7 @@ public class FixtureUseCase {
 
     @XKasperCommandHandler( domain = TestDomain.class )
     public static class TestCreateCommandHandler
-            extends EntityCommandHandler<TestCreateCommand, TestAggregate> {
+            extends AutowiredEntityCommandHandler<TestCreateCommand, TestAggregate> {
 
         public CommandResponse handle(final KasperCommandMessage<TestCreateCommand> message) throws Exception {
 
@@ -269,7 +270,7 @@ public class FixtureUseCase {
 
     @XKasperCommandHandler( domain = TestDomain.class )
     public static class TestChangeLastNameCommandHandler
-            extends EntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
+            extends AutowiredEntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
 
         public CommandResponse handle(final KasperCommandMessage<TestChangeLastNameCommand> message) throws Exception {
 
@@ -373,7 +374,7 @@ public class FixtureUseCase {
     }
 
     @XKasperCommandHandler( domain = TestDomain.class )
-    public static class TestCoreReasonCodeCommandHandler extends CommandHandler<TestCoreReasonCodeCommand> {
+    public static class TestCoreReasonCodeCommandHandler extends AutowiredCommandHandler<TestCoreReasonCodeCommand> {
         @Override
         public CommandResponse handle(TestCoreReasonCodeCommand command) throws Exception {
             return CommandResponse.error(command.getCoreReasonCode());
@@ -394,7 +395,7 @@ public class FixtureUseCase {
     }
 
     @XKasperCommandHandler( domain = TestDomain.class )
-    public static class TestCommandHandler extends CommandHandler<TestCommand> {
+    public static class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         @Override
         public CommandResponse handle(TestCommand command) throws Exception {
             if (command.getType().contentEquals("REFUSED")) {
@@ -425,7 +426,7 @@ public class FixtureUseCase {
     }
 
     @XKasperCommandHandler( domain = TestDomain.class )
-    public static class TestCreateUserCommandHandler extends CommandHandler<TestCreateUserCommand> {
+    public static class TestCreateUserCommandHandler extends AutowiredCommandHandler<TestCreateUserCommand> {
 
         @Override
         public CommandResponse handle(TestCreateUserCommand command) throws Exception {

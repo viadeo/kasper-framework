@@ -9,22 +9,22 @@ package com.viadeo.kasper.exposition.http;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.core.component.command.KasperCommandMessage;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.KasperCommandMessage;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -99,7 +99,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
     }
 
     @XKasperCommandHandler(domain = TestDomain.class)
-    public static class ContextCheckCommandHandler extends CommandHandler<ContextCheckCommand> {
+    public static class ContextCheckCommandHandler extends AutowiredCommandHandler<ContextCheckCommand> {
         @Override
         public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
             return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);

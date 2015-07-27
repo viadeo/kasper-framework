@@ -6,21 +6,23 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.gateway;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
-import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
 import com.viadeo.kasper.core.locators.DefaultDomainLocator;
+import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptorFactory;
-import com.viadeo.kasper.api.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -44,50 +46,25 @@ public class KasperCommandGateway implements CommandGateway {
 
     // ------------------------------------------------------------------------
 
-    /**
-     *
-     * Convenient class for Axon command bus subscription proper dynamic typing
-     *
-     * @param <C> the Kasper command type handled
-     */
-    private static class AxonCommandCastor<C extends Command> {
-
-        private final transient Class<? extends C> commandClass;
-        private final transient org.axonframework.commandhandling.CommandHandler handler;
-
-        @SuppressWarnings("unchecked") // Safe by previous parent class typing
-        AxonCommandCastor(final Class commandClass, final org.axonframework.commandhandling.CommandHandler container) {
-            this.commandClass = (Class<? extends C>) commandClass;
-            this.handler = container;
-        }
-
-        public Class<? extends C> getBeanClass() {
-            return this.commandClass;
-        }
-
-        public org.axonframework.commandhandling.CommandHandler getContainerClass() {
-            return this.handler;
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    public KasperCommandGateway(final KasperCommandBus commandBus) {
+    public KasperCommandGateway(final KasperCommandBus commandBus, final MetricRegistry metricRegistry) {
         this(
              new CommandGatewayFactoryBean<CommandGateway>(),
              checkNotNull(commandBus),
              new DefaultDomainLocator(new CommandHandlerResolver()),
-             new InterceptorChainRegistry<Command, CommandResponse>()
+             new InterceptorChainRegistry<Command, CommandResponse>(),
+             checkNotNull(metricRegistry)
         );
     }
 
     public KasperCommandGateway(final KasperCommandBus commandBus,
+                                final MetricRegistry metricRegistry,
                                 final CommandDispatchInterceptor... commandDispatchInterceptors) {
         this(
             new CommandGatewayFactoryBean<CommandGateway>(),
             checkNotNull(commandBus),
             new DefaultDomainLocator(new CommandHandlerResolver()),
             new InterceptorChainRegistry<Command, CommandResponse>(),
+            checkNotNull(metricRegistry),
             checkNotNull(commandDispatchInterceptors)
         );
     }
@@ -96,11 +73,13 @@ public class KasperCommandGateway implements CommandGateway {
                                    final KasperCommandBus commandBus,
                                    final DomainLocator domainLocator,
                                    final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry,
+                                   final MetricRegistry metricRegistry,
                                    final CommandDispatchInterceptor... commandDispatchInterceptors) {
 
         this.commandBus = checkNotNull(commandBus);
         this.domainLocator = checkNotNull(domainLocator);
         this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
+        this.interceptorChainRegistry.register(new MeasuredInterceptor.Factory(CommandGateway.class, metricRegistry));
 
         checkNotNull(commandGatewayFactoryBean);
         checkNotNull(commandDispatchInterceptors);
@@ -241,29 +220,20 @@ public class KasperCommandGateway implements CommandGateway {
      * Register a command handler to the gateway
      *
      * @param commandHandler the command handler to be registered
+     * @param <COMMAND> the command
      */
-    public void register(final CommandHandler commandHandler) {
+    public <COMMAND extends Command> void register(final CommandHandler<COMMAND> commandHandler) {
 
         domainLocator.registerHandler(checkNotNull(commandHandler));
 
-        final Class commandClass = commandHandler.getCommandClass();
-
-        //- Dynamic type command class and command handler for Axon -------
-        final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(
-            commandClass,
-            commandHandler
-        );
-
         commandBus.subscribe(
-                castor.getBeanClass().getName(),
-                castor.getContainerClass()
+                commandHandler.getCommandClass().getName(),
+                new AxonCommandHandler<>(commandHandler)
         );
-
-        commandHandler.setCommandGateway(this);
 
         // create immediately the interceptor chain instead of lazy mode
         interceptorChainRegistry.create(
-                commandHandler.getClass(),
+                commandHandler.getCommandHandlerClass(),
                 new CommandHandlerInterceptorFactory()
         );
     }

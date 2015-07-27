@@ -2,17 +2,15 @@ package com.viadeo.kasper.core.component.command.gateway;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.context.Tags;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
-import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.core.component.command.KasperCommandMessage;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
-import org.axonframework.unitofwork.UnitOfWork;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +45,11 @@ public class KasperCommandGatewayITest {
         final KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
-        this.commandGateway = new KasperCommandGateway(commandBus);
+        final MetricRegistry metricRegistry = new MetricRegistry();
 
-        KasperMetrics.setMetricRegistry(new MetricRegistry());
+        this.commandGateway = new KasperCommandGateway(commandBus, metricRegistry);
+
+        KasperMetrics.setMetricRegistry(metricRegistry);
     }
 
     // ------------------------------------------------------------------------
@@ -61,9 +61,9 @@ public class KasperCommandGatewayITest {
         // Given
         final List<Command> captor = Lists.newArrayList();
 
-        commandGateway.register(new CommandHandler<TestCommand>() {
+        commandGateway.register(new AutowiredCommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(final KasperCommandMessage message, final UnitOfWork uow) throws Exception {
+            public CommandResponse handle(final KasperCommandMessage message) throws Exception {
                 captor.add(message.getCommand());
                 synchronized (lock) {
                     lock.notify();
@@ -89,9 +89,9 @@ public class KasperCommandGatewayITest {
     @Test(timeout = 100)
     public void sendCommand_shouldFireAndForget() throws Exception {
         // Given
-        commandGateway.register(new CommandHandler<TestCommand>() {
+        commandGateway.register(new AutowiredCommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(KasperCommandMessage message, UnitOfWork uow) throws Exception {
+            public CommandResponse handle(KasperCommandMessage message) throws Exception {
                 Thread.sleep(5000);
                 return CommandResponse.ok();
             }

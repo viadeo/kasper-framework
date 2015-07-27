@@ -11,7 +11,7 @@ import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.core.component.query.QueryHandler;
@@ -37,7 +37,7 @@ public class DomainDescriptorFactoryUTest {
     public static class TestCommand implements Command { }
 
     @XKasperCommandHandler(domain = TestDomain.class)
-    public static class TestCommandHandler extends CommandHandler<TestCommand> { }
+    public static class TestCommandHandler extends AutowiredCommandHandler<TestCommand> { }
 
     public static class TestQuery implements Query { }
 

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
@@ -79,7 +80,7 @@ public class KasperPlatformFixture implements
                         .withConfiguration(this.config)
                         .withEventBus(this.eventBus)
                         .withCommandGateway(
-                            new KasperCommandGateway(this.commandBus)
+                            new KasperCommandGateway(this.commandBus, new MetricRegistry())
                         )
                         .addDomainBundle(this.domainBundle)
                         .build()
