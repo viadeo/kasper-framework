@@ -14,13 +14,13 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
-import com.viadeo.kasper.query.exposition.FeatureConfiguration;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
-import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
-import com.viadeo.kasper.query.exposition.query.BeanAdapter;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
-import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
+import com.viadeo.kasper.common.exposition.FeatureConfiguration;
+import com.viadeo.kasper.common.exposition.TypeAdapter;
+import com.viadeo.kasper.common.exposition.adapters.TypeAdapterFactory;
+import com.viadeo.kasper.common.exposition.query.BeanAdapter;
+import com.viadeo.kasper.common.exposition.query.QueryFactory;
+import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.common.exposition.query.VisibilityFilter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -68,13 +68,13 @@ public class KasperClientBuilder {
     /**
      * Registers an adapter for its parameterized type for query ser/deser. Registration of adapters should be done in
      * domain api projects as they are shared between server and clients. To allow adapters discovery prefer using java
-     * service loader mechanism. Create a file named com.viadeo.kasper.query.exposition.TypeAdapter under
+     * service loader mechanism. Create a file named com.viadeo.kasper.common.exposition.TypeAdapter under
      * META-INF/services and put inside the name of your adapters. They will be automatically discovered by the
      * KasperClient.
      * 
      * @param mapper to register for query serialization/deserialization.
      * @return a reference to this builder.
-     * @see com.viadeo.kasper.query.exposition.TypeAdapter
+     * @see com.viadeo.kasper.common.exposition.TypeAdapter
      */
     public KasperClientBuilder use(final ObjectMapper mapper) {
         this.mapper = checkNotNull(mapper);
@@ -104,7 +104,7 @@ public class KasperClientBuilder {
     /**
      * @param factory a factory
      * @return a reference to this builder.
-     * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
+     * @see #use(com.viadeo.kasper.common.exposition.TypeAdapter)
      */
     public KasperClientBuilder use(final TypeAdapterFactory factory) {
         qFactoryBuilder.use(checkNotNull(factory));

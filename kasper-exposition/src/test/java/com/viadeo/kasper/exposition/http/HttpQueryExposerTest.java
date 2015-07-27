@@ -23,7 +23,7 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.client.HTTPQueryResponse;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
