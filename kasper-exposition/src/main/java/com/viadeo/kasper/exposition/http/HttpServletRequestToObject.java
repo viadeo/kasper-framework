@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import com.viadeo.kasper.query.exposition.query.QueryParser;
+import com.viadeo.kasper.common.exposition.query.QueryFactory;
+import com.viadeo.kasper.common.exposition.query.QueryParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

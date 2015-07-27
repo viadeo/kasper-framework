@@ -18,8 +18,8 @@ import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.common.exposition.query.QueryFactory;
+import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
 import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;

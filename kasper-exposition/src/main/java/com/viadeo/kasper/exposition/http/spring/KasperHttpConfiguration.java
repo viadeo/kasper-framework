@@ -38,7 +38,7 @@ import com.viadeo.kasper.exposition.http.jetty.resource.Resource;
 import com.viadeo.kasper.platform.Build;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
-import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

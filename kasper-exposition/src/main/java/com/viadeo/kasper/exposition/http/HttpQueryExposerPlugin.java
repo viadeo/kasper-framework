@@ -18,7 +18,7 @@ import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.QueryHandlerDescriptor;
-import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
 
 import java.util.List;
 

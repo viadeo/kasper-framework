@@ -12,7 +12,7 @@ import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.exception.KasperException;
 import org.junit.Assert;
