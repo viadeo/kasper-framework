@@ -66,7 +66,7 @@ public class SagaExecutor {
         checkNotNull(methodName);
 
         try {
-            final Method method = sagaClass.getMethod(methodName);
+            final Method method = sagaClass.getDeclaredMethod(methodName);
             method.setAccessible(Boolean.TRUE);
 
             final Saga saga = getSaga(sagaIdentifier);
