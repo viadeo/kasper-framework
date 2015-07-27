@@ -7,11 +7,11 @@
 package com.viadeo.kasper.domain.sample.root.command.handler;
 
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 import com.viadeo.kasper.domain.sample.root.api.command.AddConnectionToMemberCommand;
 
 @XKasperCommandHandler(domain=Facebook.class)
-public class AddConnectionToMemberHandler extends CommandHandler<AddConnectionToMemberCommand> {
+public class AddConnectionToMemberHandler extends AutowiredCommandHandler<AddConnectionToMemberCommand> {
 
 }

@@ -10,7 +10,7 @@ import com.viadeo.kasper.core.TestDomain;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
@@ -126,7 +126,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class)
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
         final Class<?> handlerClass = TestCommandHandler.class;
 
@@ -144,7 +144,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class, tags = "this-is-a-tag")
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
         final Class<?> handlerClass = TestCommandHandler.class;
 
@@ -163,7 +163,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class, tags = {"this-is-a-tag", "this-is-another-tag"})
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
         final Class<?> handlerClass = TestCommandHandler.class;
 
@@ -181,7 +181,7 @@ public class TagsHolderUTest {
     public void getTags_fromCommandHandler_withoutAnnotations_shouldReturnEmpty() {
         // Given
         @XKasperUnregistered
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
         final Class<?> handlerClass = TestCommandHandler.class;
 

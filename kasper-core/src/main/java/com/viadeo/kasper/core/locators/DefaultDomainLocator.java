@@ -8,7 +8,6 @@ package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.CommandHandler;
@@ -67,8 +66,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     public void registerHandler(final CommandHandler commandHandler) {
         checkNotNull(commandHandler);
-        final Class<? extends Command> commandClass =
-                commandHandlerResolver.getCommandClass(commandHandler.getClass());
+        final Class<? extends Command> commandClass = commandHandler.getCommandClass();
         handlers.put(commandHandler, commandClass);
     }
 

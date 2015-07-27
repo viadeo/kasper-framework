@@ -7,7 +7,7 @@
 package com.viadeo.kasper.platform.bundle.sample2;
 
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.annotation.XKasperDomain;
@@ -20,7 +20,7 @@ public class SampleDomainBox2 {
     public static class MyCustomDomain implements Domain { }
 
     @XKasperCommandHandler(domain = MyCustomDomain.class)
-    public static class MyCustomCommandHandler extends CommandHandler<Command> {
+    public static class MyCustomCommandHandler extends AutowiredCommandHandler<Command> {
         public MyCustomCommandHandler(final Infra infra) { }
     }
 

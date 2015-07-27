@@ -6,20 +6,21 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.gateway;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
-import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
+import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
+import com.viadeo.kasper.core.locators.DomainLocator;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.junit.Before;
@@ -59,7 +60,7 @@ public class KasperCommandGatewayUTest {
         commandBus = mock(KasperCommandBus.class);
         domainLocator = mock(DomainLocator.class);
         interceptorChainRegistry = mock(InterceptorChainRegistry.class);
-        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator, interceptorChainRegistry);
+        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator, interceptorChainRegistry, new MetricRegistry());
     }
 
     @Before
@@ -171,8 +172,9 @@ public class KasperCommandGatewayUTest {
     @Test
     public void register_withCommandHandler_shouldBeRegistered() {
         // Given
-        final CommandHandler commandHandler = mock(CommandHandler.class);
+        final AutowiredCommandHandler commandHandler = mock(AutowiredCommandHandler.class);
         when(commandHandler.getCommandClass()).thenReturn(Command.class);
+        when(commandHandler.getCommandHandlerClass()).thenReturn(AutowiredCommandHandler.class);
 
         // When
         commandGateway.register(commandHandler);
@@ -186,11 +188,10 @@ public class KasperCommandGatewayUTest {
         verify(commandBus).setHandlerInterceptors(refEq(handlerInterceptors));
         verifyNoMoreInteractions(commandBus);
 
-        verify(commandHandler).setCommandGateway(refEq(commandGateway));
         verify(commandHandler).getCommandClass();
-        verifyNoMoreInteractions(commandHandler);
 
-        verify(interceptorChainRegistry).create(eq(commandHandler.getClass()), any(CommandInterceptorFactory.class));
+        verify(interceptorChainRegistry).create(eq(AutowiredCommandHandler.class), any(CommandInterceptorFactory.class));
+        verify(interceptorChainRegistry).register(any(MeasuredInterceptor.Factory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
     }
 }

@@ -13,22 +13,23 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.command.MeasuredCommandHandler;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.listener.QueryEventListener;
-import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.SagaWrapper;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
@@ -127,7 +128,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_a_command_handler() {
         // Given
-        final CommandHandler commandHandler = spy(new MyCustomDomainBox.MyCustomCommandHandler());
+        final AutowiredCommandHandler commandHandler = spy(new MyCustomDomainBox.MyCustomCommandHandler());
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(commandHandler)
                 .build();
@@ -136,9 +137,10 @@ public class PlatformWirerUTest {
         platformWirer.wire(domainBundle);
 
         // Then
-        verify(commandGateway).register(refEq(commandHandler));
+        verify(commandGateway).register(isA(MeasuredCommandHandler.class));
         verify(commandHandler).setEventBus(refEq(eventBus));
         verify(commandHandler).setRepositoryManager(refEq(repositoryManager));
+        verify(commandHandler).setCommandGateway(refEq(commandGateway));
         verifyNoMoreInteractions(commandHandler);
     }
 

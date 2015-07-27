@@ -11,6 +11,7 @@ import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
 import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
@@ -73,12 +74,12 @@ public class TestFixtureAxonTest {
         // Register the update handler
         final TestChangeLastNameCommandHandler updateHandler = new TestChangeLastNameCommandHandler();
         updateHandler.setRepository(this.testRepository);
-        fixture.registerCommandHandler(TestChangeLastNameCommand.class, updateHandler);
+        fixture.registerCommandHandler(TestChangeLastNameCommand.class, new AxonCommandHandler<>(updateHandler));
 
         // Register the create handler
         final TestCreateCommandHandler createHandler = new TestCreateCommandHandler();
         createHandler.setRepository(this.testRepository);
-        fixture.registerCommandHandler(TestCreateCommand.class, createHandler);
+        fixture.registerCommandHandler(TestCreateCommand.class, new AxonCommandHandler<>(createHandler));
     }
 
     private Map<String, Object> newContext() {

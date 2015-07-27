@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +33,7 @@ public class CommandHandlerResolverUTest {
     }
 
     @XKasperUnregistered
-    private static class TestCommandHandler extends CommandHandler<TestCommand> {
+    private static class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
     }
 
     // ------------------------------------------------------------------------

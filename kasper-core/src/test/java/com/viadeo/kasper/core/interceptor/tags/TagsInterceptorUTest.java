@@ -15,7 +15,8 @@ import com.viadeo.kasper.api.context.Tags;
 import com.viadeo.kasper.core.TestDomain;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.ResetMdcContextMap;
 import org.junit.Before;
@@ -72,7 +73,7 @@ public class TagsInterceptorUTest {
         // Given
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class)
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
 
         when(chain.next(same(INPUT), eq(DEFAULT_CONTEXT)))
@@ -91,7 +92,7 @@ public class TagsInterceptorUTest {
         // Given
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class)
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
 
         // Expect
@@ -113,7 +114,7 @@ public class TagsInterceptorUTest {
 
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
         final Set<String> tagsOnHandler = newHashSet(tagOnHandler, otherTagOnHandler);
 
@@ -150,7 +151,7 @@ public class TagsInterceptorUTest {
 
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
         final Set<String> tagsOnHandler = newHashSet(tagOnHandler, otherTagOnHandler);
 
@@ -195,7 +196,7 @@ public class TagsInterceptorUTest {
 
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
 
         final Set<String> tagsAlreadyInMdcContextMap = newHashSet("a-tag-already-in-mdc-context-map");
@@ -219,7 +220,7 @@ public class TagsInterceptorUTest {
 
         @XKasperUnregistered
         @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
-        class TestCommandHandler extends CommandHandler<TestCommand> {
+        class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         }
 
         final Set<String> tagsAlreadyInMdcContextMap = newHashSet("a-tag-already-in-mdc-context-map");

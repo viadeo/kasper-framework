@@ -21,13 +21,14 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse.Status;
 import com.viadeo.kasper.client.HTTPCommandResponse;
+import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.command.repository.Repository;
@@ -89,7 +90,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     // ------------------------------------------------------------------------
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class CreateAccountCommandHandler extends CommandHandler<CreateAccountCommand> {
+    public static class CreateAccountCommandHandler extends AutowiredCommandHandler<CreateAccountCommand> {
         static String createAccountCommandName = null;
 
         @Override
@@ -116,7 +117,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
+    public static class NeedValidationCommandHandler extends AutowiredCommandHandler<NeedValidationCommand> { }
 
     @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAlias implements Command {
@@ -124,7 +125,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class NeedValidationWithAliasCommandHandler extends CommandHandler<NeedValidationWithAlias> {
+    public static class NeedValidationWithAliasCommandHandler extends AutowiredCommandHandler<NeedValidationWithAlias> {
 
         @Override
         public CommandResponse handle(NeedValidationWithAlias command) throws Exception {
@@ -136,7 +137,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     @XKasperUnexposed
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class UnexposedCommandHandler extends CommandHandler<UnexposedCommand> {
+    public static class UnexposedCommandHandler extends AutowiredCommandHandler<UnexposedCommand> {
         @Override
         public CommandResponse handle(UnexposedCommand command) throws Exception {
             return CommandResponse.ok();

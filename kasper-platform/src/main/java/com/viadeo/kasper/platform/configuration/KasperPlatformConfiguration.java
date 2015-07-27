@@ -59,9 +59,13 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     public KasperPlatformConfiguration() {
+        this(new MetricRegistry());
+    }
+
+    public KasperPlatformConfiguration(MetricRegistry metricRegistry) {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway();
-        this.metricRegistry = new MetricRegistry();
+        this.metricRegistry = metricRegistry;
         this.extraComponents = Lists.newArrayList();
         this.configuration = ConfigFactory.empty();
 
@@ -69,7 +73,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         final KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
-        this.commandGateway = new KasperCommandGateway(commandBus);
+        this.commandGateway = new KasperCommandGateway(commandBus, metricRegistry);
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
             new CommandValidationInterceptorFactory()

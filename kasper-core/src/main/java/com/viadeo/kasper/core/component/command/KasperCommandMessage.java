@@ -17,7 +17,6 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- *
  * Decorator for Axon command message, holds an ICommand for bus traversal
  *
  * @param <C> Command
@@ -26,38 +25,45 @@ public class KasperCommandMessage<C extends Command> implements Serializable {
 
 	private static final long serialVersionUID = 5946300419038957372L;
 
-	/**
-	 * Decored Axon command message
-	 */
-	private final CommandMessage<C> decoredMessage;
+    private final Context context;
+    private final C command;
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
 	/**
+     * Extract context from Axon command message metadata
+     * If no context has been provided during command sending, an empty context then be used
 	 * @param decoredMessage the Axon decored command to wrap
 	 */
 	public KasperCommandMessage(final CommandMessage<C> decoredMessage) {
-		this.decoredMessage = checkNotNull(decoredMessage);
+        this(
+                Objects.firstNonNull(
+                        (Context) decoredMessage.getMetaData().get(Context.METANAME),
+                        Contexts.empty()
+                ),
+                decoredMessage.getPayload()
+        );
 	}
+
+    /**
+     * @param context a context
+     * @param command a command
+     */
+    public KasperCommandMessage(final Context context, final C command) {
+        this.context = checkNotNull(context);
+        this.command = checkNotNull(command);
+    }
 
 	// ------------------------------------------------------------------------
 
-	/**
-	 * Extract context from Axon command message metadata
-	 * If no context has been provided during command sending, an empty context then be used
-     * @return the context embedded in this message instance
-	 */
 	public Context getContext() {
-		return Objects.firstNonNull(
-                (Context) this.decoredMessage.getMetaData().get(Context.METANAME),
-                Contexts.empty()
-        );
+		return context;
 	}
 	
 	// ------------------------------------------------------------------------
 
 	public C getCommand() {
-		return this.decoredMessage.getPayload();
+		return command;
 	}
 
 }

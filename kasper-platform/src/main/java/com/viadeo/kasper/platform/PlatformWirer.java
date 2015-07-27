@@ -9,35 +9,30 @@ package com.viadeo.kasper.platform;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.RepositoryManager;
+import com.viadeo.kasper.core.component.command.*;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.SagaWrapper;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PlatformWirer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformWirer.class);
 
     private final KasperEventBus eventBus;
     private final KasperCommandGateway commandGateway;
@@ -88,9 +83,13 @@ public class PlatformWirer {
         }
 
         for (final CommandHandler commandHandler : bundle.getCommandHandlers()) {
-            commandHandler.setEventBus(eventBus);
-            commandHandler.setRepositoryManager(repositoryManager);
-            commandGateway.register(commandHandler);
+            if (commandHandler instanceof WirableCommandHandler) {
+                final WirableCommandHandler wirableCommandHandler = (WirableCommandHandler) commandHandler;
+                wirableCommandHandler.setEventBus(eventBus);
+                wirableCommandHandler.setRepositoryManager(repositoryManager);
+                wirableCommandHandler.setCommandGateway(commandGateway);
+            }
+            commandGateway.register(new MeasuredCommandHandler(metricRegistry, commandHandler));
         }
 
         for (final QueryHandler queryHandler : bundle.getQueryHandlers()) {
