@@ -13,7 +13,7 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.CommandHandler;

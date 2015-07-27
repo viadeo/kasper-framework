@@ -23,7 +23,7 @@ import com.viadeo.kasper.api.response.KasperResponse.Status;
 import com.viadeo.kasper.client.HTTPCommandResponse;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
@@ -33,8 +33,6 @@ import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.exposition.http.CallTypes;
-import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import org.junit.Test;
 
 import javax.validation.Valid;

@@ -26,12 +26,12 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
-import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.common.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
-import com.viadeo.kasper.query.exposition.query.QueryBuilder;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import com.viadeo.kasper.common.exposition.TypeAdapter;
+import com.viadeo.kasper.common.exposition.query.QueryBuilder;
+import com.viadeo.kasper.common.exposition.query.QueryFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -47,8 +47,8 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
-import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_ACCESS_TOKEN;
-import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_ACCESS_TOKEN;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
  * <p>
@@ -117,7 +117,7 @@ import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_SECURIT
  * to litterals), if you need a complex query or some type used in your query is
  * not supported you should ask the team responsible of maintaining the kasper
  * platform to implement a custom
- * {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific
+ * {@link com.viadeo.kasper.common.exposition.TypeAdapter} for that specific
  * type.</li>
  * <li>At the moment the Response to which the response should be mapped is free,
  * but take care it must match the responseing stream. This will probably change

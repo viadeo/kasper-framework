@@ -19,7 +19,7 @@ import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperSecurityException;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperResponse;
-import com.viadeo.kasper.common.context.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.exposition.context.MDCUtils;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
@@ -46,8 +46,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_REQUEST_CORRELATION_ID;
-import static com.viadeo.kasper.common.context.HttpContextHeaders.HEADER_KASPER_ID;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_REQUEST_CORRELATION_ID;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_KASPER_ID;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
