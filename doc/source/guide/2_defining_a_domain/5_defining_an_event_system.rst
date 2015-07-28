@@ -208,6 +208,10 @@ We provide an abstract class **BaseSagaRepository** which is easy to extends and
 
 For saga's methods call scheduling, we are using **Quartz** scheduler. The default implementation is an inMemory but you can easily custom the **SchedulerFactory** to persist the scheduled steps.
 
+**Exceptions**
+
+You have to manage all exceptions within a step in order to keep the Saga's state safe.
+
 
 ..  _Understand_the_hierarchies_of_events:
 
