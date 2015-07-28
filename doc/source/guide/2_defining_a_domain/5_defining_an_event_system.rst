@@ -162,8 +162,7 @@ All sagas must implement the **Saga** interface, declaring its owning domain usi
     @XKasperSaga(domain = MyDomain.class, description = "my domain saga" )
     public class MyDomainSaga implements Saga {
 
-        private static final Logger LOGGER = getLogger(HelloSaga.class);
-        private KasperID id;
+        private static final Logger LOGGER = getLogger(MyDomainSaga.class);
 
         @Override
         public Optional<SagaIdReconciler> getIdReconciler() {
@@ -187,7 +186,7 @@ All sagas must implement the **Saga** interface, declaring its owning domain usi
         }
 
         private void helloWorld(){
-            LOGGER.info("A HelloWorld call has been triggered by scheduler : " + this.id);
+            LOGGER.info("A HelloWorld call has been triggered by scheduler");
         }
     }
 
@@ -196,6 +195,8 @@ All sagas must implement the **Saga** interface, declaring its owning domain usi
 First of all, when a Saga is created when invoking a **@XKasperSaga.Start** annotated Event Handler, it is automatically associated with the property identified by the id 'getter' method.
 The events ids should then be the same in order to be able to retrieve the Saga. You can also implement a **SagaIdReconciler** if you have to make some transformations with ids.
 Then, you can define some steps methods (**@XKasperSaga.Step**) which can be tunned by the **@XKasperSaga.Schedule** annotation in order to trigger saga's method calls.
+The  **@XKasperSaga.Schedule** annotation can be put on a **@XKasperSaga.Step** or on a **@XKasperSaga.Start** step but not on a **@XKasperSaga.End**.
+You can define several **@XKasperSaga.End** steps to end the saga.
 Finally, you will end the saga by an Event handler annotated with **@XKasperSaga.End**. It will automatically delete the Saga and all associated Scheduled method calls.
 
 **Saga Repository**
