@@ -196,8 +196,7 @@ First of all, when a Saga is created when invoking a **@XKasperSaga.Start** anno
 The events ids should then be the same in order to be able to retrieve the Saga. You can also implement a **SagaIdReconciler** if you have to make some transformations with ids.
 Then, you can define some steps methods (**@XKasperSaga.Step**) which can be tunned by the **@XKasperSaga.Schedule** annotation in order to trigger saga's method calls.
 The  **@XKasperSaga.Schedule** annotation can be put on a **@XKasperSaga.Step** or on a **@XKasperSaga.Start** step but not on a **@XKasperSaga.End**.
-You can define several **@XKasperSaga.End** steps to end the saga.
-Finally, you will end the saga by an Event handler annotated with **@XKasperSaga.End**. It will automatically delete the Saga and all associated Scheduled method calls.
+Finally, you will end the saga by one or several Event handlers annotated with **@XKasperSaga.End**. they will automatically end, delete the Saga and all associated Scheduled method calls.
 
 **Saga Repository**
 
