@@ -152,7 +152,7 @@ Defining a Saga
 
 A Saga is a special type of Event Listener that manages a single business transaction running for seconds, days or weeks.
 That means that a saga has got a maintained state in order to manage the transaction.
-All sagas must implement the **Saga** interface, declaring its owning domain using the @XKasperSaga annotation, and have a name ending with ‘Saga‘ (recommended).
+All sagas must implement the **Saga** interface, declaring its owning domain using the **@XKasperSaga** annotation, and have a name ending with ‘Saga‘ (recommended).
 
 **usage**
 
@@ -191,19 +191,19 @@ All sagas must implement the **Saga** interface, declaring its owning domain usi
         }
     }
 
-** Saga Annotations **
+**Saga Annotations**
 
 First of all, when a Saga is created when invoking a **@XKasperSaga.Start** annotated Event Handler, it is automatically associated with the property identified by the id 'getter' method.
 The events ids should then be the same in order to be able to retrieve the Saga. You can also implement a **SagaIdReconciler** if you have to make some transformations with ids.
 Then, you can define some steps methods (**@XKasperSaga.Step**) which can be tunned by the **@XKasperSaga.Schedule** annotation in order to trigger saga's method calls.
 Finally, you will end the saga by an Event handler annotated with **@XKasperSaga.End**. It will automatically delete the Saga and all associated Scheduled method calls.
 
-** Saga Repository **
+**Saga Repository**
 
 The **SagaRepository** is responsible for storing and retrieving Sagas, for use by the **SagaExecutor**. It is capable to retrieve specific Saga instances using the Event specified identifier.
 We provide an abstract class **BaseSagaRepository** which is easy to extends and a default **InMemorySagaRepository** which stores the saga in the JVM.
 
-** Saga Scheduler **
+**Saga Scheduler**
 
 For saga's methods call scheduling, we are using **Quartz* scheduler. The default implementation is an inMemory but you can easily custom the **SchedulerFactory** to persist the scheduled steps.
 
