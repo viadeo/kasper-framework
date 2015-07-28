@@ -205,7 +205,7 @@ We provide an abstract class **BaseSagaRepository** which is easy to extends and
 
 **Saga Scheduler**
 
-For saga's methods call scheduling, we are using **Quartz* scheduler. The default implementation is an inMemory but you can easily custom the **SchedulerFactory** to persist the scheduled steps.
+For saga's methods call scheduling, we are using **Quartz** scheduler. The default implementation is an inMemory but you can easily custom the **SchedulerFactory** to persist the scheduled steps.
 
 
 ..  _Understand_the_hierarchies_of_events:
