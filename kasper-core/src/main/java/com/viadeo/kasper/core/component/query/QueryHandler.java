@@ -10,31 +10,22 @@ import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.api.exception.KasperQueryException;
-import com.viadeo.kasper.api.component.event.Event;
-import org.axonframework.domain.EventMessage;
-import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.EventBus;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
+import com.viadeo.kasper.core.component.Handler;
 
 /**
+ * A <code>QueryHandler</code> is invoked to process a <code>Query</code> request in order to provide a <code>Result</code>.
  *
- * This is a convenient class
+ * @param <QUERY> the query class handled by this <code>QueryHandler</code>.
+ * @param <RESULT> the result returned by this <code>QueryHandler</code>
  *
- * Extend it instead of implementing IQueryHandler will allow you to
- * override at your convenience retrieve(message) or simply retrieve(query)
- * if you are not interested by the message
- *
- * The query gateway is aware of this internal convenience and will deal with it
- *
- * @param <Q> the query
- * @param <RESULT> the Response
+ * @see Query
+ * @see QueryResult
+ * @see QueryResponse
+ * @see Context
  */
-public abstract class QueryHandler<Q extends Query, RESULT extends QueryResult> {
+public interface QueryHandler<QUERY extends Query, RESULT extends QueryResult>
+        extends Handler<QueryResponse<RESULT>, QUERY>
+{
 
     /**
      * Generic parameter position for Data Query Object
@@ -46,59 +37,22 @@ public abstract class QueryHandler<Q extends Query, RESULT extends QueryResult> 
      */
     public static final int PARAMETER_RESULT_POSITION = 1;
 
-    private transient EventBus eventBus;
-    private transient QueryGateway queryGateway;
-
-    // ------------------------------------------------------------------------
-
-    protected QueryHandler() { }
-
-    // ------------------------------------------------------------------------
-
-    public QueryResponse<RESULT> retrieve(final QueryMessage<Q> message) throws Exception {
-        return retrieve(message.getQuery());
-    }
-
-    public QueryResponse<RESULT> retrieve(final Q query) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    // ------------------------------------------------------------------------
+    /**
+     * Handle the <code>Query</code> with his <code>Context</code>.
+     *
+     * @param context the context related to the request
+     * @param query the query requested
+     * @return a response
+     * @throws Exception if an unexpected error happens
+     */
+    @Override
+    QueryResponse<RESULT> handle(Context context, QUERY query) throws Exception;
 
     /**
-     * Publish an event on the event bus
-     *
-     * @param event The event
+     * @return the result class returned by this <code>QueryHandler</code>.
      */
-    public void publish(final Event event) {
-        checkNotNull(event, "The specified event must be non null");
-        checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
-        final EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
-        this.eventBus.publish(eventMessage);
-    }
+    Class<RESULT> getResultClass();
 
-    // ------------------------------------------------------------------------
-
-    public QueryGateway getQueryGateway() {
-        return queryGateway;
-    }
-
-    public Context getContext() {
-        if (CurrentContext.value().isPresent()) {
-            return CurrentContext.value().get();
-        }
-        throw new KasperQueryException("Unexpected condition : no context was set during query handling");
-    }
-
-    // ------------------------------------------------------------------------
-
-    public void setEventBus(final EventBus eventBus) {
-        this.eventBus = checkNotNull(eventBus);
-    }
-
-    public void setQueryGateway(final QueryGateway queryGateway) {
-        this.queryGateway = checkNotNull(queryGateway);
-    }
-
+    @Override
+    Class<? extends QueryHandler> getHandlerClass();
 }
-

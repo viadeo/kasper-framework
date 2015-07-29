@@ -8,15 +8,14 @@ package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.annotation.XKasperUnexposed;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.exposition.http.HttpExposerError;
-import com.viadeo.kasper.exposition.http.HttpQueryExposer;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
@@ -34,12 +33,12 @@ public class HttpQueryExposerUTest {
         private static final long serialVersionUID = -4789744274328803972L;
     }
 
-    public static class QueryHandlerA extends QueryHandler<AQuery, QueryResult> { }
+    public static class QueryHandlerA extends AutowiredQueryHandler<AQuery, QueryResult> { }
 
-    public static class QueryHandlerB extends QueryHandler<AQuery, QueryResult> { }
+    public static class QueryHandlerB extends AutowiredQueryHandler<AQuery, QueryResult> { }
 
     @XKasperUnexposed
-    public static class QueryHandlerC extends QueryHandler<AQuery, QueryResult> { }
+    public static class QueryHandlerC extends AutowiredQueryHandler<AQuery, QueryResult> { }
 
     @Test(expected = HttpExposerError.class)
     public void init_withTwoHandlers_handlingTheSameQuery_throwException() throws Exception {

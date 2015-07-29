@@ -34,8 +34,8 @@ public class KasperSimpleComponentsConfiguration {
     }
 
     @Bean
-    public KasperQueryGateway kasperQueryGateway() {
-        return new KasperQueryGateway();
+    public KasperQueryGateway kasperQueryGateway(final MetricRegistry metricRegistry) {
+        return new KasperQueryGateway(metricRegistry);
     }
 
     @Bean

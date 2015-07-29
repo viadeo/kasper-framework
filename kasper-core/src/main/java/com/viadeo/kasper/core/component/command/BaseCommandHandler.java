@@ -35,12 +35,12 @@ public abstract class BaseCommandHandler<COMMAND extends Command> implements Com
     }
 
     @Override
-    public Class<COMMAND> getCommandClass() {
+    public Class<COMMAND> getInputClass() {
         return commandClass;
     }
 
     @Override
-    public Class<? extends CommandHandler> getCommandHandlerClass() {
+    public Class<? extends CommandHandler> getHandlerClass() {
         return this.getClass();
     }
 }

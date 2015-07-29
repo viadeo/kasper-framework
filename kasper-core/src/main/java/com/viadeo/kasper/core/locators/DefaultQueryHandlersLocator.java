@@ -8,14 +8,12 @@ package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.core.component.query.QueryHandlerAdapter;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.exception.KasperQueryException;
-import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +38,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
      * Registered handlers and adapters
      */
     @SuppressWarnings("rawtypes")
-    private final ClassToInstanceMap<QueryHandler> handlers = MutableClassToInstanceMap.create();
+    private final Map<Class<? extends QueryHandler>, QueryHandler> handlers = Maps.newHashMap();
     private final ClassToInstanceMap<QueryHandlerAdapter> adapters = MutableClassToInstanceMap.create();
     private final Map<Class<? extends QueryHandler>, Class<? extends Domain>> handlerDomains = Maps.newHashMap();
 
@@ -72,17 +70,9 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     private final Map<Class<? extends QueryHandler>, List<QueryHandlerAdapter>> instanceAdapters = newHashMap();
     private final Map<Class<? extends QueryHandlerAdapter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
-    private final QueryHandlerResolver queryHandlerResolver;
-
     // ------------------------------------------------------------------------
 
-    public DefaultQueryHandlersLocator() {
-        this(new QueryHandlerResolver(new DomainResolver()));
-    }
-
-    public DefaultQueryHandlersLocator(final QueryHandlerResolver queryHandlerResolver) {
-        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
-    }
+    public DefaultQueryHandlersLocator() { }
 
     // ------------------------------------------------------------------------
 
@@ -94,20 +84,19 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         checkNotNull(handler);
 
         if (name.isEmpty()) {
-            throw new KasperQueryException("Name of query handlers cannot be empty : " + handler.getClass());
+            throw new KasperQueryException("Name of query handlers cannot be empty : " + handler.getHandlerClass());
         }
 
-        final Class<? extends QueryHandler> handlerClass = handler.getClass();
+        final Class<? extends QueryHandler> handlerClass = handler.getHandlerClass();
 
-        @SuppressWarnings("unchecked") // Safe
-        final Class<? extends Query> queryClass = queryHandlerResolver.getQueryClass(handlerClass);
+        final Class<Query> queryClass = handler.getInputClass();
         if (this.handlerQueryClasses.containsKey(queryClass)) {
             throw new KasperQueryException("An handler for the same query class is already registered : " + queryClass);
         }
         this.handlerQueryClasses.put(queryClass, handler);
 
         @SuppressWarnings("unchecked") // Safe
-        final Class<? extends QueryResult> queryResultClass = queryHandlerResolver.getQueryResultClass(handlerClass);
+        final Class<? extends QueryResult> queryResultClass = handler.getResultClass();
         Collection<QueryHandler> qaClasses = this.handlerQueryResultClasses.get(queryResultClass);
         if (null == qaClasses) {
             qaClasses = new ArrayList<>();
@@ -202,7 +191,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     @SuppressWarnings("rawtypes")
     @Override
     public Optional<QueryHandler> getQueryHandlerFromClass(final Class<? extends QueryHandler> handlerClass) {
-        final QueryHandler handler = this.handlers.getInstance(checkNotNull(handlerClass));
+        final QueryHandler handler = this.handlers.get(checkNotNull(handlerClass));
         return Optional.fromNullable(handler);
     }
 

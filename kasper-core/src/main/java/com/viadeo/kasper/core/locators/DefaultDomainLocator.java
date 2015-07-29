@@ -8,12 +8,11 @@ package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
 
 import java.util.*;
 
@@ -45,19 +44,10 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // ------------------------------------------------------------------------
 
-    private CommandHandlerResolver commandHandlerResolver;
-
-    // ------------------------------------------------------------------------
-
     public DefaultDomainLocator() {
         this.domains = new DomainsPropertiesCache();
         this.domainNames = new DomainByPropertyCache();
         this.domainPrefixes = new DomainByPropertyCache();
-    }
-
-    public DefaultDomainLocator(final CommandHandlerResolver commandHandlerResolver) {
-        this();
-        this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
     }
 
     // ------------------------------------------------------------------------
@@ -66,7 +56,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     public void registerHandler(final CommandHandler commandHandler) {
         checkNotNull(commandHandler);
-        final Class<? extends Command> commandClass = commandHandler.getCommandClass();
+        final Class<? extends Command> commandClass = commandHandler.getInputClass();
         handlers.put(commandHandler, commandClass);
     }
 
@@ -202,12 +192,6 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     public Set<Domain> getDomains() {
         return Collections.unmodifiableSet(this.domains.keySet());
-    }
-
-    // ------------------------------------------------------------------------
-
-    public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
-        this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
     }
 
 }

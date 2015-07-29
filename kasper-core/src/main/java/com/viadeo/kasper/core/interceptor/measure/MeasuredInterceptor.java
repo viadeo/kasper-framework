@@ -71,6 +71,7 @@ public class MeasuredInterceptor<INPUT> implements Interceptor<INPUT, KasperResp
             this.metricRegistry = Preconditions.checkNotNull(metricRegistry);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Optional<InterceptorChain> create(TypeToken type) {
             checkNotNull(type);

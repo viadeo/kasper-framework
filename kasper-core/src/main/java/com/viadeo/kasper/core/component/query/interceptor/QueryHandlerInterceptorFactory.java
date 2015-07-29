@@ -9,7 +9,6 @@ package com.viadeo.kasper.core.component.query.interceptor;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResponse;

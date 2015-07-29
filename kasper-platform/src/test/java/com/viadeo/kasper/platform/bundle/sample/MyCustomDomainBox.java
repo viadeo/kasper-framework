@@ -15,7 +15,7 @@ import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
@@ -52,7 +52,7 @@ public class MyCustomDomainBox {
     }
 
     @XKasperQueryHandler(domain = MyCustomDomain.class)
-    public static class MyCustomQueryHandler extends QueryHandler<MyCustomQuery, MyCustomQueryResult> {
+    public static class MyCustomQueryHandler extends AutowiredQueryHandler<MyCustomQuery, MyCustomQueryResult> {
         @Override
         public QueryResponse<MyCustomQueryResult> retrieve(MyCustomQuery query) throws Exception {
             if ( ! query.isSuccessful()) {

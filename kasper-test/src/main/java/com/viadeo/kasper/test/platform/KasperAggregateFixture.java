@@ -94,7 +94,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         }
 
         fixture.registerCommandHandler(
-                commandHandler.getCommandClass(),
+                commandHandler.getInputClass(),
                 new AxonCommandHandler(commandHandler)
         );
         return this;
