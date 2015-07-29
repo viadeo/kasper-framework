@@ -13,6 +13,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 
@@ -38,14 +39,16 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
                          final org.axonframework.commandhandling.InterceptorChain axonInterceptorChain)
             throws Throwable {
 
+        final Class<? extends CommandHandler> commandHandlerClassFor = commandBus.findCommandHandlerClassFor(commandMessage);
+
         final InterceptorChain<Command, CommandResponse> chain;
-        final Optional<InterceptorChain<Command, CommandResponse>> optionalInterceptorChain = interceptorChainRegistry.get(commandMessage.getPayloadType());
+        final Optional<InterceptorChain<Command, CommandResponse>> optionalInterceptorChain = interceptorChainRegistry.get(commandHandlerClassFor);
 
         if (optionalInterceptorChain.isPresent()) {
             chain = optionalInterceptorChain.get();
         } else {
             chain = interceptorChainRegistry.create(
-                    commandBus.findCommandHandlerClassFor(commandMessage),
+                    commandHandlerClassFor,
                     new CommandHandlerInterceptorFactory()
             ).get();
         }
