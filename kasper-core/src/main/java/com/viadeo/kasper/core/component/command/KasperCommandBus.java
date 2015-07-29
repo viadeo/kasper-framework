@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command;
 
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import org.axonframework.commandhandling.AsynchronousCommandBus;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.CommandMessage;
@@ -41,6 +42,9 @@ public class KasperCommandBus extends AsynchronousCommandBus {
                     "No handler was subscribed to command [%s]",
                     command.getCommandName()
             ));
+        }
+        if (handler instanceof AxonCommandHandler) {
+            return ((AxonCommandHandler)handler).getDelegateHandler().getHandlerClass();
         }
         return handler.getClass();
     }
