@@ -8,7 +8,7 @@ import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.context.Tags;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
-import com.viadeo.kasper.core.component.command.KasperCommandMessage;
+import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -63,7 +63,7 @@ public class KasperCommandGatewayITest {
 
         commandGateway.register(new AutowiredCommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(final KasperCommandMessage message) throws Exception {
+            public CommandResponse handle(final CommandMessage message) throws Exception {
                 captor.add(message.getCommand());
                 synchronized (lock) {
                     lock.notify();
@@ -91,7 +91,7 @@ public class KasperCommandGatewayITest {
         // Given
         commandGateway.register(new AutowiredCommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(KasperCommandMessage message) throws Exception {
+            public CommandResponse handle(CommandMessage message) throws Exception {
                 Thread.sleep(5000);
                 return CommandResponse.ok();
             }

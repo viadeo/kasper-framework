@@ -13,9 +13,8 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandMessage;
+import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.context.CurrentContext;
-import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 
 public class AxonCommandHandler<COMMAND extends Command> implements org.axonframework.commandhandling.CommandHandler<COMMAND> {
@@ -27,8 +26,8 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
     }
 
     @Override
-    public Object handle(CommandMessage<COMMAND> commandMessage, UnitOfWork unitOfWork) throws Throwable {
-        final KasperCommandMessage<COMMAND> kmessage = new KasperCommandMessage<>(commandMessage);
+    public Object handle(org.axonframework.commandhandling.CommandMessage commandMessage, UnitOfWork unitOfWork) throws Throwable {
+        final CommandMessage<COMMAND> kmessage = new CommandMessage<>(commandMessage);
         final COMMAND command = kmessage.getCommand();
         final Context context = kmessage.getContext();
 
