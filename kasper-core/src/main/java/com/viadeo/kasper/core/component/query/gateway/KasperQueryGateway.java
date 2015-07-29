@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
@@ -21,15 +21,13 @@ import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
+import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  * The Kasper gateway base implementation
@@ -38,30 +36,32 @@ public class KasperQueryGateway implements QueryGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
 
-    public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
-    public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
-    public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
-
     private final QueryHandlersLocator queryHandlersLocator;
     private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
 
     // -----------------------------------------------------------------------
 
-    public KasperQueryGateway() {
-        this(new DefaultQueryHandlersLocator());
+    public KasperQueryGateway(final MetricRegistry metricRegistry) {
+        this(new DefaultQueryHandlersLocator(), metricRegistry);
     }
 
-    public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator) {
+    public KasperQueryGateway(
+            final QueryHandlersLocator queryHandlersLocator,
+            final MetricRegistry metricRegistry
+    ) {
         this(
             checkNotNull(queryHandlersLocator),
+            checkNotNull(metricRegistry),
             new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>()
         );
     }
 
     public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator,
+                              final MetricRegistry metricRegistry,
                               final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry) {
         this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
         this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
+        this.interceptorChainRegistry.register(new MeasuredInterceptor.Factory(QueryGateway.class, checkNotNull(metricRegistry)));
     }
 
     // ------------------------------------------------------------------------
@@ -76,19 +76,6 @@ public class KasperQueryGateway implements QueryGateway {
 
         final Class<? extends Query> queryClass = query.getClass();
 
-        final String timerRequestsTimeName = name(queryClass, "requests-time");
-        final String meterErrorsName = name(queryClass, "errors");
-        final String meterRequestsName = name(queryClass, "requests");
-
-        final String domainTimerRequestsTimeName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "requests-time");
-        final String domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "errors");
-        final String domainMeterRequestsName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "requests");
-
-        /* Start request timer */
-        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
-        final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
-        final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
-
         /* Sets current thread context */
         CurrentContext.set(context);
 
@@ -98,9 +85,6 @@ public class KasperQueryGateway implements QueryGateway {
                 getInterceptorChain(queryClass);
 
         if ( ! optionalRequestChain.isPresent()) {
-            timer.close();
-            domainTimer.close();
-            classTimer.close();
             throw new KasperException("Unable to find the handler implementing query class " + queryClass);
         }
 
@@ -114,25 +98,6 @@ public class KasperQueryGateway implements QueryGateway {
             exception = e;
         } catch (final Exception e) {
             exception = e;
-        }
-
-        /* Monitor the request calls */
-        timer.stop();
-        domainTimer.stop();
-
-        final long time = classTimer.stop();
-
-        getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
-
-        getMetricRegistry().meter(meterRequestsName).mark();
-        getMetricRegistry().meter(domainMeterRequestsName).mark();
-        getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "requests")).mark();
-
-        if (null != exception) {
-            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
-            getMetricRegistry().meter(meterErrorsName).mark();
-            getMetricRegistry().meter(domainMeterErrorsName).mark();
-            getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "errors")).mark();
         }
 
         if (null != exception) {
@@ -182,7 +147,7 @@ public class KasperQueryGateway implements QueryGateway {
     public void register(final QueryHandler queryHandler) {
         checkNotNull(queryHandler);
 
-        final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
+        final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getHandlerClass();
         LOGGER.info("Registering the query handler : " + queryHandlerClass.getName());
 
         final XKasperQueryHandler annotation = queryHandlerClass.getAnnotation(XKasperQueryHandler.class);
@@ -196,10 +161,11 @@ public class KasperQueryGateway implements QueryGateway {
 
         queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
 
-        queryHandler.setQueryGateway(this);
-
         // create immediately the interceptor chain instead of lazy mode
-        interceptorChainRegistry.create(queryHandlerClass, new QueryHandlerInterceptorFactory(queryHandler));
+        interceptorChainRegistry.create(
+                queryHandler.getHandlerClass(),
+                new QueryHandlerInterceptorFactory(queryHandler)
+        );
     }
 
     protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> getInterceptorChain(
@@ -212,7 +178,7 @@ public class KasperQueryGateway implements QueryGateway {
             return Optional.absent();
         }
 
-        final Class<? extends QueryHandler> queryHandlerClass = queryHandlerOptional.get().getClass();
+        final Class<? extends QueryHandler> queryHandlerClass = queryHandlerOptional.get().getHandlerClass();
 
         final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> chainOptional =
                 interceptorChainRegistry.get(queryHandlerClass);

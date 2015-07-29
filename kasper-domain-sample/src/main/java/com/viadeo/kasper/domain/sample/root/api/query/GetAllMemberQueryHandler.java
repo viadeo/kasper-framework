@@ -12,12 +12,12 @@ import com.viadeo.kasper.api.component.query.CollectionQueryResult;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 
 @XKasperQueryHandler(domain=Facebook.class)
-public class GetAllMemberQueryHandler extends QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
+public class GetAllMemberQueryHandler extends AutowiredQueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
 
     public static class GetAllMemberQuery implements Query {
         private static final long serialVersionUID = -3449992798518631214L;

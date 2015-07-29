@@ -7,13 +7,13 @@
 package com.viadeo.kasper.domain.sample.root.api.query;
 
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 
 @XKasperQueryHandler(domain=Facebook.class)
 public class GetMemberQueryHandler
-        extends QueryHandler<GetMemberQueryHandler.GetMemberQuery, GetAllMemberQueryHandler.MemberResult>
+        extends AutowiredQueryHandler<GetMemberQueryHandler.GetMemberQuery, GetAllMemberQueryHandler.MemberResult>
 {
 
     public static class GetMemberQuery implements Query {

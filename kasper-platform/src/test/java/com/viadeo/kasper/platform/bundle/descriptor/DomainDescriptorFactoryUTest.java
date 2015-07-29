@@ -8,13 +8,13 @@ package com.viadeo.kasper.platform.bundle.descriptor;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.api.component.Domain;
@@ -44,7 +44,7 @@ public class DomainDescriptorFactoryUTest {
     public static class TestQueryResult implements QueryResult { }
 
     @XKasperQueryHandler(domain = TestDomain.class)
-    public static class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> { }
+    public static class TestQueryHandler extends AutowiredQueryHandler<TestQuery, TestQueryResult> { }
 
     public static class TestEvent implements Event { }
 

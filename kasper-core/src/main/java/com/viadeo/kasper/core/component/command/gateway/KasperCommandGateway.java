@@ -22,7 +22,6 @@ import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
 import com.viadeo.kasper.core.locators.DefaultDomainLocator;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -50,7 +49,7 @@ public class KasperCommandGateway implements CommandGateway {
         this(
              new CommandGatewayFactoryBean<CommandGateway>(),
              checkNotNull(commandBus),
-             new DefaultDomainLocator(new CommandHandlerResolver()),
+             new DefaultDomainLocator(),
              new InterceptorChainRegistry<Command, CommandResponse>(),
              checkNotNull(metricRegistry)
         );
@@ -62,7 +61,7 @@ public class KasperCommandGateway implements CommandGateway {
         this(
             new CommandGatewayFactoryBean<CommandGateway>(),
             checkNotNull(commandBus),
-            new DefaultDomainLocator(new CommandHandlerResolver()),
+            new DefaultDomainLocator(),
             new InterceptorChainRegistry<Command, CommandResponse>(),
             checkNotNull(metricRegistry),
             checkNotNull(commandDispatchInterceptors)
@@ -227,13 +226,13 @@ public class KasperCommandGateway implements CommandGateway {
         domainLocator.registerHandler(checkNotNull(commandHandler));
 
         commandBus.subscribe(
-                commandHandler.getCommandClass().getName(),
+                commandHandler.getInputClass().getName(),
                 new AxonCommandHandler<>(commandHandler)
         );
 
         // create immediately the interceptor chain instead of lazy mode
         interceptorChainRegistry.create(
-                commandHandler.getCommandHandlerClass(),
+                commandHandler.getHandlerClass(),
                 new CommandHandlerInterceptorFactory()
         );
     }

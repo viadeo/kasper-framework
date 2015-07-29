@@ -13,7 +13,7 @@ import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.validation.AssertID;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 
@@ -21,7 +21,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @XKasperQueryHandler(domain=Facebook.class)
-public class GetMembersQueryHandler extends QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
+public class GetMembersQueryHandler extends AutowiredQueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
 
     @XKasperAlias(values = "GetUsers")
 	public static class GetMembersQuery implements Query {

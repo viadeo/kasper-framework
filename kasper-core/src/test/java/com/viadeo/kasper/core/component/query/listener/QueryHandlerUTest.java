@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.component.query.listener;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class QueryHandlerUTest {
     @Test(expected = NullPointerException.class)
     public void publish_withNullAsEvent_shouldThrowException() {
         // Given
-        final QueryHandler<Query, QueryResult> handler = new QueryHandler<Query, QueryResult>() { };
+        final AutowiredQueryHandler<Query, QueryResult> handler = new AutowiredQueryHandler<Query, QueryResult>() { };
         final Event event = null;
 
         // When
@@ -36,7 +36,7 @@ public class QueryHandlerUTest {
         // Given
         final EventBus eventBus = mock(EventBus.class);
 
-        final QueryHandler<Query, QueryResult> handler = new QueryHandler<Query, QueryResult>() { };
+        final AutowiredQueryHandler<Query, QueryResult> handler = new AutowiredQueryHandler<Query, QueryResult>() { };
         handler.setEventBus(eventBus);
 
         final Event event = new Event() { };

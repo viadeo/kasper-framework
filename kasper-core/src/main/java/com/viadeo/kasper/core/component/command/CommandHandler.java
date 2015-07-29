@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.component.command;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.Handler;
 
 /**
  * A <code>CommandHandler</code> is invoked to process a <code>Command</code> request.
@@ -19,7 +20,9 @@ import com.viadeo.kasper.api.context.Context;
  * @see CommandResponse
  * @see Context
  */
-public interface CommandHandler<COMMAND extends Command> {
+public interface CommandHandler<COMMAND extends Command>
+        extends Handler<CommandResponse, COMMAND>
+{
 
     /**
      * Generic parameter position for the handled command
@@ -34,15 +37,9 @@ public interface CommandHandler<COMMAND extends Command> {
      * @return a response
      * @throws Exception if an unexpected error happens
      */
+    @Override
     CommandResponse handle(Context context, COMMAND command) throws Exception;
 
-    /**
-     * @return the command class handled by this <code>CommandHandler</code>.
-     */
-    public Class<COMMAND> getCommandClass();
-
-    /**
-     * @return the command handler class
-     */
-    public Class<? extends CommandHandler> getCommandHandlerClass();
+    @Override
+    Class<? extends CommandHandler> getHandlerClass();
 }

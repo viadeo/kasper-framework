@@ -173,8 +173,8 @@ public class KasperCommandGatewayUTest {
     public void register_withCommandHandler_shouldBeRegistered() {
         // Given
         final AutowiredCommandHandler commandHandler = mock(AutowiredCommandHandler.class);
-        when(commandHandler.getCommandClass()).thenReturn(Command.class);
-        when(commandHandler.getCommandHandlerClass()).thenReturn(AutowiredCommandHandler.class);
+        when(commandHandler.getInputClass()).thenReturn(Command.class);
+        when(commandHandler.getHandlerClass()).thenReturn(AutowiredCommandHandler.class);
 
         // When
         commandGateway.register(commandHandler);
@@ -188,7 +188,7 @@ public class KasperCommandGatewayUTest {
         verify(commandBus).setHandlerInterceptors(refEq(handlerInterceptors));
         verifyNoMoreInteractions(commandBus);
 
-        verify(commandHandler).getCommandClass();
+        verify(commandHandler).getInputClass();
 
         verify(interceptorChainRegistry).create(eq(AutowiredCommandHandler.class), any(CommandInterceptorFactory.class));
         verify(interceptorChainRegistry).register(any(MeasuredInterceptor.Factory.class));

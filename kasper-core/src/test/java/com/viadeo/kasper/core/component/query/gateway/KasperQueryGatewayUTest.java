@@ -6,24 +6,27 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptor;
-import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryFilter;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptor;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptor;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
-import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
+import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
+import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,14 +48,14 @@ public class KasperQueryGatewayUTest {
     // ------------------------------------------------------------------------
 
     @XKasperQueryHandler(domain = Domain.class)
-    private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
+    private static class QueryHandlerForTest extends AutowiredQueryHandler<Query, QueryResult> { }
 
     @XKasperQueryHandler(domain = Domain.class)
     @XKasperQueryFilter(value = {InterceptorA.class})
-    private static class QueryHandlerWithFiltersForTest extends QueryHandler<Query, QueryResult> { }
+    private static class QueryHandlerWithFiltersForTest extends AutowiredQueryHandler<Query, QueryResult> { }
 
     @XKasperQueryHandler(domain = Domain.class, cache = @XKasperQueryCache(enabled = true))
-    private static class QueryHandlerWithCacheForTest extends QueryHandler<Query, QueryResult> { }
+    private static class QueryHandlerWithCacheForTest extends AutowiredQueryHandler<Query, QueryResult> { }
 
     public static class InterceptorA implements QueryInterceptor<Query, QueryResult> {
         @Override
@@ -66,7 +69,7 @@ public class KasperQueryGatewayUTest {
     public KasperQueryGatewayUTest() {
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         interceptorChainRegistry = mock(InterceptorChainRegistry.class);
-        queryGateway = new KasperQueryGateway(queryHandlersLocator, interceptorChainRegistry);
+        queryGateway = new KasperQueryGateway(queryHandlersLocator, new MetricRegistry(), interceptorChainRegistry);
     }
 
     @After
@@ -79,7 +82,7 @@ public class KasperQueryGatewayUTest {
     @Test(expected = NullPointerException.class)
     public void register_withNullAsQueryHandler_shouldThrownException() {
         // Given
-        final QueryHandler queryHandler = null;
+        final AutowiredQueryHandler queryHandler = null;
 
         // When
         queryGateway.register(queryHandler);
@@ -90,7 +93,7 @@ public class KasperQueryGatewayUTest {
     @Test
     public void register_withQueryHandler_shouldBeRegistered() {
         // Given
-        final QueryHandler queryHandler = new QueryHandlerForTest();
+        final AutowiredQueryHandler queryHandler = new QueryHandlerForTest();
 
         // When
         queryGateway.register(queryHandler);
@@ -98,8 +101,6 @@ public class KasperQueryGatewayUTest {
         // Then
         verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerForTest"), refEq(queryHandler), refEq(Domain.class));
         verifyNoMoreInteractions(queryHandlersLocator);
-
-        assertEquals(queryGateway, queryHandler.getQueryGateway());
     }
 
     @Test
@@ -122,9 +123,9 @@ public class KasperQueryGatewayUTest {
     @Test
     public void getInterceptorChain_withQueryHandler_shouldBeOk() {
         // Given
-        final QueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithFiltersForTest();
+        final AutowiredQueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithFiltersForTest();
 
-        final KasperQueryGateway queryGateway = new KasperQueryGateway();
+        final KasperQueryGateway queryGateway = new KasperQueryGateway(new MetricRegistry());
         queryGateway.register(queryHandler);
 
         // When
@@ -138,9 +139,9 @@ public class KasperQueryGatewayUTest {
     @Test
     public void getInterceptorChain_withQueryHandler_withFilter_shouldBeOk() {
         // Given
-        final QueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithFiltersForTest();
+        final AutowiredQueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithFiltersForTest();
 
-        final KasperQueryGateway queryGateway = new KasperQueryGateway();
+        final KasperQueryGateway queryGateway = new KasperQueryGateway(new MetricRegistry());
         queryGateway.register(new QueryFilterInterceptorFactory());
         queryGateway.register(queryHandler);
 
@@ -150,16 +151,17 @@ public class KasperQueryGatewayUTest {
 
         // Then
         assertTrue(interceptorChain.isPresent());
-        assertEquals(InterceptorA.class, interceptorChain.get().actor.get().getClass());
-        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
+        assertEquals(MeasuredInterceptor.class, interceptorChain.get().actor.get().getClass());
+        assertEquals(InterceptorA.class, interceptorChain.get().next.get().actor.get().getClass());
+        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().next.get().actor.get().getClass());
     }
 
     @Test
     public void getInterceptorChain_withQueryHandler_withCache_shouldBeOk() {
         // Given
-        final QueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithCacheForTest();
+        final AutowiredQueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithCacheForTest();
 
-        final KasperQueryGateway queryGateway = new KasperQueryGateway();
+        final KasperQueryGateway queryGateway = new KasperQueryGateway(new MetricRegistry());
         queryGateway.register(new CacheInterceptorFactory());
         queryGateway.register(queryHandler);
 
@@ -169,8 +171,9 @@ public class KasperQueryGatewayUTest {
 
         // Then
         assertTrue(interceptorChain.isPresent());
-        assertEquals(CacheInterceptor.class, interceptorChain.get().actor.get().getClass());
-        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
+        assertEquals(MeasuredInterceptor.class, interceptorChain.get().actor.get().getClass());
+        assertEquals(CacheInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
+        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().next.get().actor.get().getClass());
     }
 
 }

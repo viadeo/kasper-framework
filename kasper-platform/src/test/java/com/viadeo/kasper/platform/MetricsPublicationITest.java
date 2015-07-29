@@ -12,7 +12,7 @@ import com.codahale.metrics.Timer;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.metrics.MetricNames;
@@ -27,7 +27,8 @@ public class MetricsPublicationITest {
 
     private Platform platform;
     private MetricRegistry metricRegistry;
-    private MetricNames metricNames;
+    private MetricNames commandGatewayMetricNames;
+    private MetricNames queryGatewayMetricNames;
 
     @Before
     public void init() {
@@ -37,7 +38,8 @@ public class MetricsPublicationITest {
                 .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();
 
-        metricNames = MetricNames.of(CommandGateway.class);
+        commandGatewayMetricNames = MetricNames.of(CommandGateway.class);
+        queryGatewayMetricNames = MetricNames.of(QueryGateway.class);
 
         // clear caches in order to ensure test integrity
         KasperMetrics.clearCache();
@@ -46,8 +48,8 @@ public class MetricsPublicationITest {
     @Test
     public void checkMetricsPublication_onOverall_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
         // Given
-        final Meter globalRequestsNameMeter = registerSpyMeter(metricNames.requests);
-        final Timer globalRequestsNameTimer = registerSpyTimer(metricNames.requestsTime);
+        final Meter globalRequestsNameMeter = registerSpyMeter(commandGatewayMetricNames.requests);
+        final Timer globalRequestsNameTimer = registerSpyTimer(commandGatewayMetricNames.requestsTime);
 
         reset(metricRegistry);
 
@@ -55,16 +57,16 @@ public class MetricsPublicationITest {
         platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), Contexts.empty());
 
         // Then
-        verifyTimerInteraction(metricNames.requestsTime, globalRequestsNameTimer);
-        verifyMeterInteraction(metricNames.requests, globalRequestsNameMeter);
+        verifyTimerInteraction(commandGatewayMetricNames.requestsTime, globalRequestsNameTimer);
+        verifyMeterInteraction(commandGatewayMetricNames.requests, globalRequestsNameMeter);
     }
 
     @Test
     public void checkMetricsPublication_onOverall_fromFailedCommand_shouldPublishMetrics() throws Exception {
         // Given
-        final Timer globalRequestsNameTimer = registerSpyTimer(metricNames.requestsTime);
-        final Meter globalRequestsNameMeter = registerSpyMeter(metricNames.requests);
-        final Meter globalErrorsNameMeter = registerSpyMeter(metricNames.errors);
+        final Timer globalRequestsNameTimer = registerSpyTimer(commandGatewayMetricNames.requestsTime);
+        final Meter globalRequestsNameMeter = registerSpyMeter(commandGatewayMetricNames.requests);
+        final Meter globalErrorsNameMeter = registerSpyMeter(commandGatewayMetricNames.errors);
 
         reset(metricRegistry);
 
@@ -76,9 +78,9 @@ public class MetricsPublicationITest {
         }
 
         // Then
-        verifyTimerInteraction(metricNames.requestsTime, globalRequestsNameTimer);
-        verifyMeterInteraction(metricNames.requests, globalRequestsNameMeter);
-        verifyMeterInteraction(metricNames.errors, globalErrorsNameMeter);
+        verifyTimerInteraction(commandGatewayMetricNames.requestsTime, globalRequestsNameTimer);
+        verifyMeterInteraction(commandGatewayMetricNames.requests, globalRequestsNameMeter);
+        verifyMeterInteraction(commandGatewayMetricNames.errors, globalErrorsNameMeter);
     }
 
     @Test
@@ -200,8 +202,8 @@ public class MetricsPublicationITest {
     public void checkMetricsPublication_onOverall_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
-        final Timer globalQGRequestsTimeTimer = registerSpyTimer(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME);
-        final Meter globalRequestsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME);
+        final Timer globalQGRequestsTimeTimer = registerSpyTimer(queryGatewayMetricNames.requestsTime);
+        final Meter globalRequestsMeter = registerSpyMeter(queryGatewayMetricNames.requests);
 
         reset(metricRegistry);
 
@@ -210,17 +212,17 @@ public class MetricsPublicationITest {
 
         // Then
         verifyTimerInteraction(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME, globalInterceptorRequestsTimeTimer);
-        verifyTimerInteraction(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalQGRequestsTimeTimer);
-        verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME, globalRequestsMeter);
+        verifyTimerInteraction(queryGatewayMetricNames.requestsTime, globalQGRequestsTimeTimer);
+        verifyMeterInteraction(queryGatewayMetricNames.requests, globalRequestsMeter);
     }
 
     @Test
     public void checkMetricsPublication_onOverall_fromFailedQuery_shouldPublishMetrics() throws Exception {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
-        final Timer globalQGRequestsTimeTimer = registerSpyTimer(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME);
-        final Meter globalRequestsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME);
-        final Meter globalErrorsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_ERRORS_NAME);
+        final Timer globalQGRequestsTimeTimer = registerSpyTimer(queryGatewayMetricNames.requestsTime);
+        final Meter globalRequestsMeter = registerSpyMeter(queryGatewayMetricNames.requests);
+        final Meter globalErrorsMeter = registerSpyMeter(queryGatewayMetricNames.errors);
 
         reset(metricRegistry);
 
@@ -233,9 +235,9 @@ public class MetricsPublicationITest {
 
         // Then
         verifyTimerInteraction(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME, globalInterceptorRequestsTimeTimer);
-        verifyTimerInteraction(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalQGRequestsTimeTimer);
-        verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME, globalRequestsMeter);
-        verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_ERRORS_NAME, globalErrorsMeter);
+        verifyTimerInteraction(queryGatewayMetricNames.requestsTime, globalQGRequestsTimeTimer);
+        verifyMeterInteraction(queryGatewayMetricNames.requests, globalRequestsMeter);
+        verifyMeterInteraction(queryGatewayMetricNames.errors, globalErrorsMeter);
     }
 
     @Test

@@ -12,7 +12,7 @@ import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperQueryHandler(domain = TestDomain.class)
-        class TestQueryHandler extends QueryHandler<TestDomain.TestQuery, TestQueryResult> {
+        class TestQueryHandler extends AutowiredQueryHandler<TestQuery, TestQueryResult> {
         }
 
         final Class<?> handlerClass = TestQueryHandler.class;
@@ -69,7 +69,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperQueryHandler(domain = TestDomain.class, tags = "this-is-a-tag")
-        class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> {
+        class TestQueryHandler extends AutowiredQueryHandler<TestQuery, TestQueryResult> {
         }
         final Class<?> handlerClass = TestQueryHandler.class;
 
@@ -88,7 +88,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperQueryHandler(domain = TestDomain.class, tags = {"this-is-a-tag", "this-is-another-tag"})
-        class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> {
+        class TestQueryHandler extends AutowiredQueryHandler<TestQuery, TestQueryResult> {
         }
         final Class<?> handlerClass = TestQueryHandler.class;
 
@@ -106,7 +106,7 @@ public class TagsHolderUTest {
     public void getTags_fromQueryHandler_withoutAnnotations_shouldReturnEmpty() {
         // Given
         @XKasperUnregistered
-        class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> {
+        class TestQueryHandler extends AutowiredQueryHandler<TestQuery, TestQueryResult> {
         }
         final Class<?> handlerClass = TestQueryHandler.class;
 

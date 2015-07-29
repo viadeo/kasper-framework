@@ -22,9 +22,9 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.client.HTTPQueryResponse;
 import com.viadeo.kasper.client.KasperClientBuilder;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
@@ -59,7 +59,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    public static class SomeCollectionQueryHandler extends QueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
+    public static class SomeCollectionQueryHandler extends AutowiredQueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
         @Override
         public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
@@ -129,7 +129,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     @XKasperQueryHandler(domain = AccountDomain.class)
     @SuppressWarnings("unchecked")
-    public static class SomeQueryHandler extends QueryHandler<SomeQuery, SomeResponse> {
+    public static class SomeQueryHandler extends AutowiredQueryHandler<SomeQuery, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
@@ -158,7 +158,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    public static class NeedValidationWithAliasQueryHandler extends QueryHandler<NeedValidationWithAlias, SomeResponse> {
+    public static class NeedValidationWithAliasQueryHandler extends AutowiredQueryHandler<NeedValidationWithAlias, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) throws Exception {
             return QueryResponse.of(new SomeResponse());
@@ -171,7 +171,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     @XKasperUnexposed
     @XKasperQueryHandler(domain = AccountDomain.class)
-    public static class UnexposedQueryHandler extends QueryHandler<UnexposedQuery, SomeResponse> {
+    public static class UnexposedQueryHandler extends AutowiredQueryHandler<UnexposedQuery, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(UnexposedQuery query) throws Exception {
             return QueryResponse.of(new SomeResponse());

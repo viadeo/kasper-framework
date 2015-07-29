@@ -13,6 +13,7 @@ import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.core.component.query.QueryHandler;
@@ -100,7 +101,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    public static class ContextCheckQueryHandler extends QueryHandler<ContextCheckQuery, ContextCheckResult> {
+    public static class ContextCheckQueryHandler extends AutowiredQueryHandler<ContextCheckQuery, ContextCheckResult> {
         @Override
         public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
             return QueryResponse.of(new ContextCheckResult());

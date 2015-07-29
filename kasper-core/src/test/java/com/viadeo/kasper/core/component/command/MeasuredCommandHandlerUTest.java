@@ -66,7 +66,7 @@ public class MeasuredCommandHandlerUTest {
     @Test
     public void measure_an_accepted_command() throws Exception {
         // Given
-        MeasuredCommandHandler<TestCommand> handler = new MeasuredCommandHandler<>(
+        MeasuredCommandHandler handler = new MeasuredCommandHandler(
                 metricRegistry,
                 new TestCommandHandler(KasperResponse.Status.ACCEPTED)
         );
@@ -86,7 +86,7 @@ public class MeasuredCommandHandlerUTest {
     @Test
     public void measure_an_ok_command() throws Exception {
         // Given
-        MeasuredCommandHandler<TestCommand> handler = new MeasuredCommandHandler<>(
+        MeasuredCommandHandler handler = new MeasuredCommandHandler(
                 metricRegistry,
                 new TestCommandHandler(KasperResponse.Status.OK)
         );
@@ -105,7 +105,7 @@ public class MeasuredCommandHandlerUTest {
     @Test
     public void measure_a_refused_command() throws Exception {
         // Given
-        MeasuredCommandHandler<TestCommand> handler = new MeasuredCommandHandler<>(
+        MeasuredCommandHandler handler = new MeasuredCommandHandler(
                 metricRegistry,
                 new TestCommandHandler(KasperResponse.Status.REFUSED)
         );
@@ -124,7 +124,7 @@ public class MeasuredCommandHandlerUTest {
     @Test
     public void measure_an_error_command() throws Exception {
         // Given
-        MeasuredCommandHandler<TestCommand> handler = new MeasuredCommandHandler<>(
+        MeasuredCommandHandler handler = new MeasuredCommandHandler(
                 metricRegistry,
                 new TestCommandHandler(KasperResponse.Status.ERROR)
         );
@@ -146,7 +146,7 @@ public class MeasuredCommandHandlerUTest {
     @Test
     public void measure_a_command_throwing_an_unexpected_exception() throws Exception {
         // Given
-        MeasuredCommandHandler<TestCommand> handler = new MeasuredCommandHandler<>(
+        MeasuredCommandHandler handler = new MeasuredCommandHandler(
                 metricRegistry,
                 new TestCommandHandler(KasperResponse.Status.ERROR) {
                     @Override

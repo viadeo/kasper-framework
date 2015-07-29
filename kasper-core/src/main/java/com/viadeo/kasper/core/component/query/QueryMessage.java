@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class QueryMessage<Q extends Query> {
 
 	private static final long serialVersionUID = 8648752933168387124L;
+
 	private final Context context;
 	private final Q query;
 

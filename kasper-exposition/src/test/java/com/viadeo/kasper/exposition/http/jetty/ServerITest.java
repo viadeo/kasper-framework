@@ -27,14 +27,11 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.doc.DocumentationPlugin;
@@ -42,6 +39,9 @@ import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import com.viadeo.kasper.exposition.http.HttpEventExposerPlugin;
 import com.viadeo.kasper.exposition.http.HttpQueryExposerPlugin;
 import com.viadeo.kasper.exposition.http.jetty.resource.KasperDocResource;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.hamcrest.core.StringContains;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -264,7 +264,7 @@ public class ServerITest {
     }
 
     @XKasperQueryHandler(domain = Foobar.class)
-    public static class DummyQueryService extends QueryHandler<DummyQuery, DummyQueryResult> {
+    public static class DummyQueryService extends AutowiredQueryHandler<DummyQuery, DummyQueryResult> {
         @Override
         public QueryResponse<DummyQueryResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyQueryResult());

@@ -16,6 +16,8 @@ import com.viadeo.kasper.api.component.command.UpdateCommand;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
@@ -28,7 +30,6 @@ import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactor
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
@@ -324,7 +325,7 @@ public class FixtureUseCase {
     }
 
     @XKasperQueryHandler( domain = TestDomain.class )
-    public static class TestGetSomeDataQueryHandler extends QueryHandler<TestQuery, TestResult> {
+    public static class TestGetSomeDataQueryHandler extends AutowiredQueryHandler<TestQuery, TestResult> {
         public QueryResponse<TestResult> retrieve(final TestQuery query) throws Exception {
             if (query.getType().contentEquals("REFUSED")) {
                 return QueryResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
@@ -352,7 +353,7 @@ public class FixtureUseCase {
     }
 
     @XKasperQueryHandler( domain = TestDomain.class )
-    public static class TestCoreReasonCodeQueryHandler extends QueryHandler<TestCoreReasonCodeQuery, TestResult> {
+    public static class TestCoreReasonCodeQueryHandler extends AutowiredQueryHandler<TestCoreReasonCodeQuery, TestResult> {
         public QueryResponse<TestResult> retrieve(final TestCoreReasonCodeQuery query) throws Exception {
             return QueryResponse.error(query.getCoreReasonCode());
         }

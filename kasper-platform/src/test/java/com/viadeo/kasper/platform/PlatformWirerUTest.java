@@ -28,7 +28,7 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.SagaWrapper;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.MeasuredQueryHandler;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
@@ -147,7 +147,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_an_query_handler() {
         // Given
-        final QueryHandler queryHandler = spy(new MyCustomDomainBox.MyCustomQueryHandler());
+        final MyCustomDomainBox.MyCustomQueryHandler queryHandler = spy(new MyCustomDomainBox.MyCustomQueryHandler());
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(queryHandler)
                 .build();
@@ -156,8 +156,9 @@ public class PlatformWirerUTest {
         platformWirer.wire(domainBundle);
 
         // Then
-        verify(queryGateway).register(refEq(queryHandler));
+        verify(queryGateway).register(isA(MeasuredQueryHandler.class));
         verify(queryHandler).setEventBus(refEq(eventBus));
+        verify(queryHandler).setQueryGateway(refEq(queryGateway));
         verifyNoMoreInteractions(queryHandler);
     }
 
