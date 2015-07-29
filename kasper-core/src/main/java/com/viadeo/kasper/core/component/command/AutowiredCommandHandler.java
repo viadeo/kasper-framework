@@ -47,7 +47,7 @@ public abstract class AutowiredCommandHandler<C extends Command>
             return handle(command);
         } catch (final UnsupportedOperationException e) {
             try {
-                return handle(new KasperCommandMessage<>(context, command));
+                return handle(new CommandMessage<>(context, command));
             } catch (final UnsupportedOperationException e1) {
                 throw new UnsupportedOperationException();
             }
@@ -59,7 +59,7 @@ public abstract class AutowiredCommandHandler<C extends Command>
      * @return the command response
      * @throws Exception an exception
      */
-    public CommandResponse handle(final KasperCommandMessage<C> message) throws Exception {
+    public CommandResponse handle(final CommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
     }
 

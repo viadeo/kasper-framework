@@ -24,7 +24,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.AutowiredEntityCommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandMessage;
+import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
@@ -257,7 +257,7 @@ public class FixtureUseCase {
     public static class TestCreateCommandHandler
             extends AutowiredEntityCommandHandler<TestCreateCommand, TestAggregate> {
 
-        public CommandResponse handle(final KasperCommandMessage<TestCreateCommand> message) throws Exception {
+        public CommandResponse handle(final CommandMessage<TestCreateCommand> message) throws Exception {
 
             final TestAggregate agr = new TestAggregate(message.getCommand().getIdToUse());
 
@@ -273,7 +273,7 @@ public class FixtureUseCase {
     public static class TestChangeLastNameCommandHandler
             extends AutowiredEntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
 
-        public CommandResponse handle(final KasperCommandMessage<TestChangeLastNameCommand> message) throws Exception {
+        public CommandResponse handle(final CommandMessage<TestChangeLastNameCommand> message) throws Exception {
 
             final Optional<TestAggregate> agr =
                     this.getRepository().load(

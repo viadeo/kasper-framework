@@ -15,7 +15,8 @@ import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandMessage;
+import com.viadeo.kasper.core.component.command.CommandMessage;
+import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
@@ -101,7 +102,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
     @XKasperCommandHandler(domain = TestDomain.class)
     public static class ContextCheckCommandHandler extends AutowiredCommandHandler<ContextCheckCommand> {
         @Override
-        public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
+        public CommandResponse handle(final CommandMessage<ContextCheckCommand> message) throws Exception {
             return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
         }
     }
