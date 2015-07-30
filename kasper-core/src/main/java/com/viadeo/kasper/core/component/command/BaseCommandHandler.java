@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.component.command;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.exception.KasperCommandException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 public abstract class BaseCommandHandler<COMMAND extends Command> implements CommandHandler<COMMAND> {
 

@@ -15,7 +15,7 @@ import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.command.aggregate.LinkedConcept;
 import com.viadeo.kasper.doc.nodes.validation.DefaultPropertyValidator;
 import com.viadeo.kasper.doc.nodes.validation.PropertyValidationProcessor;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

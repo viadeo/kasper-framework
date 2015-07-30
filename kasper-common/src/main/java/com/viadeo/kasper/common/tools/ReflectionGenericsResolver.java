@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.tools;
+package com.viadeo.kasper.common.tools;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;

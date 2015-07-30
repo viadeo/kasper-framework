@@ -26,7 +26,7 @@ import com.viadeo.kasper.core.component.event.saga.step.Step;
 import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

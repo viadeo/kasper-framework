@@ -12,7 +12,7 @@ import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.DomainEvent;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

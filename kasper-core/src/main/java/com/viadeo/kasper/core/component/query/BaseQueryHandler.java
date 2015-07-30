@@ -10,7 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.exception.KasperCommandException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 public abstract class BaseQueryHandler<QUERY extends Query, RESULT extends QueryResult> implements QueryHandler<QUERY,RESULT> {
 

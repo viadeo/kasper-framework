@@ -16,7 +16,7 @@ import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
