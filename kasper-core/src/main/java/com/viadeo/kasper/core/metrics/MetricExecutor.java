@@ -1,4 +1,4 @@
-package com.viadeo.kasper.core.component.event.eventbus.runtime;
+package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
-import com.viadeo.kasper.core.component.event.eventbus.EventMessageConverter;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
 import org.axonframework.domain.GenericDomainEventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -30,7 +29,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.viadeo.kasper.core.component.event.eventbus.EventMessageConverter.*;
+import static com.viadeo.kasper.core.component.event.eventbus.EventBusMessageConverter.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
@@ -45,13 +44,13 @@ public class EventMessageConverterUTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    private EventMessageConverter converter;
+    private EventBusMessageConverter converter;
     private DateTime timestamp;
     private Map<String, Object> properties;
 
     @Before
     public void setUp() throws Exception {
-        converter = new EventMessageConverter(new DefaultContextHelper(new SimpleIDBuilder(TestFormats.DB_ID,
+        converter = new EventBusMessageConverter(new DefaultContextHelper(new SimpleIDBuilder(TestFormats.DB_ID,
                 TestFormats.UUID)), serializer);
         timestamp = new DateTime("2012-10-12");
         properties = ImmutableMap.<String, Object>builder()

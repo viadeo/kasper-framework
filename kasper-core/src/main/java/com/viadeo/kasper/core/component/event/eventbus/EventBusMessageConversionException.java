@@ -5,15 +5,15 @@ import org.axonframework.eventhandling.EventListener;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.support.converter.MessageConversionException;
 
-public class EventMessageConversionException extends MessageConversionException implements WithSource<Class<EventListener>> {
+public class EventBusMessageConversionException extends MessageConversionException implements WithSource<Class<EventListener>> {
 
     private Optional<Class<EventListener>> eventListenerClass;
 
-    public EventMessageConversionException(Message message, Throwable cause) {
+    public EventBusMessageConversionException(Message message, Throwable cause) {
         super("unable to convert message : " + (message == null ? null : message.getMessageProperties()), cause);
 
-        if (message instanceof EventMessage) {
-            eventListenerClass = Optional.fromNullable((Class<EventListener>) ((EventMessage) message).getEventListenerClass());
+        if (message instanceof EventBusMessage) {
+            eventListenerClass = Optional.fromNullable((Class<EventListener>) ((EventBusMessage) message).getEventListenerClass());
         } else {
             eventListenerClass = Optional.absent();
         }

@@ -265,7 +265,7 @@ public class EventBusConfiguration {
          */
         @Bean
         public MessageConverter messageConverter(ContextHelper contextHelper, ObjectMapper objectMapper) {
-            return new EventMessageConverter(contextHelper, createEventMessageSerializer(objectMapper));
+            return new EventBusMessageConverter(contextHelper, createEventMessageSerializer(objectMapper));
         }
 
         @Bean
