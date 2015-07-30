@@ -46,7 +46,7 @@ public class MessageListenerContainer extends SimpleMessageListenerContainer {
     @Override
     protected void invokeListener(Channel channel, Message message) throws Exception {
         checkNotNull(message);
-        super.invokeListener(channel, new EventMessage(message, eventListener.getClass()));
+        super.invokeListener(channel, new EventBusMessage(message, eventListener.getClass()));
     }
 
     public EventListener getEventListener() {

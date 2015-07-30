@@ -29,7 +29,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EventMessageConverter implements MessageConverter {
+public class EventBusMessageConverter implements MessageConverter {
 
     private static final String HEADER_REQUIRED_MESSAGE = "header %s is required";
 
@@ -60,7 +60,7 @@ public class EventMessageConverter implements MessageConverter {
      * @param contextHelper the contextHelper
      * @param serializer message serializer
      */
-    public EventMessageConverter(final ContextHelper contextHelper, final Serializer serializer) {
+    public EventBusMessageConverter(final ContextHelper contextHelper, final Serializer serializer) {
         this.serializer = new MessageSerializer(checkNotNull(serializer));
         this.contextHelper = checkNotNull(contextHelper);
     }
@@ -220,7 +220,7 @@ public class EventMessageConverter implements MessageConverter {
                     toMetadata(messageProperties)
             );
         } catch (Exception e) {
-            throw new EventMessageConversionException(message, e);
+            throw new EventBusMessageConversionException(message, e);
         }
     }
 }

@@ -46,7 +46,7 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
 
         errorTemplate.send(exchangeName, descriptor.getRoutingKey(), message);
 
-        final Object event = headers.get(EventMessageConverter.PAYLOAD_TYPE_KEY);
+        final Object event = headers.get(EventBusMessageConverter.PAYLOAD_TYPE_KEY);
         LOGGER.error(
                 "{} failed to handle {}. Republishing message to exchange '{}' with routing key '{}', <source={}> <event={}>, ",
                 getClassNameFromCanonicalName(descriptor.getRoutingKey()),
@@ -93,8 +93,8 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
                 source = Optional.absent();
             }
 
-            if (message instanceof EventMessage) {
-                EventMessage eventMessage = (EventMessage) message;
+            if (message instanceof EventBusMessage) {
+                EventBusMessage eventMessage = (EventBusMessage) message;
                 routingKey = eventMessage.getEventListenerClass().getName();
             } else {
                 routingKey = source.isPresent() ? source.get().getName() : "fallback." + message.getMessageProperties().getReceivedRoutingKey();
