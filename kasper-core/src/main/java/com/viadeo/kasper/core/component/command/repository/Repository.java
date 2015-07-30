@@ -12,7 +12,7 @@ import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.AggregateDeletedException;
 import org.axonframework.eventstore.EventStore;

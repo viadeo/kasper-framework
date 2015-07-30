@@ -16,7 +16,7 @@ import com.viadeo.kasper.core.component.command.aggregate.LinkedConcept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 import java.lang.reflect.Field;

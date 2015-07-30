@@ -12,7 +12,7 @@ import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

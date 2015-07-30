@@ -14,7 +14,7 @@ import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.query.QueryBuilder;
 import com.viadeo.kasper.common.exposition.query.QueryFactory;
 import com.viadeo.kasper.common.exposition.query.QueryParser;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import org.joda.time.DateTime;
 
 import java.util.Collection;

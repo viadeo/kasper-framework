@@ -14,7 +14,7 @@ import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XBidirectional;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperRelation;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
