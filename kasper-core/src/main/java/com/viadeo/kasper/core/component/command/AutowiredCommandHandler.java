@@ -42,7 +42,7 @@ public abstract class AutowiredCommandHandler<C extends Command>
      * @return the command response
      */
     @Override
-    public CommandResponse handle(Context context, C command) throws Exception {
+    public CommandResponse handle(Context context, C command) {
         try {
             return handle(command);
         } catch (final UnsupportedOperationException e) {
@@ -57,18 +57,16 @@ public abstract class AutowiredCommandHandler<C extends Command>
     /**
      * @param message the command handler encapsulating message
      * @return the command response
-     * @throws Exception an exception
      */
-    public CommandResponse handle(final CommandMessage<C> message) throws Exception {
+    public CommandResponse handle(final CommandMessage<C> message) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * @param command The command to handle
      * @return the command response
-     * @throws Exception an exception
      */
-    public CommandResponse handle(final C command) throws Exception {
+    public CommandResponse handle(final C command) {
         throw new UnsupportedOperationException();
     }
 

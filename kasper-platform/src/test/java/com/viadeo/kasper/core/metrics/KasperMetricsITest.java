@@ -7,13 +7,13 @@
 package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;

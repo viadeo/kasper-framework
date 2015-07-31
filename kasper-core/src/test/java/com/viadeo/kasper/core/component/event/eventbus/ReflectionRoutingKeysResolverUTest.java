@@ -4,8 +4,7 @@ import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.eventbus.ReflectionRoutingKeysResolver;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -87,25 +86,25 @@ public class ReflectionRoutingKeysResolverUTest {
     private static class MySpeOneAbstractEvent extends MyAbstractEvent {}
     private static class MySpeTwoAbstractEvent extends MyAbstractEvent {}
 
-    private static class IEventListener extends EventListener<Event> {
+    private static class IEventListener extends AutowiredEventListener<Event> {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();
         }
     }
-    private static class ConcreteEventListener extends EventListener<MyConcreteEvent> {
+    private static class ConcreteEventListener extends AutowiredEventListener<MyConcreteEvent> {
         @Override
         public EventResponse handle(Context context, MyConcreteEvent event) {
             return EventResponse.success();
         }
     }
-    private static class AbstractEventListener extends EventListener<MyAbstractEvent> {
+    private static class AbstractEventListener extends AutowiredEventListener<MyAbstractEvent> {
         @Override
         public EventResponse handle(Context context, MyAbstractEvent event) {
             return EventResponse.success();
         }
     }
-    private static class InterfaceEventListener extends EventListener<MyInterfaceEvent> {
+    private static class InterfaceEventListener extends AutowiredEventListener<MyInterfaceEvent> {
         @Override
         public EventResponse handle(Context context, MyInterfaceEvent event) {
             return EventResponse.success();

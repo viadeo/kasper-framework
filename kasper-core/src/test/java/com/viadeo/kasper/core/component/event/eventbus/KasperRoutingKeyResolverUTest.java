@@ -4,8 +4,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.eventbus.ReflectionRoutingKeysResolver;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,21 +26,21 @@ public class KasperRoutingKeyResolverUTest {
     static public class EventA extends EventB {
     }
 
-    static public class EventListenerB extends EventListener<EventB> {
+    static public class EventListenerB extends AutowiredEventListener<EventB> {
         @Override
         public EventResponse handle(Context context, EventB event) {
             return EventResponse.success();
         }
     }
 
-    static public class EventListenerA extends EventListener {
+    static public class EventListenerA extends AutowiredEventListener {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();
         }
     }
 
-    static public class CatchAllEventListener extends EventListener<Event> {
+    static public class CatchAllEventListener extends AutowiredEventListener<Event> {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();

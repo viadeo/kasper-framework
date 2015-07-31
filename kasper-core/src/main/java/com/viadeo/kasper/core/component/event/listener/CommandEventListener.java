@@ -12,7 +12,7 @@ import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class CommandEventListener<E extends Event> extends EventListener<E> {
+public abstract class CommandEventListener<E extends Event> extends AutowiredEventListener<E> {
 
     private CommandGateway commandGateway;
 

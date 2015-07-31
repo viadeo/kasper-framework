@@ -22,12 +22,12 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.client.HTTPQueryResponse;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -160,7 +160,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class NeedValidationWithAliasQueryHandler extends AutowiredQueryHandler<NeedValidationWithAlias, SomeResponse> {
         @Override
-        public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) throws Exception {
+        public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) {
             return QueryResponse.of(new SomeResponse());
         }
     }
@@ -173,7 +173,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class UnexposedQueryHandler extends AutowiredQueryHandler<UnexposedQuery, SomeResponse> {
         @Override
-        public QueryResponse<SomeResponse> retrieve(UnexposedQuery query) throws Exception {
+        public QueryResponse<SomeResponse> retrieve(UnexposedQuery query) {
             return QueryResponse.of(new SomeResponse());
         }
     }

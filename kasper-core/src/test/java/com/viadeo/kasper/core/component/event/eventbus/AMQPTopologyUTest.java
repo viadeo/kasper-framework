@@ -3,10 +3,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPComponentNameFormatter;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPTopology;
-import com.viadeo.kasper.core.component.event.eventbus.ReflectionRoutingKeysResolver;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +39,13 @@ public class AMQPTopologyUTest {
     @Before
     public void setUp() throws Exception {
         topology = new AMQPTopology(rabbitAdmin, reflectionRoutingKeysResolver, new AMQPComponentNameFormatter());
-        when(reflectionRoutingKeysResolver.resolve(any(EventListener.class))).thenReturn(Arrays.asList(FakeEvent.class.getName()));
+        when(reflectionRoutingKeysResolver.resolve(any(AutowiredEventListener.class))).thenReturn(Arrays.asList(FakeEvent.class.getName()));
     }
 
     @Test
     public void createQueue_withDeprecatedEventListener_unbindQueue() throws Exception {
         // Given
-        EventListener eventListener = new DeprecatedEventListener();
+        AutowiredEventListener eventListener = new DeprecatedEventListener();
 
         // When
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
@@ -67,7 +64,7 @@ public class AMQPTopologyUTest {
     @Test
     public void createQueue_withDeprecatedEventListener_withUnexpectedException_catchIt() throws Exception {
         // Given
-        EventListener eventListener = new DeprecatedEventListener();
+        AutowiredEventListener eventListener = new DeprecatedEventListener();
         doThrow(new RuntimeException("Fake event")).when(rabbitAdmin).removeBinding(any(Binding.class));
 
         // When
@@ -81,7 +78,7 @@ public class AMQPTopologyUTest {
     @Test
     public void createQueue_withEventListener_bindQueue() throws Exception {
         // Given
-        EventListener eventListener = new NormalEventListener();
+        AutowiredEventListener eventListener = new NormalEventListener();
 
         // When
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
@@ -100,14 +97,14 @@ public class AMQPTopologyUTest {
     static class FakeEvent implements Event { }
 
     @Deprecated
-    static class DeprecatedEventListener extends EventListener<FakeEvent> {
+    static class DeprecatedEventListener extends AutowiredEventListener<FakeEvent> {
         @Override
         public EventResponse handle(Context context, FakeEvent event) {
             return EventResponse.success();
         }
     }
 
-    static class NormalEventListener extends EventListener<FakeEvent> {
+    static class NormalEventListener extends AutowiredEventListener<FakeEvent> {
         @Override
         public EventResponse handle(Context context, FakeEvent event) {
             return EventResponse.success();

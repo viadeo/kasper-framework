@@ -11,7 +11,7 @@ import com.viadeo.kasper.api.response.KasperResponse;
  */
 public interface Handler<RESPONSE extends KasperResponse, INPUT> {
 
-    RESPONSE handle(Context context, INPUT input) throws Exception;
+    RESPONSE handle(Context context, INPUT input);
 
     /**
      * @return the input class handled by this <code>Handler</code>.
@@ -21,6 +21,6 @@ public interface Handler<RESPONSE extends KasperResponse, INPUT> {
     /**
      * @return the handler class
      */
-    Class<? extends Handler> getHandlerClass();
+    Class<?> getHandlerClass();
 
 }

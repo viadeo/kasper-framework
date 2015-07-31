@@ -45,40 +45,46 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
     ) {
         this.metricRegistry = checkNotNull(metricRegistry);
         this.handler = checkNotNull(handler);
-        this.globalMetricNames = MetricNames.of(checkNotNull(globalComponent));
+        this.globalMetricNames = instantiateGlobalMetricNames(checkNotNull(globalComponent));
     }
 
-    protected MetricNames getOrInstantiateCommandMetricNames() {
-        final Class<INPUT> inputClass = handler.getInputClass();
+    protected MetricNames instantiateGlobalMetricNames(Class<?> componentClass) {
+        return MetricNames.of(componentClass);
+    }
 
+    protected MetricNames instantiateInputMetricNames() {
+        return MetricNames.of(handler.getInputClass());
+    }
+
+    protected MetricNames instantiateDomainMetricNames() {
+        return MetricNames.byDomainOf(handler.getInputClass());
+    }
+
+    private MetricNames getOrInstantiateInputMetricNames() {
         if (inputMetricNames == null) {
-            inputMetricNames = MetricNames.of(inputClass);
+            inputMetricNames = instantiateInputMetricNames();
         }
-
         return inputMetricNames;
     }
 
-    protected MetricNames getOrInstantiateDomainMetricNames() {
-        final Class<INPUT> inputClass = handler.getInputClass();
-
+    private MetricNames getOrInstantiateDomainMetricNames() {
         if (domainMetricNames == null) {
-            domainMetricNames = MetricNames.byDomainOf(inputClass);
+            domainMetricNames = instantiateDomainMetricNames();
         }
-
         return domainMetricNames;
     }
 
     @Override
-    public RESPONSE handle(final Context context, final INPUT command) throws Exception {
-        final MetricNames commandMetricNames = getOrInstantiateCommandMetricNames();
+    public RESPONSE handle(final Context context, final INPUT command) {
+        final MetricNames inputMetricNames = getOrInstantiateInputMetricNames();
         final MetricNames domainMetricNames = getOrInstantiateDomainMetricNames();
 
-        metricRegistry.meter(commandMetricNames.requests).mark();
+        metricRegistry.meter(inputMetricNames.requests).mark();
         metricRegistry.meter(domainMetricNames.requests).mark();
         metricRegistry.meter(name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "requests")).mark();
         metricRegistry.meter(globalMetricNames.requests).mark();
 
-        final Timer.Context commandTimer = metricRegistry.timer(commandMetricNames.requestsTime).time();
+        final Timer.Context inputTimer = metricRegistry.timer(inputMetricNames.requestsTime).time();
         final Timer.Context domainTimer = metricRegistry.timer(domainMetricNames.requestsTime).time();
         final Timer.Context globalTimer = metricRegistry.timer(globalMetricNames.requestsTime).time();
 
@@ -91,7 +97,7 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
         } catch (final RuntimeException e) {
             response = error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         } finally {
-            commandTimer.stop();
+            inputTimer.stop();
             domainTimer.stop();
             globalTimer.stop();
         }
@@ -106,7 +112,7 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
 
             case ERROR:
             case FAILURE:
-                metricRegistry.meter(commandMetricNames.errors).mark();
+                metricRegistry.meter(inputMetricNames.errors).mark();
                 metricRegistry.meter(domainMetricNames.errors).mark();
                 metricRegistry.meter(name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
                 metricRegistry.meter(globalMetricNames.errors).mark();

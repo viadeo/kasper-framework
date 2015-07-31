@@ -10,12 +10,12 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 
 import java.util.Set;
 

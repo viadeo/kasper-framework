@@ -4,8 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.eventbus.MessageListenerContainer;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.jboss.logging.MDC;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +35,7 @@ public class MessageListenerContainerTest {
         }
     }
 
-    static class Foo extends EventListener<Event> {
+    static class Foo extends AutowiredEventListener<Event> {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();

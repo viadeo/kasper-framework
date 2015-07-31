@@ -2,7 +2,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
-import org.axonframework.eventhandling.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import org.reflections.Reflections;
 
 import java.util.Arrays;
@@ -16,22 +16,24 @@ public class ReflectionRoutingKeysResolver implements RoutingKeysResolver {
     private static final Reflections reflections = new Reflections();
 
     @Override
-    public List<String> resolve(EventListener listener) {
+    public List<String> resolve(org.axonframework.eventhandling.EventListener eventListener) {
 
-        if (!(listener instanceof com.viadeo.kasper.core.component.event.listener.EventListener)) {
-            throw new IllegalArgumentException("routing key has to be an instance of " + com.viadeo.kasper.core.component.event.listener.EventListener.class.getName());
+        if (!(eventListener instanceof EventListener)) {
+            throw new IllegalArgumentException("routing key has to be an instance of " + EventListener.class.getName());
         }
 
-        List<String> routingKeys = Lists.newArrayList();
-        Class eventClass = ((com.viadeo.kasper.core.component.event.listener.EventListener) listener).getEventClass();
+        final Set<Class<?>> eventClasses = ((EventListener) eventListener).getEventClasses();
+        final List<String> routingKeys = Lists.newArrayList();
 
-        if (rootClasses.contains(eventClass)) {
-            routingKeys.add("#");
-        } else {
-            routingKeys.add(eventClass.getName());
-            Set subTypes = reflections.getSubTypesOf(eventClass);
-            for (Object type : subTypes) {
-                routingKeys.add(((Class) type).getName());
+        for (final Class eventClass : eventClasses) {
+            if (rootClasses.contains(eventClass)) {
+                routingKeys.add("#");
+            } else {
+                routingKeys.add(eventClass.getName());
+                Set subTypes = reflections.getSubTypesOf(eventClass);
+                for (Object type : subTypes) {
+                    routingKeys.add(((Class) type).getName());
+                }
             }
         }
 

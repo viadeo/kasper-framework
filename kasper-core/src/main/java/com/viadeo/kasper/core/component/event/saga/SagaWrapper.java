@@ -6,36 +6,31 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.event.listener.AxonEventListener;
-import com.viadeo.kasper.core.component.event.listener.EventMessage;
-import com.viadeo.kasper.core.component.event.listener.IEventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SagaWrapper extends AxonEventListener<Event> implements IEventListener {
+public class SagaWrapper extends AxonEventListener<Event> implements EventListener<Event> {
 
     private final SagaExecutor executor;
 
     // ------------------------------------------------------------------------
 
-    public SagaWrapper(final SagaExecutor executor) {
+    public SagaWrapper(final MetricRegistry metricRegistry, final SagaExecutor executor) {
+        super(metricRegistry);
         this.executor = checkNotNull(executor);
     }
 
     // ------------------------------------------------------------------------
-
-    @Override
-    public EventResponse handle(final EventMessage message) {
-        checkNotNull(message);
-        return handle(message.getContext(), message.getEvent());
-    }
 
     @Override
     public EventResponse handle(final Context context, final Event event) {
@@ -46,6 +41,9 @@ public class SagaWrapper extends AxonEventListener<Event> implements IEventListe
         }
         return EventResponse.success();
     }
+
+    @Override
+    public void rollback(Context context, Event event) { }
 
     @Override
     public String getName() {
@@ -60,5 +58,15 @@ public class SagaWrapper extends AxonEventListener<Event> implements IEventListe
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public Class<Event> getInputClass() {
+        return Event.class;
+    }
+
+    @Override
+    public Class<?> getHandlerClass() {
+        return executor.getSagaClass();
     }
 }
