@@ -6,10 +6,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPComponentNameFormatter;
-import com.viadeo.kasper.core.component.event.eventbus.QueueFinder;
-import com.viadeo.kasper.core.component.event.eventbus.QueueInfo;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.Profile;
@@ -35,14 +32,14 @@ public class QueueFinderUTest {
 
     private StandardEnvironment environment;
 
-    public static class Fake_EventListener extends EventListener<Event> {
+    public static class Fake_EventListener extends AutowiredEventListener<Event> {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();
         }
     }
 
-    public static class FakeEventListener extends EventListener<Event> {
+    public static class FakeEventListener extends AutowiredEventListener<Event> {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();
@@ -50,7 +47,7 @@ public class QueueFinderUTest {
     }
 
     @Profile("!test")
-    public static class AnnotatedFakeEventListener extends EventListener<Event> {
+    public static class AnnotatedFakeEventListener extends AutowiredEventListener<Event> {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();

@@ -6,9 +6,11 @@ import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.context.Tags;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.CommandMessage;
+import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -61,7 +63,7 @@ public class KasperCommandGatewayITest {
 
         commandGateway.register(new AutowiredCommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(final CommandMessage message) throws Exception {
+            public CommandResponse handle(final CommandMessage message) {
                 captor.add(message.getCommand());
                 synchronized (lock) {
                     lock.notify();
@@ -89,8 +91,12 @@ public class KasperCommandGatewayITest {
         // Given
         commandGateway.register(new AutowiredCommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(CommandMessage message) throws Exception {
-                Thread.sleep(5000);
+            public CommandResponse handle(CommandMessage message) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    return CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
+                }
                 return CommandResponse.ok();
             }
         });

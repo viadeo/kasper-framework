@@ -171,7 +171,7 @@ public class KasperQueryGateway implements QueryGateway {
             return Optional.absent();
         }
 
-        final Class<? extends QueryHandler> queryHandlerClass = queryHandlerOptional.get().getHandlerClass();
+        final Class<? /*extends QueryHandler*/> queryHandlerClass = queryHandlerOptional.get().getHandlerClass();
 
         final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> chainOptional =
                 interceptorChainRegistry.get(queryHandlerClass);

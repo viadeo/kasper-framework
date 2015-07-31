@@ -21,8 +21,8 @@ import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFa
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.listener.QueryEventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
@@ -165,7 +165,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_an_event_listener() {
         // Given
-        final EventListener eventListener = mock(EventListener.class);
+        final AutowiredEventListener eventListener = mock(AutowiredEventListener.class);
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
                 .build();

@@ -24,6 +24,7 @@ import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConc
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
@@ -91,7 +92,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
     }
 
     @XKasperEventListener(domain = TestDomain.class)
-    public static class TestListener extends EventListener<TestEvent> {
+    public static class TestListener extends AutowiredEventListener<TestEvent> {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
             received = true;

@@ -20,6 +20,7 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.WirableEventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
@@ -109,18 +110,22 @@ public class PlatformWirer {
         }
 
         for (final EventListener eventListener : bundle.getEventListeners()) {
-            eventListener.setEventBus(eventBus);
+            if (eventListener instanceof WirableEventListener) {
+                final WirableEventListener wirableEventListener = (WirableEventListener) eventListener;
+                wirableEventListener.setEventBus(eventBus);
 
-            if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
-                final CommandEventListener commandEventListener = (CommandEventListener) eventListener;
-                commandEventListener.setCommandGateway(commandGateway);
+                if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
+                    final CommandEventListener commandEventListener = (CommandEventListener) eventListener;
+                    commandEventListener.setCommandGateway(commandGateway);
+                }
             }
+
             eventBus.subscribe(eventListener);
         }
 
         for (final Saga saga : bundle.getSagas()) {
             final SagaExecutor executor = sagaManager.register(saga);
-            eventBus.subscribe(new SagaWrapper(executor));
+            eventBus.subscribe(new SagaWrapper(metricRegistry, executor));
         }
 
         for (final CommandInterceptorFactory factory : bundle.getCommandInterceptorFactories()) {

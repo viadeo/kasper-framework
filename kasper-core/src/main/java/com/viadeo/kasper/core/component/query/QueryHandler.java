@@ -43,10 +43,9 @@ public interface QueryHandler<QUERY extends Query, RESULT extends QueryResult>
      * @param context the context related to the request
      * @param query the query requested
      * @return a response
-     * @throws Exception if an unexpected error happens
      */
     @Override
-    QueryResponse<RESULT> handle(Context context, QUERY query) throws Exception;
+    QueryResponse<RESULT> handle(Context context, QUERY query);
 
     /**
      * @return the result class returned by this <code>QueryHandler</code>.

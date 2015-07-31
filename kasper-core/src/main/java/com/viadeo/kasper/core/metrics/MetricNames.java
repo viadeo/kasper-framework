@@ -9,18 +9,26 @@ package com.viadeo.kasper.core.metrics;
 public class MetricNames {
 
     public static MetricNames of(Class<?> componentClass) {
+        return of(componentClass, "errors", "requests", "requests-time");
+    }
+
+    public static MetricNames of(Class<?> componentClass, String errors, String requests, String requestsTime) {
         return new MetricNames(
-                KasperMetrics.name(componentClass, "errors"),
-                KasperMetrics.name(componentClass, "requests"),
-                KasperMetrics.name(componentClass, "requests-time")
+                KasperMetrics.name(componentClass, errors),
+                KasperMetrics.name(componentClass, requests),
+                KasperMetrics.name(componentClass, requestsTime)
         );
     }
 
     public static MetricNames byDomainOf(Class<?> componentClass) {
+        return byDomainOf(componentClass, "errors", "requests", "requests-time");
+    }
+
+    public static MetricNames byDomainOf(Class<?> componentClass, String errors, String requests, String requestsTime) {
         return new MetricNames(
-                KasperMetrics.name(MetricNameStyle.DOMAIN_TYPE, componentClass, "errors"),
-                KasperMetrics.name(MetricNameStyle.DOMAIN_TYPE, componentClass, "requests"),
-                KasperMetrics.name(MetricNameStyle.DOMAIN_TYPE, componentClass, "requests-time")
+                KasperMetrics.name(MetricNameStyle.DOMAIN_TYPE, componentClass, errors),
+                KasperMetrics.name(MetricNameStyle.DOMAIN_TYPE, componentClass, requests),
+                KasperMetrics.name(MetricNameStyle.DOMAIN_TYPE, componentClass, requestsTime)
         );
     }
 

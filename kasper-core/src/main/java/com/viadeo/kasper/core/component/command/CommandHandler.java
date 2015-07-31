@@ -35,10 +35,9 @@ public interface CommandHandler<COMMAND extends Command>
      * @param context the context related to the request
      * @param command the command requested
      * @return a response
-     * @throws Exception if an unexpected error happens
      */
     @Override
-    CommandResponse handle(Context context, COMMAND command) throws Exception;
+    CommandResponse handle(Context context, COMMAND command);
 
     @Override
     Class<? extends CommandHandler> getHandlerClass();

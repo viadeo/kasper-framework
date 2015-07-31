@@ -6,10 +6,7 @@ import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPTopology;
-import com.viadeo.kasper.core.component.event.eventbus.ExchangeDescriptor;
-import com.viadeo.kasper.core.component.event.eventbus.RabbitMQComponentInjector;
-import com.viadeo.kasper.core.component.event.eventbus.ReflectionRoutingKeysResolver;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -123,7 +120,7 @@ public class AMQPTopologyITest {
         AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver());
         topology.setQueueExpires(TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS));
 
-        TestEventListener eventListener = new TestEventListener(mock(EventListener.class));
+        TestEventListener eventListener = new TestEventListener(mock(AutowiredEventListener.class));
 
         // When
         new Thread(new Runnable() {
@@ -239,7 +236,7 @@ public class AMQPTopologyITest {
         }
     }
 
-    static class TestEventListener extends EventListener<TestEvent> {
+    static class TestEventListener extends AutowiredEventListener<TestEvent> {
 
         private final EventListener<TestEvent> eventListener;
 

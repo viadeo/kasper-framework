@@ -9,23 +9,23 @@ package com.viadeo.kasper.exposition.http;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
-import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryMessage;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.junit.Test;
 
 import java.util.Locale;
@@ -103,7 +103,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class ContextCheckQueryHandler extends AutowiredQueryHandler<ContextCheckQuery, ContextCheckResult> {
         @Override
-        public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
+        public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) {
             return QueryResponse.of(new ContextCheckResult());
         }
     }

@@ -7,29 +7,29 @@
 package com.viadeo.kasper.platform.bundle.sample;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.api.component.event.DomainEvent;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
-import com.viadeo.kasper.api.component.event.DomainEvent;
+import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,7 +43,7 @@ public class MyCustomDomainBox {
     @XKasperCommandHandler(domain = MyCustomDomain.class)
     public static class MyCustomCommandHandler extends AutowiredCommandHandler<MyCustomCommand> {
         @Override
-        public CommandResponse handle(MyCustomCommand command) throws Exception {
+        public CommandResponse handle(MyCustomCommand command) {
             if ( ! command.isSuccessful()) {
                 throw new RuntimeException("I must failed!");
             }
@@ -54,7 +54,7 @@ public class MyCustomDomainBox {
     @XKasperQueryHandler(domain = MyCustomDomain.class)
     public static class MyCustomQueryHandler extends AutowiredQueryHandler<MyCustomQuery, MyCustomQueryResult> {
         @Override
-        public QueryResponse<MyCustomQueryResult> retrieve(MyCustomQuery query) throws Exception {
+        public QueryResponse<MyCustomQueryResult> retrieve(MyCustomQuery query) {
             if ( ! query.isSuccessful()) {
                 throw new RuntimeException("I must failed!");
             }
@@ -63,7 +63,7 @@ public class MyCustomDomainBox {
     }
 
     @XKasperEventListener(domain = MyCustomDomain.class)
-    public static class MyCustomEventListener extends EventListener<MyCustomEvent> {
+    public static class MyCustomEventListener extends AutowiredEventListener<MyCustomEvent> {
         @Override
         public EventResponse handle(Context context, MyCustomEvent event) {
             return EventResponse.success();

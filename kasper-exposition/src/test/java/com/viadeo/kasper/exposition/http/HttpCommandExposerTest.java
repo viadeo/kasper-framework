@@ -21,19 +21,19 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse.Status;
 import com.viadeo.kasper.client.HTTPCommandResponse;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.junit.Test;
 
 import javax.validation.Valid;
@@ -94,9 +94,13 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         static String createAccountCommandName = null;
 
         @Override
-        public CommandResponse handle(final CreateAccountCommand command) throws Exception {
+        public CommandResponse handle(final CreateAccountCommand command) {
             if (command.getDelay().isPresent())
-                Thread.sleep(command.getDelay().get());
+                try {
+                    Thread.sleep(command. getDelay().get());
+                } catch (InterruptedException e) {
+                    return CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
+                }
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
             if (command.getCode() != null)
@@ -128,7 +132,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     public static class NeedValidationWithAliasCommandHandler extends AutowiredCommandHandler<NeedValidationWithAlias> {
 
         @Override
-        public CommandResponse handle(NeedValidationWithAlias command) throws Exception {
+        public CommandResponse handle(NeedValidationWithAlias command) {
             return CommandResponse.ok();
         }
     }
@@ -139,7 +143,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     @XKasperCommandHandler(domain = AccountDomain.class)
     public static class UnexposedCommandHandler extends AutowiredCommandHandler<UnexposedCommand> {
         @Override
-        public CommandResponse handle(UnexposedCommand command) throws Exception {
+        public CommandResponse handle(UnexposedCommand command) {
             return CommandResponse.ok();
         }
     }

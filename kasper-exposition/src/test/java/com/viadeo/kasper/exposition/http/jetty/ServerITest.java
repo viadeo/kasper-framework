@@ -30,7 +30,7 @@ import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
@@ -266,7 +266,7 @@ public class ServerITest {
     @XKasperQueryHandler(domain = Foobar.class)
     public static class DummyQueryService extends AutowiredQueryHandler<DummyQuery, DummyQueryResult> {
         @Override
-        public QueryResponse<DummyQueryResult> retrieve(DummyQuery query) throws Exception {
+        public QueryResponse<DummyQueryResult> retrieve(DummyQuery query) {
             return QueryResponse.of(new DummyQueryResult());
         }
     }
@@ -275,13 +275,13 @@ public class ServerITest {
     public static class DummyCommandHandler extends AutowiredCommandHandler<DummyCommand> {
 
         @Override
-        public CommandResponse handle(DummyCommand command) throws Exception {
+        public CommandResponse handle(DummyCommand command) {
             return CommandResponse.ok();
         }
     }
 
     @XKasperCommandHandler(domain = Foobar.class)
-    public static class DummyEventListener extends EventListener<DummyEvent> {
+    public static class DummyEventListener extends AutowiredEventListener<DummyEvent> {
 
         @Override
         public EventResponse handle(final Context context, final DummyEvent event) {

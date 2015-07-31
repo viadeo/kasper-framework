@@ -21,7 +21,7 @@ public class MeasuredQueryHandler
 
     public MeasuredQueryHandler(
             final MetricRegistry metricRegistry,
-            final QueryHandler<Query, QueryResult> handler
+            final QueryHandler handler
     ) {
         super(metricRegistry, handler, QueryGateway.class);
     }

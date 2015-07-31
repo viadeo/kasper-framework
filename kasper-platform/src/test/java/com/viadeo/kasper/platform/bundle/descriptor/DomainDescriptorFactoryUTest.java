@@ -7,24 +7,24 @@
 package com.viadeo.kasper.platform.bundle.descriptor;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
-import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
-import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
+import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public class DomainDescriptorFactoryUTest {
     public static class TestEvent implements Event { }
 
     @XKasperEventListener(domain = TestDomain.class)
-    public static class TestEventListener extends EventListener<TestEvent> {
+    public static class TestEventListener extends AutowiredEventListener<TestEvent> {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
             return EventResponse.success();

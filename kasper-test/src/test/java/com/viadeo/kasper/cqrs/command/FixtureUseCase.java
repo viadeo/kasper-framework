@@ -9,42 +9,43 @@ package com.viadeo.kasper.cqrs.command;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.component.command.CreateCommand;
 import com.viadeo.kasper.api.component.command.UpdateCommand;
-import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.api.response.KasperReason;
-import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.AutowiredEntityCommandHandler;
-import com.viadeo.kasper.core.component.command.CommandMessage;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.api.component.event.EntityCreatedEvent;
+import com.viadeo.kasper.api.component.event.EntityUpdatedEvent;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredEntityCommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.CommandMessage;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.component.command.aggregate.Concept;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
-import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.api.component.event.EntityCreatedEvent;
-import com.viadeo.kasper.api.component.event.EntityUpdatedEvent;
 import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.eventstore.EventStore;
 import org.slf4j.Logger;
@@ -120,21 +121,21 @@ public class FixtureUseCase {
         }
     }
 
-    public static class TestCreatedEventListener extends EventListener<TestCreatedEvent> {
+    public static class TestCreatedEventListener extends AutowiredEventListener<TestCreatedEvent> {
         @Override
         public EventResponse handle(Context context, TestCreatedEvent event) {
             return EventResponse.success();
         }
     }
 
-    public static class TestFirstNameChangedEventListener extends EventListener<TestFirstNameChangedEvent> {
+    public static class TestFirstNameChangedEventListener extends AutowiredEventListener<TestFirstNameChangedEvent> {
         @Override
         public EventResponse handle(Context context, TestFirstNameChangedEvent event) {
             return EventResponse.success();
         }
     }
 
-    public static class TestLastNameChangedEventListener extends EventListener<TestLastNameChangedEvent> {
+    public static class TestLastNameChangedEventListener extends AutowiredEventListener<TestLastNameChangedEvent> {
         @Override
         public EventResponse handle(Context context, TestLastNameChangedEvent event) {
             return EventResponse.success();
@@ -257,7 +258,7 @@ public class FixtureUseCase {
     public static class TestCreateCommandHandler
             extends AutowiredEntityCommandHandler<TestCreateCommand, TestAggregate> {
 
-        public CommandResponse handle(final CommandMessage<TestCreateCommand> message) throws Exception {
+        public CommandResponse handle(final CommandMessage<TestCreateCommand> message) {
 
             final TestAggregate agr = new TestAggregate(message.getCommand().getIdToUse());
 
@@ -273,7 +274,7 @@ public class FixtureUseCase {
     public static class TestChangeLastNameCommandHandler
             extends AutowiredEntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
 
-        public CommandResponse handle(final CommandMessage<TestChangeLastNameCommand> message) throws Exception {
+        public CommandResponse handle(final CommandMessage<TestChangeLastNameCommand> message) {
 
             final Optional<TestAggregate> agr =
                     this.getRepository().load(
@@ -326,7 +327,7 @@ public class FixtureUseCase {
 
     @XKasperQueryHandler( domain = TestDomain.class )
     public static class TestGetSomeDataQueryHandler extends AutowiredQueryHandler<TestQuery, TestResult> {
-        public QueryResponse<TestResult> retrieve(final TestQuery query) throws Exception {
+        public QueryResponse<TestResult> retrieve(final TestQuery query) {
             if (query.getType().contentEquals("REFUSED")) {
                 return QueryResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
             } else if (query.getType().contentEquals("ERROR")) {
@@ -354,7 +355,7 @@ public class FixtureUseCase {
 
     @XKasperQueryHandler( domain = TestDomain.class )
     public static class TestCoreReasonCodeQueryHandler extends AutowiredQueryHandler<TestCoreReasonCodeQuery, TestResult> {
-        public QueryResponse<TestResult> retrieve(final TestCoreReasonCodeQuery query) throws Exception {
+        public QueryResponse<TestResult> retrieve(final TestCoreReasonCodeQuery query) {
             return QueryResponse.error(query.getCoreReasonCode());
         }
     }
@@ -377,7 +378,7 @@ public class FixtureUseCase {
     @XKasperCommandHandler( domain = TestDomain.class )
     public static class TestCoreReasonCodeCommandHandler extends AutowiredCommandHandler<TestCoreReasonCodeCommand> {
         @Override
-        public CommandResponse handle(TestCoreReasonCodeCommand command) throws Exception {
+        public CommandResponse handle(TestCoreReasonCodeCommand command) {
             return CommandResponse.error(command.getCoreReasonCode());
         }
     }
@@ -398,7 +399,7 @@ public class FixtureUseCase {
     @XKasperCommandHandler( domain = TestDomain.class )
     public static class TestCommandHandler extends AutowiredCommandHandler<TestCommand> {
         @Override
-        public CommandResponse handle(TestCommand command) throws Exception {
+        public CommandResponse handle(TestCommand command) {
             if (command.getType().contentEquals("REFUSED")) {
                 return CommandResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
             } else if (command.getType().contentEquals("ERROR")) {
@@ -430,19 +431,23 @@ public class FixtureUseCase {
     public static class TestCreateUserCommandHandler extends AutowiredCommandHandler<TestCreateUserCommand> {
 
         @Override
-        public CommandResponse handle(TestCreateUserCommand command) throws Exception {
-            final CommandResponse response1 = getCommandGateway().sendCommandAndWaitForAResponse(
-                    new TestCreateCommand(command.getIdToUse(), command.firstName),
-                    getContext()
-            );
-
-            if (response1.isOK()) {
-                return getCommandGateway().sendCommandAndWaitForAResponse(
-                        new TestChangeLastNameCommand(command.getIdToUse(), command.lastName),
+        public CommandResponse handle(TestCreateUserCommand command) {
+            try {
+                final CommandResponse response1 = getCommandGateway().sendCommandAndWaitForAResponse(
+                        new TestCreateCommand(command.getIdToUse(), command.firstName),
                         getContext()
                 );
-            } else {
-                return response1;
+
+                if (response1.isOK()) {
+                    return getCommandGateway().sendCommandAndWaitForAResponse(
+                            new TestChangeLastNameCommand(command.getIdToUse(), command.lastName),
+                            getContext()
+                    );
+                } else {
+                    return response1;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
 

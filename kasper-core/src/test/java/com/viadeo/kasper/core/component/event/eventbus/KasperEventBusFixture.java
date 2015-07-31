@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public interface KasperEventBusFixture {
         }
     }
 
-    public static class ChildEventListener extends EventListener<UserEvent> {
+    public static class ChildEventListener extends AutowiredEventListener<UserEvent> {
         private Spy<UserEvent> spy;
 
         public ChildEventListener(final Spy<UserEvent> spy) {
@@ -104,7 +104,7 @@ public interface KasperEventBusFixture {
         }
     }
 
-    public static class UserEventListener extends EventListener<UserEvent> {
+    public static class UserEventListener extends AutowiredEventListener<UserEvent> {
 
         private Spy<UserEvent> spy;
 

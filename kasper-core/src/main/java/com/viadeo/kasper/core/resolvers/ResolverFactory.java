@@ -8,19 +8,19 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
-import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

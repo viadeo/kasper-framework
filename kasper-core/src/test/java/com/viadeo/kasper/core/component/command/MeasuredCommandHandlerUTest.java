@@ -150,7 +150,7 @@ public class MeasuredCommandHandlerUTest {
                 metricRegistry,
                 new TestCommandHandler(KasperResponse.Status.ERROR) {
                     @Override
-                    public CommandResponse handle(Context context, TestCommand command) throws Exception {
+                    public CommandResponse handle(Context context, TestCommand command) {
                         throw new RuntimeException("Fake exception");
                     }
                 }
@@ -189,7 +189,7 @@ public class MeasuredCommandHandlerUTest {
         }
 
         @Override
-        public CommandResponse handle(Context context, TestCommand command) throws Exception {
+        public CommandResponse handle(Context context, TestCommand command) {
             switch (status) {
                 case OK:
                     return CommandResponse.ok();

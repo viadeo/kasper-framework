@@ -7,17 +7,17 @@
 package com.viadeo.kasper.platform.bundle;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.platform.Platform;
 
 import java.util.List;
 

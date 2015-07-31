@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.common.tools.KasperMatcher;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
-import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.mockito.ArgumentCaptor;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public class KasperPlatformListenedEventsValidator
 
             final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
             verify(eventListener).handle(any(Context.class), captor.capture());
-            assertEquals(platform().getRecordedEvents(eventListener.getEventClass()), captor.getAllValues());
+            assertEquals(platform().getRecordedEvents(eventListener.getInputClass()), captor.getAllValues());
 
             remainingListenerClasses.remove(listenerClass);
         }

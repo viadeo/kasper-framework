@@ -54,7 +54,7 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
      * @return the command response
      */
     @Override
-    public QueryResponse<RESULT> handle(Context context, Q query) throws Exception {
+    public QueryResponse<RESULT> handle(Context context, Q query) {
         try {
             return retrieve(query);
         } catch (final UnsupportedOperationException e) {
@@ -66,11 +66,11 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
         }
     }
 
-    public QueryResponse<RESULT> retrieve(final QueryMessage<Q> message) throws Exception {
+    public QueryResponse<RESULT> retrieve(final QueryMessage<Q> message) {
         throw new UnsupportedOperationException();
     }
 
-    public QueryResponse<RESULT> retrieve(final Q query) throws Exception {
+    public QueryResponse<RESULT> retrieve(final Q query) {
         throw new UnsupportedOperationException();
     }
 

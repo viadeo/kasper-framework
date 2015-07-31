@@ -9,29 +9,30 @@ package com.viadeo.kasper.exposition.http;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.api.annotation.XKasperAlias;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.common.exposition.HttpContextHeaders;
-import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.api.annotation.XKasperDomain;
-import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
-import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -71,7 +72,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     public static class TestDomain implements Domain { }
 
     @XKasperEventListener(domain = TestDomain.class)
-    public static class AccountCreatedEventListener extends EventListener<AccountCreatedEvent> {
+    public static class AccountCreatedEventListener extends AutowiredEventListener<AccountCreatedEvent> {
         @Override
         public EventResponse handle(Context context, AccountCreatedEvent event) {
             return EventResponse.success();
@@ -93,7 +94,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperEventListener(domain = TestDomain.class)
-    public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
+    public static class NeedValidationEventListener extends AutowiredEventListener<NeedValidationEvent> {
         @Override
         public EventResponse handle(Context context, NeedValidationEvent event) {
             return EventResponse.success();

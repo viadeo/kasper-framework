@@ -8,15 +8,14 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.api.component.event.EventResponse;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class KasperEventBusTest {
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
-    private static class TestEventListener extends EventListener<TestEvent> {
+    private static class TestEventListener extends AutowiredEventListener<TestEvent> {
 
         private final List<Integer> returns;
 
@@ -135,7 +134,7 @@ public class KasperEventBusTest {
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
-    private static class TestEventErrorListener extends EventListener<TestEvent> {
+    private static class TestEventErrorListener extends AutowiredEventListener<TestEvent> {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
             throw new RuntimeException("ERROR");

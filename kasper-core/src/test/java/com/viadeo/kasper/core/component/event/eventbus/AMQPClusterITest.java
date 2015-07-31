@@ -11,10 +11,8 @@ import com.viadeo.kasper.api.context.ContextHelper;
 import com.viadeo.kasper.api.id.IDBuilder;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPCluster;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPComponentNameFormatter;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
@@ -97,7 +95,7 @@ public class AMQPClusterITest {
     );
 
     private static AMQPTopologyITest.TestEventListener eventListenerWrapper;
-    private static final EventListener<AMQPTopologyITest.TestEvent> mockedEventListener = mock(EventListener.class);
+    private static final AutowiredEventListener<AMQPTopologyITest.TestEvent> mockedEventListener = mock(AutowiredEventListener.class);
 
     @BeforeClass
     public static void init() throws Exception {

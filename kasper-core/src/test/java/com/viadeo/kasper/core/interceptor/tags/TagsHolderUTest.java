@@ -11,7 +11,7 @@ import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
-import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import org.junit.Rule;
@@ -201,7 +201,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperEventListener(domain = TestDomain.class)
-        class TestEventListener extends EventListener<TestEvent> {
+        class TestEventListener extends AutowiredEventListener<TestEvent> {
         }
         final Class<?> handlerClass = TestEventListener.class;
 
@@ -219,7 +219,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperEventListener(domain = TestDomain.class, tags = "this-is-a-tag")
-        class TestEventListener extends EventListener<TestEvent> {
+        class TestEventListener extends AutowiredEventListener<TestEvent> {
         }
         final Class<?> handlerClass = TestEventListener.class;
 
@@ -238,7 +238,7 @@ public class TagsHolderUTest {
         // Given
         @XKasperUnregistered
         @XKasperEventListener(domain = TestDomain.class, tags = {"this-is-a-tag", "this-is-another-tag"})
-        class TestEventListener extends EventListener<TestEvent> {
+        class TestEventListener extends AutowiredEventListener<TestEvent> {
         }
         final Class<?> handlerClass = TestEventListener.class;
 
@@ -256,7 +256,7 @@ public class TagsHolderUTest {
     public void getTags_fromEventListener_withoutAnnotations_shouldReturnEmpty() {
         // Given
         @XKasperUnregistered
-        class TestEventListener extends EventListener<TestEvent> {
+        class TestEventListener extends AutowiredEventListener<TestEvent> {
         }
         final Class<?> handlerClass = TestEventListener.class;
 
