@@ -73,7 +73,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         final KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
-        this.commandGateway = new KasperCommandGateway(commandBus, metricRegistry);
+        this.commandGateway = new KasperCommandGateway(commandBus);
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
             new CommandValidationInterceptorFactory()

@@ -6,23 +6,22 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import com.viadeo.kasper.test.platform.fixture.KasperEventFixture;
 import com.viadeo.kasper.test.platform.fixture.KasperQueryFixture;
@@ -76,14 +75,14 @@ public class KasperPlatformFixture implements
             final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
             this.platform.set(
-                new Platform.Builder(platformConfiguration)
-                        .withConfiguration(this.config)
-                        .withEventBus(this.eventBus)
-                        .withCommandGateway(
-                            new KasperCommandGateway(this.commandBus, new MetricRegistry())
-                        )
-                        .addDomainBundle(this.domainBundle)
-                        .build()
+                    new Platform.Builder(platformConfiguration)
+                            .withConfiguration(this.config)
+                            .withEventBus(this.eventBus)
+                            .withCommandGateway(
+                                    new KasperCommandGateway(this.commandBus)
+                            )
+                            .addDomainBundle(this.domainBundle)
+                            .build()
             );
 
             this.initialized = true;

@@ -36,13 +36,16 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
 
     private MetricNames inputMetricNames;
     private MetricNames domainMetricNames;
+    private MetricNames globalMetricNames;
 
     public MeasuredHandler(
             final MetricRegistry metricRegistry,
-            final HANDLER handler
+            final HANDLER handler,
+            final Class<?> globalComponent
     ) {
         this.metricRegistry = checkNotNull(metricRegistry);
         this.handler = checkNotNull(handler);
+        this.globalMetricNames = MetricNames.of(checkNotNull(globalComponent));
     }
 
     protected MetricNames getOrInstantiateCommandMetricNames() {
@@ -73,9 +76,11 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
         metricRegistry.meter(commandMetricNames.requests).mark();
         metricRegistry.meter(domainMetricNames.requests).mark();
         metricRegistry.meter(name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "requests")).mark();
+        metricRegistry.meter(globalMetricNames.requests).mark();
 
         final Timer.Context commandTimer = metricRegistry.timer(commandMetricNames.requestsTime).time();
         final Timer.Context domainTimer = metricRegistry.timer(domainMetricNames.requestsTime).time();
+        final Timer.Context globalTimer = metricRegistry.timer(globalMetricNames.requestsTime).time();
 
         RESPONSE response;
 
@@ -88,6 +93,7 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
         } finally {
             commandTimer.stop();
             domainTimer.stop();
+            globalTimer.stop();
         }
 
         switch (response.getStatus()) {
@@ -103,6 +109,7 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
                 metricRegistry.meter(commandMetricNames.errors).mark();
                 metricRegistry.meter(domainMetricNames.errors).mark();
                 metricRegistry.meter(name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
+                metricRegistry.meter(globalMetricNames.errors).mark();
                 break;
         }
 

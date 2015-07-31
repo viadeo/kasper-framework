@@ -25,7 +25,6 @@ import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptor
 import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import org.junit.After;
 import org.junit.Rule;
@@ -69,7 +68,7 @@ public class KasperQueryGatewayUTest {
     public KasperQueryGatewayUTest() {
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         interceptorChainRegistry = mock(InterceptorChainRegistry.class);
-        queryGateway = new KasperQueryGateway(queryHandlersLocator, new MetricRegistry(), interceptorChainRegistry);
+        queryGateway = new KasperQueryGateway(queryHandlersLocator, interceptorChainRegistry);
     }
 
     @After
@@ -151,9 +150,8 @@ public class KasperQueryGatewayUTest {
 
         // Then
         assertTrue(interceptorChain.isPresent());
-        assertEquals(MeasuredInterceptor.class, interceptorChain.get().actor.get().getClass());
-        assertEquals(InterceptorA.class, interceptorChain.get().next.get().actor.get().getClass());
-        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().next.get().actor.get().getClass());
+        assertEquals(InterceptorA.class, interceptorChain.get().actor.get().getClass());
+        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
     }
 
     @Test
@@ -171,9 +169,8 @@ public class KasperQueryGatewayUTest {
 
         // Then
         assertTrue(interceptorChain.isPresent());
-        assertEquals(MeasuredInterceptor.class, interceptorChain.get().actor.get().getClass());
-        assertEquals(CacheInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
-        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().next.get().actor.get().getClass());
+        assertEquals(CacheInterceptor.class, interceptorChain.get().actor.get().getClass());
+        assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
     }
 
 }
