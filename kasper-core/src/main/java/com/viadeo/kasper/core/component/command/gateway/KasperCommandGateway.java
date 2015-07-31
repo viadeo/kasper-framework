@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.gateway;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
@@ -19,7 +18,6 @@ import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterce
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
-import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
 import com.viadeo.kasper.core.locators.DefaultDomainLocator;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
@@ -45,25 +43,22 @@ public class KasperCommandGateway implements CommandGateway {
 
     // ------------------------------------------------------------------------
 
-    public KasperCommandGateway(final KasperCommandBus commandBus, final MetricRegistry metricRegistry) {
+    public KasperCommandGateway(final KasperCommandBus commandBus) {
         this(
              new CommandGatewayFactoryBean<CommandGateway>(),
              checkNotNull(commandBus),
              new DefaultDomainLocator(),
-             new InterceptorChainRegistry<Command, CommandResponse>(),
-             checkNotNull(metricRegistry)
+             new InterceptorChainRegistry<Command, CommandResponse>()
         );
     }
 
     public KasperCommandGateway(final KasperCommandBus commandBus,
-                                final MetricRegistry metricRegistry,
                                 final CommandDispatchInterceptor... commandDispatchInterceptors) {
         this(
             new CommandGatewayFactoryBean<CommandGateway>(),
             checkNotNull(commandBus),
             new DefaultDomainLocator(),
             new InterceptorChainRegistry<Command, CommandResponse>(),
-            checkNotNull(metricRegistry),
             checkNotNull(commandDispatchInterceptors)
         );
     }
@@ -72,13 +67,11 @@ public class KasperCommandGateway implements CommandGateway {
                                    final KasperCommandBus commandBus,
                                    final DomainLocator domainLocator,
                                    final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry,
-                                   final MetricRegistry metricRegistry,
                                    final CommandDispatchInterceptor... commandDispatchInterceptors) {
 
         this.commandBus = checkNotNull(commandBus);
         this.domainLocator = checkNotNull(domainLocator);
         this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
-        this.interceptorChainRegistry.register(new MeasuredInterceptor.Factory(CommandGateway.class, metricRegistry));
 
         checkNotNull(commandGatewayFactoryBean);
         checkNotNull(commandDispatchInterceptors);

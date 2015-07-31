@@ -1,6 +1,5 @@
 package com.viadeo.kasper.core.component.query.gateway;
 
-import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
@@ -31,9 +30,8 @@ public class KasperQueryGatewayITest {
     @Before
     public void setUp() throws Exception {
         queryHandlersLocator = spy(new DefaultQueryHandlersLocator());
-        final MetricRegistry metricRegistry = new MetricRegistry();
         interceptorChainRegistry = spy(new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>());
-        kasperQueryGateway = new KasperQueryGateway(queryHandlersLocator, metricRegistry, interceptorChainRegistry);
+        kasperQueryGateway = new KasperQueryGateway(queryHandlersLocator, interceptorChainRegistry);
     }
 
     @Test

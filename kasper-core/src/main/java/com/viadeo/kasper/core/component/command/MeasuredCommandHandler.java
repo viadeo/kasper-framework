@@ -11,6 +11,7 @@ import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.MeasuredHandler;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 
 public class MeasuredCommandHandler
         extends MeasuredHandler<CommandResponse, Command, CommandHandler<Command>>
@@ -21,7 +22,7 @@ public class MeasuredCommandHandler
             final MetricRegistry metricRegistry,
             final CommandHandler commandHandler
     ) {
-        super(metricRegistry, commandHandler);
+        super(metricRegistry, commandHandler, CommandGateway.class);
     }
 
     @Override

@@ -45,11 +45,9 @@ public class KasperCommandGatewayITest {
         final KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
-        final MetricRegistry metricRegistry = new MetricRegistry();
+        this.commandGateway = new KasperCommandGateway(commandBus);
 
-        this.commandGateway = new KasperCommandGateway(commandBus, metricRegistry);
-
-        KasperMetrics.setMetricRegistry(metricRegistry);
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
     // ------------------------------------------------------------------------

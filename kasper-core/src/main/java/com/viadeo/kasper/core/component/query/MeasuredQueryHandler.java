@@ -12,6 +12,7 @@ import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.MeasuredHandler;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 
 public class MeasuredQueryHandler
         extends MeasuredHandler<QueryResponse<QueryResult>, Query, QueryHandler<Query, QueryResult>>
@@ -22,7 +23,7 @@ public class MeasuredQueryHandler
             final MetricRegistry metricRegistry,
             final QueryHandler<Query, QueryResult> handler
     ) {
-        super(metricRegistry, handler);
+        super(metricRegistry, handler, QueryGateway.class);
     }
 
     @Override

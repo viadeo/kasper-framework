@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.spring;
 
-import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
@@ -23,15 +22,14 @@ public class KasperCommandConfiguration {
     /**
      * Command gateway is responsible for dispatching command to the appropriate command handler
      *
-     * @param metricRegistry a metric registry
      * @return command gateway
      */
     @Bean
-    public CommandGateway commandGateway(final MetricRegistry metricRegistry) {
+    public CommandGateway commandGateway() {
         UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
         KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
-        return new KasperCommandGateway(commandBus, metricRegistry);
+        return new KasperCommandGateway(commandBus);
     }
 
     @Bean

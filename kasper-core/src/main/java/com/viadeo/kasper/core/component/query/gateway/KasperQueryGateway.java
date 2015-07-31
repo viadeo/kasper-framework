@@ -21,7 +21,6 @@ import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
-import com.viadeo.kasper.core.interceptor.measure.MeasuredInterceptor;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import org.slf4j.Logger;
@@ -42,26 +41,20 @@ public class KasperQueryGateway implements QueryGateway {
     // -----------------------------------------------------------------------
 
     public KasperQueryGateway(final MetricRegistry metricRegistry) {
-        this(new DefaultQueryHandlersLocator(), metricRegistry);
+        this(new DefaultQueryHandlersLocator());
     }
 
-    public KasperQueryGateway(
-            final QueryHandlersLocator queryHandlersLocator,
-            final MetricRegistry metricRegistry
-    ) {
+    public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator) {
         this(
             checkNotNull(queryHandlersLocator),
-            checkNotNull(metricRegistry),
             new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>()
         );
     }
 
     public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator,
-                              final MetricRegistry metricRegistry,
                               final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry) {
         this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
         this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
-        this.interceptorChainRegistry.register(new MeasuredInterceptor.Factory(QueryGateway.class, checkNotNull(metricRegistry)));
     }
 
     // ------------------------------------------------------------------------
