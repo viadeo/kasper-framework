@@ -44,7 +44,6 @@ public class EventListenerUTest {
     @Test
     public void handle_withSuccessAsResponse_isOk() {
         // Given
-        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.success());
         GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), Contexts.empty().asMetaDataMap());
 
         // When
@@ -135,7 +134,12 @@ public class EventListenerUTest {
         };
     }
 
-    private static class TestEventListener extends AutowiredEventListener<TestEvent> { }
+    private static class TestEventListener extends AutowiredEventListener<TestEvent> {
+        @Override
+        public EventResponse handle(Context context, TestEvent event) {
+            return EventResponse.success();
+        }
+    }
 
     private static class TestEvent implements Event {
         @Override

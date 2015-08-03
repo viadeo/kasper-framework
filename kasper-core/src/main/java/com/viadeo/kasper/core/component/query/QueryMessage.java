@@ -8,38 +8,27 @@ package com.viadeo.kasper.core.component.query;
 
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.context.Context;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.viadeo.kasper.core.component.KasperMessage;
 
 /**
  * The kasper query message base implementation
  *
  * @param <Q> the enclosed query type
  */
-public class QueryMessage<Q extends Query> {
+public class QueryMessage<Q extends Query> extends KasperMessage<Q> {
 
 	private static final long serialVersionUID = 8648752933168387124L;
-
-	private final Context context;
-	private final Q query;
 
 	// -----------------------------------------------------------------------
 
 	public QueryMessage(final Context context, final Q query) {
-		this.context = checkNotNull(context);
-		this.query = checkNotNull(query);
+        super(context, query);
 	}
 
 	// -----------------------------------------------------------------------
 
 	public Q getQuery() {
-		return this.query;
-	}
-
-	// -----------------------------------------------------------------------
-
-	public Context getContext() {
-		return this.context;
+		return getInput();
 	}
 
 }

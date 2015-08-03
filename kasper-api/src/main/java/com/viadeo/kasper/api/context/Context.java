@@ -158,9 +158,9 @@ public final class Context implements Serializable {
     /**
      * @return the version of the context
      */
-    public Integer getVersion() {
-        Optional<Integer> version = getGenericProperty(VERSION);
-        return version.or(0);
+    public Long getVersion() {
+        Optional<Long> version = getGenericProperty(VERSION);
+        return version.or(0L);
     }
 
     /**

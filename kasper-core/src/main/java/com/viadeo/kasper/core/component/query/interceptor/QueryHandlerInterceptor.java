@@ -14,6 +14,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
 
         try {
             LOGGER.info("Call handler " + queryHandler.getClass().getSimpleName());
-            ret = queryHandler.handle(context, query);
+            ret = queryHandler.handle(new QueryMessage<>(context, query));
         } catch (Exception e) {
             ret = QueryResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         } finally {

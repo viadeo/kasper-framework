@@ -61,7 +61,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class SomeCollectionQueryHandler extends AutowiredQueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
         @Override
-        public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
+        public QueryResponse<SomeCollectionResponse> handle(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
 
             final SomeResponse response = new SomeResponse();
@@ -131,7 +131,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @SuppressWarnings("unchecked")
     public static class SomeQueryHandler extends AutowiredQueryHandler<SomeQuery, SomeResponse> {
         @Override
-        public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
+        public QueryResponse<SomeResponse> handle(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
 
             if (q.isDoThrowSomeException()) {
@@ -160,7 +160,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class NeedValidationWithAliasQueryHandler extends AutowiredQueryHandler<NeedValidationWithAlias, SomeResponse> {
         @Override
-        public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) {
+        public QueryResponse<SomeResponse> handle(NeedValidationWithAlias query) {
             return QueryResponse.of(new SomeResponse());
         }
     }
@@ -173,7 +173,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class UnexposedQueryHandler extends AutowiredQueryHandler<UnexposedQuery, SomeResponse> {
         @Override
-        public QueryResponse<SomeResponse> retrieve(UnexposedQuery query) {
+        public QueryResponse<SomeResponse> handle(UnexposedQuery query) {
             return QueryResponse.of(new SomeResponse());
         }
     }

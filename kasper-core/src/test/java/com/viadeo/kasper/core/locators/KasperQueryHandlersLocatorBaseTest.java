@@ -43,7 +43,7 @@ public class KasperQueryHandlersLocatorBaseTest {
     @XKasperQueryHandler( domain = TestDomain.class )
 	private static class TestHandler extends AutowiredQueryHandler<TestQuery, TestResult> {
 		@Override
-		public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery> message) {
+		public QueryResponse<TestResult> handle(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -161,7 +161,7 @@ public class KasperQueryHandlersLocatorBaseTest {
     @XKasperQueryHandler( domain = TestDomain2.class )
     private static class TestHandler2 extends AutowiredQueryHandler<TestQuery2, TestResult> {
         @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery2> message) {
+        public QueryResponse<TestResult> handle(final QueryMessage<TestQuery2> message) {
             throw new UnsupportedOperationException();
         }
     }

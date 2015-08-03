@@ -266,7 +266,7 @@ public class ServerITest {
     @XKasperQueryHandler(domain = Foobar.class)
     public static class DummyQueryService extends AutowiredQueryHandler<DummyQuery, DummyQueryResult> {
         @Override
-        public QueryResponse<DummyQueryResult> retrieve(DummyQuery query) {
+        public QueryResponse<DummyQueryResult> handle(DummyQuery query) {
             return QueryResponse.of(new DummyQueryResult());
         }
     }

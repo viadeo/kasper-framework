@@ -103,7 +103,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class ContextCheckQueryHandler extends AutowiredQueryHandler<ContextCheckQuery, ContextCheckResult> {
         @Override
-        public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) {
+        public QueryResponse<ContextCheckResult> handle(final QueryMessage<ContextCheckQuery> message) {
             return QueryResponse.of(new ContextCheckResult());
         }
     }

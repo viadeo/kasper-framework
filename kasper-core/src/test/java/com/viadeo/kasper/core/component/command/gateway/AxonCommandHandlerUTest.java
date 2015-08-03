@@ -12,6 +12,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
@@ -39,7 +40,7 @@ public class AxonCommandHandlerUTest {
     @Before
     public void setUp() throws Exception {
         when(unitOfWork.isStarted()).thenReturn(Boolean.TRUE);
-        when(handler.handle(any(Context.class), any(Command.class))).thenReturn(CommandResponse.ok());
+        when(handler.handle(any(CommandMessage.class))).thenReturn(CommandResponse.ok());
         axonHandler = new AxonCommandHandler<>(handler);
     }
 
@@ -69,7 +70,7 @@ public class AxonCommandHandlerUTest {
     public void rollback_an_unexpected_exception() throws Throwable {
         // Given
         RuntimeException toBeThrown = new RuntimeException("Fake!");
-        doThrow(toBeThrown).when(handler).handle(any(Context.class), any(Command.class));
+        doThrow(toBeThrown).when(handler).handle(any(CommandMessage.class));
 
         GenericCommandMessage<Command> message = new GenericCommandMessage<>(
                 mock(Command.class),
@@ -87,7 +88,7 @@ public class AxonCommandHandlerUTest {
     @Test
     public void rollback_a_refused_command() throws Throwable {
         // Given
-        when(handler.handle(any(Context.class), any(Command.class))).thenReturn(CommandResponse.refused(CoreReasonCode.UNKNOWN_REASON));
+        when(handler.handle(any(CommandMessage.class))).thenReturn(CommandResponse.refused(CoreReasonCode.UNKNOWN_REASON));
 
         GenericCommandMessage<Command> message = new GenericCommandMessage<>(
                 mock(Command.class),
@@ -104,7 +105,7 @@ public class AxonCommandHandlerUTest {
 
     @Test
     public void rollback_an_error_command() throws Throwable {
-        when(handler.handle(any(Context.class), any(Command.class))).thenReturn(CommandResponse.error(CoreReasonCode.UNKNOWN_REASON));
+        when(handler.handle(any(CommandMessage.class))).thenReturn(CommandResponse.error(CoreReasonCode.UNKNOWN_REASON));
 
         GenericCommandMessage<Command> message = new GenericCommandMessage<>(
                 mock(Command.class),

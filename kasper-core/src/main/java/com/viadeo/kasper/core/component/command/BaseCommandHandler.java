@@ -8,6 +8,8 @@ package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
@@ -32,6 +34,22 @@ public abstract class BaseCommandHandler<COMMAND extends Command> implements Com
         }
 
         this.commandClass = commandClass.get();
+    }
+
+    @Override
+    public CommandResponse handle(final CommandMessage<COMMAND> message) {
+        return this.handle(message.getContext(), message.getInput());
+    }
+
+    /**
+     * Handle the <code>Command</code> with his <code>Context</code>.
+     *
+     * @param context the context related to the request
+     * @param query the command requested
+     * @return a response
+     */
+    public CommandResponse handle(final Context context, final COMMAND query) {
+        throw new UnsupportedOperationException("not yet implemented!");
     }
 
     @Override
