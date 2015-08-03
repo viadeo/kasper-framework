@@ -15,7 +15,7 @@ import com.viadeo.kasper.core.component.MeasuredHandler;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 
 public class MeasuredQueryHandler
-        extends MeasuredHandler<QueryResponse<QueryResult>, Query, QueryHandler<Query, QueryResult>>
+        extends MeasuredHandler<Query, QueryMessage<Query>, QueryResponse<QueryResult>, QueryHandler<Query, QueryResult>>
         implements QueryHandler<Query, QueryResult>
 {
 

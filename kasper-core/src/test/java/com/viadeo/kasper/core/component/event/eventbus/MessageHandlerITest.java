@@ -3,10 +3,10 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.MetricRegistry;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.eventbus.spring.EventBusConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.After;
@@ -82,8 +82,8 @@ public class MessageHandlerITest {
     @Test
     public void handle_withoutTrouble_isOk() throws Exception {
         // Given
-        when(mockedEventListener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.success());
-        ArgumentCaptor<TestEvent> eventCaptor = ArgumentCaptor.forClass(TestEvent.class);
+        when(mockedEventListener.handle(any(EventMessage.class))).thenReturn(EventResponse.success());
+        ArgumentCaptor<EventMessage> eventCaptor = ArgumentCaptor.forClass(EventMessage.class);
         TestEvent testEvent = new TestEvent();
 
         // When
@@ -94,17 +94,17 @@ public class MessageHandlerITest {
         }
 
         // Then
-        verify(mockedEventListener).handle(any(Context.class), eventCaptor.capture());
+        verify(mockedEventListener).handle(eventCaptor.capture());
         assertEquals(1, eventCaptor.getAllValues().size());
-        assertEquals(testEvent, eventCaptor.getValue());
+        assertEquals(testEvent, eventCaptor.getValue().getEvent());
     }
 
     @Test
     public void handle_withUnexpectedException_shouldRetry5TimesBeforeRequeueInDeadLetter() throws Exception {
         // Given
-        doThrow(new RuntimeException("Bazinga!!")).when(mockedEventListener).handle(any(Context.class), any(TestEvent.class));
+        doThrow(new RuntimeException("Bazinga!!")).when(mockedEventListener).handle(any(EventMessage.class));
 
-        ArgumentCaptor<TestEvent> eventCaptor = ArgumentCaptor.forClass(TestEvent.class);
+        ArgumentCaptor<EventMessage> eventCaptor = ArgumentCaptor.forClass(EventMessage.class);
 
         TestEvent testEvent = new TestEvent();
 
@@ -116,10 +116,10 @@ public class MessageHandlerITest {
         }
 
         // Then
-        verify(mockedEventListener, times(5)).handle(any(Context.class), eventCaptor.capture());
+        verify(mockedEventListener, times(5)).handle(eventCaptor.capture());
         assertEquals(5, eventCaptor.getAllValues().size());
-        for (TestEvent event : eventCaptor.getAllValues()) {
-            assertEquals(testEvent, event);
+        for (EventMessage message : eventCaptor.getAllValues()) {
+            assertEquals(testEvent, message.getEvent());
         }
 
         String clusterName = config.getString("runtime.eventbus.amqp.clusterName");

@@ -14,7 +14,7 @@ import com.viadeo.kasper.core.component.MeasuredHandler;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 
 public class MeasuredCommandHandler
-        extends MeasuredHandler<CommandResponse, Command, CommandHandler<Command>>
+        extends MeasuredHandler<Command, CommandMessage<Command>, CommandResponse, CommandHandler<Command>>
         implements CommandHandler<Command>
 {
 

@@ -9,11 +9,11 @@ package com.viadeo.kasper.core.component.event.saga;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.event.listener.AxonEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventMessage;
 
 import java.util.Set;
 
@@ -33,9 +33,9 @@ public class SagaWrapper extends AxonEventListener<Event> implements EventListen
     // ------------------------------------------------------------------------
 
     @Override
-    public EventResponse handle(final Context context, final Event event) {
+    public EventResponse handle(final EventMessage<Event> message) {
         try {
-            executor.execute(context, event);
+            executor.execute(message.getContext(), message.getInput());
         } catch (final Exception e) {
             return EventResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }
@@ -43,7 +43,9 @@ public class SagaWrapper extends AxonEventListener<Event> implements EventListen
     }
 
     @Override
-    public void rollback(Context context, Event event) { }
+    public void rollback(final EventMessage<Event> message) {
+        // nothing
+    }
 
     @Override
     public String getName() {

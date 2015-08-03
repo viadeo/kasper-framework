@@ -10,8 +10,7 @@ import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-
-import java.io.Serializable;
+import com.viadeo.kasper.core.component.KasperMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,12 +19,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @param <C> Command
  */
-public class CommandMessage<C extends Command> implements Serializable {
+public class CommandMessage<C extends Command> extends KasperMessage<C> {
 
 	private static final long serialVersionUID = 5946300419038957372L;
-
-    private final Context context;
-    private final C command;
 
     // ------------------------------------------------------------------------
 
@@ -49,20 +45,13 @@ public class CommandMessage<C extends Command> implements Serializable {
      * @param command a command
      */
     public CommandMessage(final Context context, final C command) {
-        this.context = checkNotNull(context);
-        this.command = checkNotNull(command);
+        super(checkNotNull(context), checkNotNull(command));
     }
-
-	// ------------------------------------------------------------------------
-
-	public Context getContext() {
-		return context;
-	}
 	
 	// ------------------------------------------------------------------------
 
 	public C getCommand() {
-		return command;
+		return getInput();
 	}
 
 }

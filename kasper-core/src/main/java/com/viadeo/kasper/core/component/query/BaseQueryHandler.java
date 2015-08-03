@@ -8,7 +8,9 @@ package com.viadeo.kasper.core.component.query;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
@@ -51,6 +53,22 @@ public abstract class BaseQueryHandler<QUERY extends Query, RESULT extends Query
         }
 
         this.resultClass = optionalResultClass.get();
+    }
+
+    @Override
+    public QueryResponse<RESULT> handle(QueryMessage<QUERY> message) {
+        return this.handle(message.getContext(), message.getInput());
+    }
+
+    /**
+     * Handle the <code>Query</code> with his <code>Context</code>.
+     *
+     * @param context the context related to the request
+     * @param query the query requested
+     * @return a response
+     */
+    public QueryResponse<RESULT> handle(Context context, QUERY query) {
+        throw new UnsupportedOperationException("not yet implemented!");
     }
 
     @Override

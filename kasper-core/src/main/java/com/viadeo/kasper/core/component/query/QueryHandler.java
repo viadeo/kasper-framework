@@ -20,11 +20,12 @@ import com.viadeo.kasper.core.component.Handler;
  *
  * @see Query
  * @see QueryResult
+ * @see QueryMessage
  * @see QueryResponse
  * @see Context
  */
 public interface QueryHandler<QUERY extends Query, RESULT extends QueryResult>
-        extends Handler<QueryResponse<RESULT>, QUERY>
+        extends Handler<QueryMessage<QUERY>, QueryResponse<RESULT>, QUERY>
 {
 
     /**
@@ -38,14 +39,13 @@ public interface QueryHandler<QUERY extends Query, RESULT extends QueryResult>
     public static final int PARAMETER_RESULT_POSITION = 1;
 
     /**
-     * Handle the <code>Query</code> with his <code>Context</code>.
+     * Handle the <code>QueryMessage</code>.
      *
-     * @param context the context related to the request
-     * @param query the query requested
+     * @param message the query message
      * @return a response
      */
     @Override
-    QueryResponse<RESULT> handle(Context context, QUERY query);
+    QueryResponse<RESULT> handle(final QueryMessage<QUERY> message);
 
     /**
      * @return the result class returned by this <code>QueryHandler</code>.

@@ -8,14 +8,13 @@ package com.viadeo.kasper.core.component.event.listener;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.core.component.KasperMessage;
 import org.axonframework.domain.DomainEventMessage;
 import org.joda.time.DateTime;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
@@ -26,63 +25,51 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see EventMessage
  * @see com.viadeo.kasper.api.component.event.Event
  */
-public class EventMessage<E extends Event> {
-	private static final long serialVersionUID = -214545825521867826L;
+public class EventMessage<E extends Event> extends KasperMessage<E> {
 
-	private final org.axonframework.domain.EventMessage<E> axonMessage;
+    private final Optional<KasperID> optionalKapserID;
+    private final DateTime timestamp;
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
 	public EventMessage(final org.axonframework.domain.EventMessage<E> eventMessage) {
-		this.axonMessage = checkNotNull(eventMessage);
+		this(
+                (eventMessage instanceof DomainEventMessage ? Optional.fromNullable((KasperID)((DomainEventMessage) eventMessage).getAggregateIdentifier()) : Optional.<KasperID>absent()),
+                eventMessage.getTimestamp(),
+                Objects.firstNonNull(
+                        (Context) eventMessage.getMetaData().get(Context.METANAME),
+                        Contexts.empty()
+                ),
+                eventMessage.getPayload()
+        );
 	}
 
-	// ------------------------------------------------------------------------
-
-	public Context getContext() {
-		return (Context) this.axonMessage.getMetaData().get(Context.METANAME);
-	}
-
-	public E getEvent() {
-		return this.axonMessage.getPayload();
-	}
-
-	// ------------------------------------------------------------------------
-	
-	public org.axonframework.domain.EventMessage<E> getAxonMessage() {
-		return this.axonMessage;
-	}
+    public EventMessage(Optional<KasperID> entityId, DateTime timestamp, Context context, E event) {
+        super(context, event);
+        this.optionalKapserID = entityId;
+        this.timestamp = timestamp;
+    }
 
     // ------------------------------------------------------------------------
+
 
     public Optional<KasperID> getEntityId() {
-        if (DomainEventMessage.class.isAssignableFrom(axonMessage.getClass())) {
-            final DomainEventMessage<E> domainMessage = (DomainEventMessage<E>) axonMessage;
-            return Optional.of((KasperID) domainMessage.getAggregateIdentifier());
-        }
-        return Optional.absent();
+        return optionalKapserID;
     }
+
+    public DateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public E getEvent() {
+		return getInput();
+	}
 
     public Long getVersion() {
-        Long version = (Long) this.axonMessage.getMetaData().get(AggregateRoot.VERSION_METANAME);
-
-        if ((null == version) && (DomainEventMessage.class.isAssignableFrom(this.axonMessage.getClass()))) {
-            version = ((DomainEventMessage) this.axonMessage).getSequenceNumber();
-        }
-
-        return (null == version) ? 0L : version;
-    }
-
-    public DateTime getModificationDate() {
-        return this.axonMessage.getTimestamp();
+        return getContext().getVersion();
     }
 
     // ------------------------------------------------------------------------
-
-    public org.axonframework.domain.EventMessage<E> axon() {
-        return this.axonMessage;
-    }
-
 
     @Override
     public String toString() {

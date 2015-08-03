@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
@@ -245,8 +245,8 @@ public class AMQPTopologyITest {
         }
 
         @Override
-        public EventResponse handle(Context context, TestEvent event) {
-            EventResponse response = eventListener.handle(context, event);
+        public EventResponse handle(EventMessage<TestEvent> message) {
+            EventResponse response = eventListener.handle(message);
             synchronized (eventListener) {
                 eventListener.notify();
             }

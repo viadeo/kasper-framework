@@ -17,11 +17,12 @@ import com.viadeo.kasper.core.component.Handler;
  * @param <COMMAND> the command class handled by this <code>CommandHandler</code>.
  *
  * @see Command
+ * @see CommandMessage
  * @see CommandResponse
  * @see Context
  */
 public interface CommandHandler<COMMAND extends Command>
-        extends Handler<CommandResponse, COMMAND>
+        extends Handler<CommandMessage<COMMAND>, CommandResponse, COMMAND>
 {
 
     /**
@@ -30,14 +31,13 @@ public interface CommandHandler<COMMAND extends Command>
     public static final int COMMAND_PARAMETER_POSITION = 0;
 
     /**
-     * Handle the <code>Command</code> with his <code>Context</code>.
+     * Handle the <code>CommandMessage</code>.
      *
-     * @param context the context related to the request
-     * @param command the command requested
+     * @param message the command message
      * @return a response
      */
     @Override
-    CommandResponse handle(Context context, COMMAND command);
+    CommandResponse handle(CommandMessage<COMMAND> message);
 
     @Override
     Class<? extends CommandHandler> getHandlerClass();

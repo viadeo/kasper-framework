@@ -85,6 +85,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         final Timer.Context domainTimer = metricRegistry.timer(domainMetricNames.requestsTime).time();
         final Timer.Context globalTimer = metricRegistry.timer(globalMetricNames.requestsTime).time();
 
+        @SuppressWarnings("unchecked")
         final EventMessage<EVENT> kmessage = new EventMessage<EVENT>(eventMessage);
         final EVENT event = kmessage.getEvent();
         final Context context = Objects.firstNonNull(kmessage.getContext(), Contexts.empty());
@@ -94,7 +95,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         EventResponse response;
 
         try {
-            response = this.handle(context, event);
+            response = this.handle(kmessage);
         } catch (Exception e) {
             response =  EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         } finally {
@@ -110,7 +111,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
                 metricRegistry.meter(domainMetricNames.errors).mark();
             case ERROR:
                 try {
-                    rollback(context, event);
+                    rollback(kmessage);
                 } catch (Exception e) {
                     LOGGER.error("Failed to rollback, <context=%s> <event=%s> <response=%s>", context, event, response, e);
                 }
@@ -133,9 +134,9 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
 
     // ------------------------------------------------------------------------
 
-    public abstract EventResponse handle(Context context, EVENT event);
+    public abstract EventResponse handle(EventMessage<EVENT> message);
 
-    public abstract void rollback(Context context, Event event);
+    public abstract void rollback(EventMessage<EVENT> message);
 
     public abstract Set<Class<?>> getEventClasses();
 

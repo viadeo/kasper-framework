@@ -12,23 +12,24 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.core.metrics.MetricNames;
 import org.axonframework.repository.ConflictingAggregateVersionException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  * This implementation of <code>Handler</code> allows to add metrics.
  * 
  * @param <INPUT> the input class handled by this <code>Handler</code>.
+ * @param <MESSAGE> the message sent to this <code>Handler</code>.
  * @param <RESPONSE> the response returned by this <code>Handler</code>.
  *
  * @see Handler
  */
-public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HANDLER extends Handler<RESPONSE,INPUT>>
-        implements Handler<RESPONSE, INPUT>
+public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT>, RESPONSE extends KasperResponse, HANDLER extends Handler<MESSAGE, RESPONSE,INPUT>>
+        implements Handler<MESSAGE, RESPONSE, INPUT>
 {
 
     protected final HANDLER handler;
@@ -75,13 +76,14 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
     }
 
     @Override
-    public RESPONSE handle(final Context context, final INPUT command) {
+    public RESPONSE handle(final MESSAGE message) {
+        final Context context = message.getContext();
         final MetricNames inputMetricNames = getOrInstantiateInputMetricNames();
         final MetricNames domainMetricNames = getOrInstantiateDomainMetricNames();
 
         metricRegistry.meter(inputMetricNames.requests).mark();
         metricRegistry.meter(domainMetricNames.requests).mark();
-        metricRegistry.meter(name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "requests")).mark();
+        metricRegistry.meter(KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "requests")).mark();
         metricRegistry.meter(globalMetricNames.requests).mark();
 
         final Timer.Context inputTimer = metricRegistry.timer(inputMetricNames.requestsTime).time();
@@ -91,7 +93,7 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
         RESPONSE response;
 
         try {
-            response = handler.handle(context, command);
+            response = handler.handle(message);
         } catch (final ConflictingAggregateVersionException e) {
             response = error(new KasperReason(CoreReasonCode.CONFLICT, e.getMessage()));
         } catch (final RuntimeException e) {
@@ -114,7 +116,7 @@ public abstract class MeasuredHandler<RESPONSE extends KasperResponse, INPUT, HA
             case FAILURE:
                 metricRegistry.meter(inputMetricNames.errors).mark();
                 metricRegistry.meter(domainMetricNames.errors).mark();
-                metricRegistry.meter(name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
+                metricRegistry.meter(KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
                 metricRegistry.meter(globalMetricNames.errors).mark();
                 break;
         }

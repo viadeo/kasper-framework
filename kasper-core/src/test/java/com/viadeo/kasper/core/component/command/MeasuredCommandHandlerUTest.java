@@ -72,7 +72,7 @@ public class MeasuredCommandHandlerUTest {
         );
 
         // When
-        CommandResponse response = handler.handle(Contexts.empty(), mock(TestCommand.class));
+        CommandResponse response = handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
 
         // Then
         assertNotNull(response);
@@ -92,7 +92,7 @@ public class MeasuredCommandHandlerUTest {
         );
 
         // When
-        CommandResponse response = handler.handle(Contexts.empty(), mock(TestCommand.class));
+        CommandResponse response = handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
 
         // Then
         assertNotNull(response);
@@ -111,7 +111,7 @@ public class MeasuredCommandHandlerUTest {
         );
 
         // When
-        CommandResponse response = handler.handle(Contexts.empty(), mock(TestCommand.class));
+        CommandResponse response = handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
 
         // Then
         assertNotNull(response);
@@ -130,7 +130,7 @@ public class MeasuredCommandHandlerUTest {
         );
 
         // When
-        CommandResponse response = handler.handle(Contexts.empty(), mock(TestCommand.class));
+        CommandResponse response = handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
 
         // Then
         assertNotNull(response);
@@ -157,7 +157,7 @@ public class MeasuredCommandHandlerUTest {
         );
 
         // When
-        CommandResponse response = handler.handle(Contexts.empty(), mock(TestCommand.class));
+        CommandResponse response = handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
 
         // Then
         assertNotNull(response);

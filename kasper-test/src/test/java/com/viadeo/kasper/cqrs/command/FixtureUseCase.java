@@ -327,7 +327,7 @@ public class FixtureUseCase {
 
     @XKasperQueryHandler( domain = TestDomain.class )
     public static class TestGetSomeDataQueryHandler extends AutowiredQueryHandler<TestQuery, TestResult> {
-        public QueryResponse<TestResult> retrieve(final TestQuery query) {
+        public QueryResponse<TestResult> handle(final TestQuery query) {
             if (query.getType().contentEquals("REFUSED")) {
                 return QueryResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
             } else if (query.getType().contentEquals("ERROR")) {
@@ -355,7 +355,7 @@ public class FixtureUseCase {
 
     @XKasperQueryHandler( domain = TestDomain.class )
     public static class TestCoreReasonCodeQueryHandler extends AutowiredQueryHandler<TestCoreReasonCodeQuery, TestResult> {
-        public QueryResponse<TestResult> retrieve(final TestCoreReasonCodeQuery query) {
+        public QueryResponse<TestResult> handle(final TestCoreReasonCodeQuery query) {
             return QueryResponse.error(query.getCoreReasonCode());
         }
     }

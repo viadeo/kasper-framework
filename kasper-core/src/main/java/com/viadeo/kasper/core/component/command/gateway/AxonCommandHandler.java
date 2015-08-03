@@ -28,7 +28,6 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
     @Override
     public Object handle(org.axonframework.commandhandling.CommandMessage<COMMAND> commandMessage, UnitOfWork unitOfWork) throws Throwable {
         final CommandMessage<COMMAND> kmessage = new CommandMessage<>(commandMessage);
-        final COMMAND command = kmessage.getCommand();
         final Context context = kmessage.getContext();
 
         CurrentContext.set(context);
@@ -39,7 +38,7 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
         CommandResponse response;
 
         try {
-            response = commandHandler.handle(context, command);
+            response = commandHandler.handle(kmessage);
         } catch (Exception e) {
             response = CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }

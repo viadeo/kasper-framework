@@ -54,7 +54,7 @@ public class MyCustomDomainBox {
     @XKasperQueryHandler(domain = MyCustomDomain.class)
     public static class MyCustomQueryHandler extends AutowiredQueryHandler<MyCustomQuery, MyCustomQueryResult> {
         @Override
-        public QueryResponse<MyCustomQueryResult> retrieve(MyCustomQuery query) {
+        public QueryResponse<MyCustomQueryResult> handle(MyCustomQuery query) {
             if ( ! query.isSuccessful()) {
                 throw new RuntimeException("I must failed!");
             }

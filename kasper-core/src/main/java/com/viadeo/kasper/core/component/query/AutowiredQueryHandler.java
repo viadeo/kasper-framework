@@ -53,24 +53,16 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
      * @param query The command to handle
      * @return the command response
      */
-    @Override
     public QueryResponse<RESULT> handle(Context context, Q query) {
         try {
-            return retrieve(query);
+            return handle(query);
         } catch (final UnsupportedOperationException e) {
-            try {
-                return retrieve(new QueryMessage<>(context, query));
-            } catch (final UnsupportedOperationException e1) {
-                throw new UnsupportedOperationException();
-            }
+            throw new UnsupportedOperationException();
         }
     }
 
-    public QueryResponse<RESULT> retrieve(final QueryMessage<Q> message) {
-        throw new UnsupportedOperationException();
-    }
 
-    public QueryResponse<RESULT> retrieve(final Q query) {
+    public QueryResponse<RESULT> handle(final Q query) {
         throw new UnsupportedOperationException();
     }
 

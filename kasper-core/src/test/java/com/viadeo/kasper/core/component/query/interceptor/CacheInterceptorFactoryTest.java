@@ -41,7 +41,7 @@ public class CacheInterceptorFactoryTest {
     @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
     public static class WithFilteredFieldsCacheQueryHandler extends AutowiredQueryHandler<DummyQuery, DummyResult> {
         @Override
-        public QueryResponse<DummyResult> retrieve(DummyQuery query) {
+        public QueryResponse<DummyResult> handle(DummyQuery query) {
             return QueryResponse.of(new DummyResult());
         }
     }
@@ -50,7 +50,7 @@ public class CacheInterceptorFactoryTest {
     @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
     public static class WithCacheQueryHandler extends AutowiredQueryHandler<DummyQuery, DummyResult> {
         @Override
-        public QueryResponse<DummyResult> retrieve(DummyQuery query) {
+        public QueryResponse<DummyResult> handle(DummyQuery query) {
             return QueryResponse.of(new DummyResult());
         }
     }
@@ -59,7 +59,7 @@ public class CacheInterceptorFactoryTest {
     @XKasperQueryHandler(domain = DummyDomain.class)
     public static class WithoutCacheQueryHandler extends AutowiredQueryHandler<DummyQuery, DummyResult> {
         @Override
-        public QueryResponse<DummyResult> retrieve(DummyQuery query) {
+        public QueryResponse<DummyResult> handle(DummyQuery query) {
             return QueryResponse.of(new DummyResult());
         }
     }

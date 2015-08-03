@@ -43,12 +43,21 @@ public class BaseEventListener<EVENT extends Event>
     }
 
     @Override
-    public EventResponse handle(Context context, EVENT event) {
-        return EventResponse.success();
+    public EventResponse handle(final EventMessage<EVENT> message) {
+        return handle(message.getContext(), message.getEvent());
     }
 
+    public EventResponse handle(final Context context, final EVENT event) {
+        throw new UnsupportedOperationException("not yet implemented!");
+    }
+
+
     @Override
-    public void rollback(Context context, Event event) {
+    public void rollback(final EventMessage<EVENT> message) {
+        rollback(message.getContext(), message.getInput());
+    }
+
+    public void rollback(final Context context, final Event event) {
         // nothing
     }
 

@@ -55,14 +55,6 @@ public abstract class AutowiredCommandHandler<C extends Command>
     }
 
     /**
-     * @param message the command handler encapsulating message
-     * @return the command response
-     */
-    public CommandResponse handle(final CommandMessage<C> message) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * @param command The command to handle
      * @return the command response
      */

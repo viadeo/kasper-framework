@@ -6,11 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.common.tools.KasperMatcher;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
 import org.mockito.ArgumentCaptor;
@@ -44,15 +45,21 @@ public class KasperPlatformListenedEventsValidator
             final EventListener eventListener = platform().listeners.get(listenerClass);
             assertNotNull("Unknown event listener : " + listenerClass.getName(), eventListener);
 
-            final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
-            verify(eventListener).handle(any(Context.class), captor.capture());
-            assertEquals(platform().getRecordedEvents(eventListener.getInputClass()), captor.getAllValues());
+            final ArgumentCaptor<EventMessage> captor = ArgumentCaptor.forClass(EventMessage.class);
+            verify(eventListener).handle(captor.capture());
+
+            final List<Event> events = Lists.newArrayList();
+            for (final EventMessage eventMessage : captor.getAllValues()) {
+                events.add(eventMessage.getEvent());
+            }
+
+            assertEquals(platform().getRecordedEvents(eventListener.getInputClass()), events);
 
             remainingListenerClasses.remove(listenerClass);
         }
 
         for (final Class listenerClass : remainingListenerClasses) {
-            verify(platform().listeners.get(listenerClass), never()).handle(any(Context.class), any(Event.class));
+            verify(platform().listeners.get(listenerClass), never()).handle(any(EventMessage.class));
         }
 
         return this;
@@ -62,7 +69,7 @@ public class KasperPlatformListenedEventsValidator
     @Override
     public KasperFixtureEventResultValidator expectZeroEventNotification() {
         for (final EventListener eventListener : platform().listeners.values()) {
-            verify(eventListener, never()).handle(any(Context.class), any(Event.class));
+            verify(eventListener, never()).handle(any(EventMessage.class));
         }
         return this;
     }
