@@ -17,7 +17,7 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.BuilderContext;
 
 import java.util.List;
 
@@ -81,7 +81,7 @@ public class DefaultDomainBundle implements DomainBundle {
     // ------------------------------------------------------------------------
 
     @Override
-    public void configure(final Platform.BuilderContext context) { }
+    public void configure(final BuilderContext context) { }
 
     @Override
     public String getName() {

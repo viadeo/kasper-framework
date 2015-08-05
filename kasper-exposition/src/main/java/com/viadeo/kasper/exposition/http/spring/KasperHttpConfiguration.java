@@ -61,6 +61,9 @@ public class KasperHttpConfiguration {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired(required = false)
+    Map<String, HealthCheck> healthChecks;
+
     /**
      * Setup the http server
      *
@@ -213,11 +216,8 @@ public class KasperHttpConfiguration {
     }
 
     /**
-     * Returns resources exposed by jetty. These resource are :
-     * - auto-documentation
-     * - artifact : allow to know which artifact is deployed
-     * - acv : health checks used by ops to know if the current instance should
-     * be removed from the pool
+     * Returns resources exposed by jetty.
+     *
      * @param resources resources to expose
      * @return resource config
      */
@@ -235,14 +235,14 @@ public class KasperHttpConfiguration {
     }
 
     @Bean
-    HealthCheckRegistry healthCheckRegistry(final Map<String, HealthCheck> healthChecks) {
+    HealthCheckRegistry healthCheckRegistry() {
 
         // Add health checks to a new registry
         final HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
         healthCheckRegistry.register("deadlocks", new ThreadDeadlockHealthCheck());
 
 
-        if (healthChecks.isEmpty()) {
+        if (healthChecks == null || healthChecks.isEmpty()) {
             LOGGER.warn('\n' +
                             "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" +
                             "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" +

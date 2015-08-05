@@ -43,7 +43,7 @@ public class EventBusConfiguration {
      * @return kasper event bus
      */
     @Bean
-    public KasperEventBus kasperEventBus(List<Cluster> clusters) {
+    public KasperEventBus eventBus(List<Cluster> clusters) {
         ClassNamePatternClusterSelector selector = new ClassNamePatternClusterSelector(Pattern.compile(".*"), new CompositeCluster(clusters));
         KasperEventBus eventBus = new KasperEventBus(selector);
 

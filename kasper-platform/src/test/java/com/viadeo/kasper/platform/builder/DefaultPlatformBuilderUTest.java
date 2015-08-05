@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform;
+package com.viadeo.kasper.platform.builder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
@@ -17,13 +17,15 @@ import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.saga.SagaManager;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
@@ -40,7 +42,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
 
-public class PlatformBuilderUTest {
+public class DefaultPlatformBuilderUTest {
 
     private static class TestDomain implements Domain { }
 
@@ -76,7 +78,7 @@ public class PlatformBuilderUTest {
     public void addDomainBundle_withNullAsDomainBundle_shouldThrownException() {
         // Given
         final DomainBundle domainBundle = null;
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addDomainBundle(domainBundle);
@@ -88,7 +90,7 @@ public class PlatformBuilderUTest {
     public void addDomainBundle_withDomainBundle_shouldBeOk() {
         // Given
         final DomainBundle domainBundle = new DefaultDomainBundle(new TestDomain());
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addDomainBundle(domainBundle);
@@ -100,7 +102,7 @@ public class PlatformBuilderUTest {
     public void addPlugin_withNullAsPlugin_shouldThrownException() {
         // Given
         final Plugin plugin = null;
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addPlugin(plugin);
@@ -112,7 +114,7 @@ public class PlatformBuilderUTest {
     public void addPlugin_withPlugin_shouldBeOk() {
         // Given
         final Plugin plugin = mock(Plugin.class);
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addPlugin(plugin);
@@ -124,7 +126,7 @@ public class PlatformBuilderUTest {
     public void addQueryInterceptorFactory_withNullAsInterceptorFactory_shouldThrownException() {
         // Given
         final QueryInterceptorFactory interceptorFactory = null;
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addQueryInterceptorFactory(interceptorFactory);
@@ -136,7 +138,7 @@ public class PlatformBuilderUTest {
     public void addCommandInterceptorFactory_withNullAsInterceptorFactory_shouldThrownException() {
         // Given
         final CommandInterceptorFactory interceptorFactory = null;
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addCommandInterceptorFactory(interceptorFactory);
@@ -148,7 +150,7 @@ public class PlatformBuilderUTest {
     public void addEventInterceptorFactory_withNullAsInterceptorFactory_shouldThrownException() {
         // Given
         final EventInterceptorFactory interceptorFactory = null;
-        final Platform.Builder builder = new Platform.Builder();
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder();
 
         // When
         builder.addEventInterceptorFactory(interceptorFactory);
@@ -161,7 +163,7 @@ public class PlatformBuilderUTest {
 //        // Given
 //        final QueryInterceptorFactory interceptorFactory = mock(QueryInterceptorFactory.class);
 //        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
-//        final Platform.Builder builder = new Platform.Builder()
+//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
 //                .withQueryGateway(queryGateway)
 //                .addQueryInterceptorFactory(interceptorFactory);
 //
@@ -179,7 +181,7 @@ public class PlatformBuilderUTest {
 //        // Given
 //        final CommandInterceptorFactory interceptorFactory = mock(CommandInterceptorFactory.class);
 //        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-//        final Platform.Builder builder = new Platform.Builder()
+//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
 //                .withCommandGateway(commandGateway)
 //                .addCommandInterceptorFactory(interceptorFactory);
 //
@@ -195,7 +197,7 @@ public class PlatformBuilderUTest {
     @Test(expected = IllegalStateException.class)
     public void build_withoutCommandGateway_shouldThrownException() {
         // Given
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withEventBus(mock(KasperEventBus.class))
                 .withConfiguration(mock(Config.class));
@@ -209,7 +211,7 @@ public class PlatformBuilderUTest {
     @Test(expected = IllegalStateException.class)
     public void build_withoutQueryGateway_shouldThrownException() {
         // Given
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(mock(KasperEventBus.class))
                 .withConfiguration(mock(Config.class));
@@ -223,7 +225,7 @@ public class PlatformBuilderUTest {
     @Test(expected = IllegalStateException.class)
     public void build_withoutEventBus_shouldThrownException() {
         // Given
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withConfiguration(mock(Config.class));
@@ -238,7 +240,7 @@ public class PlatformBuilderUTest {
     @Test(expected = IllegalStateException.class)
     public void build_withoutConfiguration_shouldThrownException() {
         // Given
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(mock(KasperEventBus.class));
@@ -252,7 +254,7 @@ public class PlatformBuilderUTest {
     @Test(expected = IllegalStateException.class)
     public void build_withoutMetricRegistry_shouldThrownException() {
         // Given
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(mock(KasperEventBus.class))
@@ -271,7 +273,7 @@ public class PlatformBuilderUTest {
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
 
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -293,7 +295,7 @@ public class PlatformBuilderUTest {
     public void build_fromPlatformConfiguration_shouldBeOk() {
         // Given
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
-        final Platform.Builder builder = new Platform.Builder(platformConfiguration);
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(platformConfiguration);
 
         // When
         final Platform platform = builder.build();
@@ -316,7 +318,7 @@ public class PlatformBuilderUTest {
         final Config configuration = mock(Config.class);
         final MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -330,7 +332,7 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(domainBundle).configure(refEq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList())));
+        verify(domainBundle).configure(refEq(new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList())));
     }
 
     @Test
@@ -343,7 +345,7 @@ public class PlatformBuilderUTest {
         final Config configuration = mock(Config.class);
         final MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -366,7 +368,7 @@ public class PlatformBuilderUTest {
         final QueryInterceptorFactory queryInterceptorFactory = mock(QueryInterceptorFactory.class);
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withQueryGateway(queryGateway)
                 .addQueryInterceptorFactory(queryInterceptorFactory);
 
@@ -384,7 +386,7 @@ public class PlatformBuilderUTest {
         final CommandInterceptorFactory commandInterceptorFactory = mock(CommandInterceptorFactory.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withCommandGateway(commandGateway)
                 .addCommandInterceptorFactory(commandInterceptorFactory);
 
@@ -402,7 +404,7 @@ public class PlatformBuilderUTest {
         final EventInterceptorFactory eventInterceptorFactory = mock(EventInterceptorFactory.class);
         final KasperEventBus eventBus = mock(KasperEventBus.class);
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withEventBus(eventBus)
                 .addEventInterceptorFactory(eventInterceptorFactory);
 
@@ -430,7 +432,7 @@ public class PlatformBuilderUTest {
         final DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
         final RepositoryManager repositoryManager = mock(DefaultRepositoryManager.class);
 
-        final Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(domainDescriptorFactory)
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -460,7 +462,7 @@ public class PlatformBuilderUTest {
         final Config configuration = mock(Config.class);
         final MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
-        final Platform.Builder builder = new Platform.Builder()
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -480,7 +482,7 @@ public class PlatformBuilderUTest {
         expectedExtraComponents.add(new ExtraComponent(name, component.getClass(), component));
 
         assertNotNull(platform);
-        verify(domainBundle).configure(eq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents)));
+        verify(domainBundle).configure(eq(new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents)));
     }
 
     @Test
@@ -493,7 +495,7 @@ public class PlatformBuilderUTest {
 
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withQueryGateway(queryGateway)
                 .addDomainBundle(domainBundle);
 
@@ -515,7 +517,7 @@ public class PlatformBuilderUTest {
 
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withCommandGateway(commandGateway)
                 .addDomainBundle(domainBundle);
 
@@ -537,7 +539,7 @@ public class PlatformBuilderUTest {
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withEventBus(eventBus)
                 .addDomainBundle(domainBundle);
 
@@ -555,11 +557,11 @@ public class PlatformBuilderUTest {
 //        // Given
 //        final DomainHelper domainHelper = mock(DomainHelper.class);
 //
-//        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration());
+//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration());
 //        builder.setDomainHelper(domainHelper);
 //
 //        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain()).build();
-//        final Platform.BuilderContext builderContext = mock(Platform.BuilderContext.class);
+//        final DefaultPlatform.BuilderContext builderContext = mock(DefaultPlatform.BuilderContext.class);
 //
 //        // When
 //        final DomainDescriptor descriptor = builder.configureDomainBundle(builderContext, domainBundle);

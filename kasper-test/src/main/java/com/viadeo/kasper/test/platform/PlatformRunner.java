@@ -9,9 +9,10 @@ package com.viadeo.kasper.test.platform;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -87,7 +88,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
 
         // Initialize the builder
         final PlatformConfiguration platformConfiguration = initializePlatformConfiguration(clazz.getAnnotation(Configuration.class));
-        final Platform.Builder platformBuilder = new Platform.Builder(platformConfiguration);
+        final DefaultPlatform.Builder platformBuilder = new DefaultPlatform.Builder(platformConfiguration);
 
         // Define an application context of infrastructure components
         final ApplicationContext applicationContextOfInfra = createApplicationContextOf(

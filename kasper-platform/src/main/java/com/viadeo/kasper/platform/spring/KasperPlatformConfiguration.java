@@ -7,6 +7,8 @@
 package com.viadeo.kasper.platform.spring;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
@@ -15,17 +17,22 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.resolvers.DomainHelper;
+import com.viadeo.kasper.platform.Build;
 import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.PlatformWirer;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DescriptorRegistry;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.LifecycleProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.DefaultLifecycleProcessor;
 
 import java.util.List;
 
@@ -36,6 +43,20 @@ public class KasperPlatformConfiguration {
 
     @Autowired(required = false)
     List<ExtraComponent> extraComponents;
+
+    @Autowired(required = false)
+    List<DomainBundle> bundles;
+
+    /**
+     * Register lifecycle processor (using spring smart lifecycle)
+     * In order to get a proper start/shutdown sequence
+     *
+     * @return lifecycle processor
+     */
+    @Bean
+    public LifecycleProcessor lifecycleProcessor() {
+        return new DefaultLifecycleProcessor();
+    }
 
     @Bean
     public PlatformWirer platformWirer(
@@ -65,18 +86,16 @@ public class KasperPlatformConfiguration {
      *
      * @param platformWirer the platform wirer
      * @param domainHelper something strange
-     * @param bundles the domains (with isolated command / query contexts depending on this context)
      * @return Descriptor registry
      */
     @Bean
     public DescriptorRegistry descriptorRegistry(
             final PlatformWirer platformWirer,
-            final DomainHelper domainHelper,
-            final List<DomainBundle> bundles
+            final DomainHelper domainHelper
     ) {
         final List<DomainDescriptor> descriptors = Lists.newArrayList();
 
-        for (final DomainBundle bundle : bundles) {
+        for (final DomainBundle bundle : Objects.firstNonNull(bundles, Lists.<DomainBundle>newArrayList())) {
 
             LOGGER.debug("Configuring bundle : {}", bundle.getName());
 
@@ -86,5 +105,19 @@ public class KasperPlatformConfiguration {
         }
 
         return new DescriptorRegistry(descriptors);
+    }
+
+    @Bean
+    public Build.Info info(ObjectMapper objectMapper) {
+        return Build.info(objectMapper);
+    }
+
+    @Bean
+    public Meta meta(final Build.Info info) {
+        return new Meta(
+                info.getRevision(),
+                info.getTime(),
+                DateTime.now()
+        );
     }
 }

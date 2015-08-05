@@ -39,7 +39,7 @@ import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import com.viadeo.kasper.exposition.http.HttpEventExposerPlugin;
 import com.viadeo.kasper.exposition.http.HttpQueryExposerPlugin;
 import com.viadeo.kasper.exposition.http.jetty.resource.KasperDocResource;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.hamcrest.core.StringContains;
@@ -207,7 +207,7 @@ public class ServerITest {
         HttpEventExposerPlugin httpEventExposerPlugin = new HttpEventExposerPlugin();
         DocumentationPlugin documentationPlugin = new DocumentationPlugin();
 
-        new Platform.Builder(new KasperPlatformConfiguration())
+        new DefaultPlatform.Builder(new KasperPlatformConfiguration())
                 .withEventBus(new KasperEventBus())
                 .withConfiguration(config)
                 .addPlugin(httpCommandExposerPlugin)

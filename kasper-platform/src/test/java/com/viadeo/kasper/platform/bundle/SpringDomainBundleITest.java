@@ -9,17 +9,15 @@ package com.viadeo.kasper.platform.bundle;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.Platforms;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.SpringDomainBundle;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.plugin.Plugin;
 import org.junit.Test;
 
 import java.util.List;
 
-import static com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox.MyCustomDomain;
-import static com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox.MyCustomDomainSpringConfiguration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -49,7 +47,7 @@ public class SpringDomainBundleITest {
             MyCustomDomainBox.MyCustomDomainSpringConfiguration.class
         );
 
-        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final Platform.Builder builder = Platforms.newDefaultBuilder(new KasperPlatformConfiguration())
                 .addDomainBundle(domainBundle)
                 .addPlugin(spy);
 
