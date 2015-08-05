@@ -17,11 +17,11 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.platform.builder.BuilderContext;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.platform.Platform.BuilderContext;
 
 /**
  * The DomainBundle interface represents a domain with its components like : command handlers, query handlers, event

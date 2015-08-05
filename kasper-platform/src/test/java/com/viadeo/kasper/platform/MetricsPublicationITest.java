@@ -34,7 +34,7 @@ public class MetricsPublicationITest {
     public void init() {
         metricRegistry = spy(new MetricRegistry());
 
-        platform = new Platform.Builder(new KasperPlatformConfiguration(metricRegistry))
+        platform = Platforms.newDefaultBuilder(new KasperPlatformConfiguration(metricRegistry))
                 .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();
 

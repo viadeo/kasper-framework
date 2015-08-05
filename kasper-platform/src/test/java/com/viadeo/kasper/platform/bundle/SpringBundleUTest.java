@@ -2,16 +2,12 @@ package com.viadeo.kasper.platform.bundle;
 
 import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.core.config.ConfigPropertySource;
+import com.viadeo.kasper.platform.builder.BuilderContext;
 import com.viadeo.kasper.platform.bundle.fixture.DummyBundle;
 import com.viadeo.kasper.platform.bundle.fixture.command.handler.DummyCommandHandler;
 import com.viadeo.kasper.platform.bundle.fixture.command.listener.DummyCommandListener;
 import com.viadeo.kasper.platform.bundle.fixture.infra.DummyBackend;
-import com.viadeo.kasper.platform.bundle.fixture.missplaced.MissplacedBundle;
-import com.viadeo.kasper.core.config.ConfigPropertySource;
-import com.viadeo.kasper.platform.bundle.SpringBundle;
-import com.viadeo.kasper.platform.bundle.fixture.DummyBundle;
-import com.viadeo.kasper.platform.bundle.fixture.command.handler.DummyCommandHandler;
 import com.viadeo.kasper.platform.bundle.fixture.missplaced.MissplacedBundle;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +24,7 @@ import static org.junit.Assert.*;
 public class SpringBundleUTest {
 
     @Mock
-    private Platform.BuilderContext builderContext;
+    private BuilderContext builderContext;
     private AnnotationConfigApplicationContext context;
 
     @Before

@@ -9,15 +9,16 @@ package com.viadeo.kasper.exposition.http;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.viadeo.kasper.client.KasperClient;
-import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.client.KasperClient;
+import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -102,7 +103,7 @@ public abstract class BaseHttpExposerTest {
     protected void buildPlatform(final PlatformConfiguration platformConfiguration,
                                  final HttpExposerPlugin httpExposerPlugin,
                                  final DomainBundle domainBundle) {
-        final Platform.Builder builder = new Platform.Builder(platformConfiguration).addPlugin(httpExposerPlugin);
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(platformConfiguration).addPlugin(httpExposerPlugin);
         if (null != domainBundle) {
             builder.addDomainBundle(domainBundle);
         }

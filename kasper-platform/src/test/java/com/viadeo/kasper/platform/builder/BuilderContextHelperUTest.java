@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform.utils;
+package com.viadeo.kasper.platform.builder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -12,7 +12,6 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
-import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class BuilderContextHelperUTest {
     @Test( expected = NullPointerException.class)
     public void createApplicationContextFrom_nullAsBuilderContext_shouldThrowException() {
         // Given
-        final Platform.BuilderContext builderContext = null;
+        final BuilderContext builderContext = null;
 
         // When
         BuilderContextHelper.createApplicationContextFrom(builderContext);
@@ -43,7 +42,7 @@ public class BuilderContextHelperUTest {
         // Given
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final Platform.BuilderContext builderContext = new Platform.BuilderContext(
+        final BuilderContext builderContext = new BuilderContext(
             platformConfiguration.configuration(),
             platformConfiguration.eventBus(),
             platformConfiguration.commandGateway(),
@@ -75,7 +74,7 @@ public class BuilderContextHelperUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final Platform.BuilderContext builderContext = new Platform.BuilderContext(
+        final BuilderContext builderContext = new BuilderContext(
             platformConfiguration.configuration(),
             platformConfiguration.eventBus(),
             platformConfiguration.commandGateway(),
@@ -108,7 +107,7 @@ public class BuilderContextHelperUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final Platform.BuilderContext builderContext = new Platform.BuilderContext(
+        final BuilderContext builderContext = new BuilderContext(
             platformConfiguration.configuration(),
             platformConfiguration.eventBus(),
             platformConfiguration.commandGateway(),

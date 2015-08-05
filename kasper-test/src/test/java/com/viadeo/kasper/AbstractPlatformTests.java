@@ -7,11 +7,13 @@
 package com.viadeo.kasper;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.Platforms;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public abstract class AbstractPlatformTests {
 
     protected Platform getPlatform() {
         if(platform == null){
-            final Platform.Builder platformBuilder = new Platform.Builder(new KasperPlatformConfiguration());
+            final DefaultPlatform.Builder platformBuilder = Platforms.newDefaultBuilder(new KasperPlatformConfiguration());
 
             for (final DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())) {
                 platformBuilder.addDomainBundle(domainBundle);

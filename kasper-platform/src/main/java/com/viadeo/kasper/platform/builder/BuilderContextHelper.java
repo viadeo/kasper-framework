@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform.utils;
+package com.viadeo.kasper.platform.builder;
 
 import com.viadeo.kasper.platform.ExtraComponent;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -12,7 +12,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.platform.Platform.BuilderContext;
 
 public final class BuilderContextHelper {
 

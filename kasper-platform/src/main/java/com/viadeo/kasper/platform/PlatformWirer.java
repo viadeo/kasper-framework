@@ -30,6 +30,7 @@ import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.WirableQueryHandler;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.platform.builder.BuilderContext;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
@@ -72,7 +73,7 @@ public class PlatformWirer {
 
     public DomainDescriptor wire(DomainBundle bundle) {
         bundle.configure(
-                new Platform.BuilderContext(
+                new BuilderContext(
                         config,
                         eventBus,
                         commandGateway,

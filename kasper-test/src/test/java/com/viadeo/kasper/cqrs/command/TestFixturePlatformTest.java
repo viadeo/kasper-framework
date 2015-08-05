@@ -16,7 +16,6 @@ import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;

@@ -16,7 +16,7 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.BuilderContext;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.BeforeClass;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 
 public class SpringDomainBundleUTest {
 
-    private static Platform.BuilderContext platformBuilderContext;
+    private static BuilderContext platformBuilderContext;
 
     @Configuration
     public static class FakeConfiguration {
@@ -49,7 +49,7 @@ public class SpringDomainBundleUTest {
 
     @BeforeClass
     public static void setup() {
-        platformBuilderContext = new Platform.BuilderContext(
+        platformBuilderContext = new BuilderContext(
             mock(Config.class),
             mock(KasperEventBus.class),
             mock(CommandGateway.class),
@@ -154,7 +154,7 @@ public class SpringDomainBundleUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final Platform.BuilderContext builderContext = new Platform.BuilderContext(
+        final BuilderContext builderContext = new BuilderContext(
             platformConfiguration,
             extraComponents
         );

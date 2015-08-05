@@ -29,7 +29,7 @@ import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
@@ -135,7 +135,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
                                  final HttpExposerPlugin httpExposerPlugin,
                                  final DomainBundle domainBundle){
         eventBus = spy(platformConfiguration.eventBus());
-        new Platform.Builder(platformConfiguration)
+        new DefaultPlatform.Builder(platformConfiguration)
                 .withEventBus(eventBus)
                 .addPlugin(httpExposerPlugin)
                 .addDomainBundle(domainBundle)
