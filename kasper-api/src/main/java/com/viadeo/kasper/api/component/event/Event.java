@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.event;
 
+import com.viadeo.kasper.api.Immutable;
+
 import java.io.Serializable;
 
 /**
@@ -13,4 +15,4 @@ import java.io.Serializable;
  * The Kasper event
  *
  */
-public interface Event extends Serializable { }
+public interface Event extends Serializable, Immutable { }

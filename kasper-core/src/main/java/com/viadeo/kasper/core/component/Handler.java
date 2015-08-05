@@ -17,6 +17,12 @@ import com.viadeo.kasper.api.response.KasperResponse;
  */
 public interface Handler<MESSAGE extends KasperMessage<INPUT>, RESPONSE extends KasperResponse, INPUT> {
 
+    /**
+     * Handle the <code>KasperMessage</code>.
+     *
+     * @param message the message
+     * @return a response
+     */
     RESPONSE handle(MESSAGE message);
 
     /**
