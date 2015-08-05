@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares an handler as unexposed
+ * Declares an <code>Handler</code> as unexposed
  *
  * <p>When used on the handler class the handler will not be exposed
  */
