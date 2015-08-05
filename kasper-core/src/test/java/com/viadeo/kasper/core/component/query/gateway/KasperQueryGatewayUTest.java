@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
@@ -124,7 +123,7 @@ public class KasperQueryGatewayUTest {
         // Given
         final AutowiredQueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithFiltersForTest();
 
-        final KasperQueryGateway queryGateway = new KasperQueryGateway(new MetricRegistry());
+        final KasperQueryGateway queryGateway = new KasperQueryGateway();
         queryGateway.register(queryHandler);
 
         // When
@@ -140,7 +139,7 @@ public class KasperQueryGatewayUTest {
         // Given
         final AutowiredQueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithFiltersForTest();
 
-        final KasperQueryGateway queryGateway = new KasperQueryGateway(new MetricRegistry());
+        final KasperQueryGateway queryGateway = new KasperQueryGateway();
         queryGateway.register(new QueryFilterInterceptorFactory());
         queryGateway.register(queryHandler);
 
@@ -159,7 +158,7 @@ public class KasperQueryGatewayUTest {
         // Given
         final AutowiredQueryHandler<Query,QueryResult> queryHandler = new QueryHandlerWithCacheForTest();
 
-        final KasperQueryGateway queryGateway = new KasperQueryGateway(new MetricRegistry());
+        final KasperQueryGateway queryGateway = new KasperQueryGateway();
         queryGateway.register(new CacheInterceptorFactory());
         queryGateway.register(queryHandler);
 
