@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.spring.starters;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
@@ -34,8 +33,8 @@ public class KasperSimpleComponentsConfiguration {
     }
 
     @Bean
-    public KasperQueryGateway kasperQueryGateway(final MetricRegistry metricRegistry) {
-        return new KasperQueryGateway(metricRegistry);
+    public KasperQueryGateway kasperQueryGateway() {
+        return new KasperQueryGateway();
     }
 
     @Bean

@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
@@ -40,7 +39,7 @@ public class KasperQueryGateway implements QueryGateway {
 
     // -----------------------------------------------------------------------
 
-    public KasperQueryGateway(final MetricRegistry metricRegistry) {
+    public KasperQueryGateway() {
         this(new DefaultQueryHandlersLocator());
     }
 
