@@ -13,6 +13,7 @@ dependencies {
     compile project(':kasper-platform')
 
     // Third party dependencies
+    compile libraries.HIBERNATE_VALIDATOR
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
 
@@ -27,4 +28,5 @@ dependencies {
     testCompile libraries.JSON
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
+    testCompile libraries.SPRING_TEST
 }
