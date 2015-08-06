@@ -4,10 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
-import com.viadeo.kasper.core.component.annotation.XKasperRepository;
-import com.viadeo.kasper.core.component.annotation.XKasperSaga;
+import com.viadeo.kasper.core.component.annotation.*;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
@@ -96,14 +93,16 @@ public class SpringBundle extends DefaultDomainBundle {
         commandScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperEventListener.class, makePaths("command")));
         commandScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperSaga.class, makePaths("command")));
         commandScanner.addIncludeFilter(new AnnotationAndPathFilter(Configuration.class, makePaths("command.spring", "common.spring")));
+        commandScanner.addExcludeFilter(new AnnotationAndPathFilter(XKasperUnregistered.class, makePaths("command")));
         total += commandScanner.scan(getClass().getPackage().getName());
 
         queryContext = createChildContext(applicationContext);
         ClassPathBeanDefinitionScanner queryScanner = new ClassPathBeanDefinitionScanner(queryContext, false);
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperQueryHandler.class, makePaths("query")));
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperEventListener.class, makePaths("query")));
-        commandScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperSaga.class, makePaths("command")));
+        queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperSaga.class, makePaths("command")));
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(Configuration.class, makePaths("query.spring", "common.spring")));
+        queryScanner.addExcludeFilter(new AnnotationAndPathFilter(XKasperUnregistered.class, makePaths("query")));
         total += queryScanner.scan(getClass().getPackage().getName());
 
         Preconditions.checkState(total > 0, "Bundle %s registered nothing in context, this is probably an error in the package layout", getClass().getName());
