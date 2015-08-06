@@ -7,10 +7,12 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.api.annotation.XKasperPublic;
+import com.viadeo.kasper.core.component.annotation.XKasperPublic;
+import com.viadeo.kasper.core.security.AuthorizationManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.api.annotation.XKasperAuthz.*;
+import static com.viadeo.kasper.core.component.annotation.XKasperAuthz.RequiresPermissions;
+import static com.viadeo.kasper.core.component.annotation.XKasperAuthz.RequiresRoles;
 
 public abstract class AbstractDomainElement extends AbstractElement {
 

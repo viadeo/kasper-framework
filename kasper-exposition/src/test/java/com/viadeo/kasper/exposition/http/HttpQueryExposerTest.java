@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.api.annotation.XKasperAlias;
-import com.viadeo.kasper.api.annotation.XKasperUnexposed;
+import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.api.component.query.CollectionQueryResult;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;

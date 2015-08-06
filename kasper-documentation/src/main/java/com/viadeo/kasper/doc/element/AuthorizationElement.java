@@ -7,10 +7,9 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.core.security.CombinesWith;
 
 import java.util.List;
-
-import static com.viadeo.kasper.api.annotation.XKasperAuthz.CombinesWith;
 
 public class AuthorizationElement {
 
