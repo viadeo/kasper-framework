@@ -17,7 +17,7 @@ import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.core.config.ConfigPropertySource;
-import com.viadeo.kasper.core.config.spring.KasperTypesafeConfigConfiguration;
+import com.viadeo.kasper.core.config.spring.KasperConfiguration;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
@@ -130,7 +130,7 @@ public class SpringPlatform implements Platform {
         @Override
         public SpringPlatform build() {
             if (null == this.config) {
-                this.config = KasperTypesafeConfigConfiguration.configuration();
+                this.config = KasperConfiguration.configuration();
             }
 
             if (this.bundles.isEmpty()) {

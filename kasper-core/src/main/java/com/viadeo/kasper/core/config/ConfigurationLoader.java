@@ -58,8 +58,8 @@ import java.util.Map;
  *  - keys hierarchy: '<domain>'
  *
  */
-public class KasperConfiguration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperConfiguration.class);
+public class ConfigurationLoader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationLoader.class);
 
     private static final String DEFAULT_ENVIRONMENT_NAME = "SPRING_PROFILES_ACTIVE";
 
@@ -74,14 +74,14 @@ public class KasperConfiguration {
     private static final String INFRASTRUCTURE_CONFIG_NAME = "infrastructure";
     private static final String ENVIRONMENT_CONFIG_NAME = "environments";
 
-    private final KasperConfigurationOptions options;
+    private final Options options;
 
     private Config globalConfiguration;
 
 
     // ------------------------------------------------------------------------
 
-    public static class KasperConfigurationOptions {
+    public static class Options {
 
         protected String domainsConfPrefix;
         protected String applicationConfPrefix;
@@ -91,11 +91,11 @@ public class KasperConfiguration {
 
         // - Build ----------------------------------------
 
-        private KasperConfigurationOptions() {
+        private Options() {
         }
 
-        public static KasperConfigurationOptions defaults() {
-            return new KasperConfigurationOptions() {{
+        public static Options defaults() {
+            return new Options() {{
                 this.environmentName = DEFAULT_ENVIRONMENT_NAME;
                 this.systemFileName = DEFAULT_SYSTEM_FILENAME;
                 this.applicationConfPrefix = DEFAULT_APP_CONFIG_PREFIX;
@@ -131,30 +131,30 @@ public class KasperConfiguration {
 
         // - Setters --------------------------------------
 
-        public KasperConfigurationOptions domainsConfPrefix(final String prefix) {
+        public Options domainsConfPrefix(final String prefix) {
             this.domainsConfPrefix = prefix;
             return this;
         }
 
-        public KasperConfigurationOptions applicationConfPrefix(final String prefix) {
+        public Options applicationConfPrefix(final String prefix) {
             this.applicationConfPrefix = prefix;
             return this;
         }
 
 
-        public KasperConfigurationOptions systemFileName(final String filename) {
+        public Options systemFileName(final String filename) {
             this.systemFileName = filename;
             return this;
         }
 
-        public KasperConfigurationOptions forcedEnvironment(final String forcedEnvironment) {
+        public Options forcedEnvironment(final String forcedEnvironment) {
             this.forcedEnvironment = forcedEnvironment;
             return this;
         }
 
     }
 
-    public KasperConfiguration(final KasperConfigurationOptions options) {
+    public ConfigurationLoader(final Options options) {
         this.options = options;
     }
 

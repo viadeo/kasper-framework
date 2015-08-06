@@ -7,12 +7,12 @@
 package com.viadeo.kasper.core.config.spring;
 
 import com.typesafe.config.Config;
-import com.viadeo.kasper.core.config.KasperConfiguration;
+import com.viadeo.kasper.core.config.ConfigurationLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class KasperTypesafeConfigConfiguration {
+public class KasperConfiguration {
 
     public static Config config = null;
 
@@ -27,8 +27,8 @@ public class KasperTypesafeConfigConfiguration {
 
     public static Config configuration(final String environment, final boolean reload) {
         if ((null == config) || reload) {
-            config = new KasperConfiguration(
-                    KasperConfiguration.KasperConfigurationOptions.defaults().forcedEnvironment(environment)
+            config = new ConfigurationLoader(
+                    ConfigurationLoader.Options.defaults().forcedEnvironment(environment)
             ).load();
         }
         return config;
