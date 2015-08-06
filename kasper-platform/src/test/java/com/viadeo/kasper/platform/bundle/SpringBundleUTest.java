@@ -49,6 +49,7 @@ public class SpringBundleUTest {
         assertFalse(command.containsBean("missplacedBean"));
         assertTrue(command.containsBean("commandBean"));
         assertTrue(command.containsBean("dummyCommandHandler"));
+        assertFalse(command.containsBean("dummyCommandUnregisteredHandler"));
         assertTrue(command.containsBean("dummyCommandListener"));
         Assert.assertEquals(1, command.getBean(DummyCommandHandler.class).getFoo());
 
@@ -57,6 +58,7 @@ public class SpringBundleUTest {
         assertFalse(query.containsBean("missplacedBean"));
         assertTrue(query.containsBean("queryBean"));
         assertTrue(query.containsBean("dummyQueryHandler"));
+        assertFalse(query.containsBean("dummyQueryUnregisteredHandler"));
         assertTrue(query.containsBean("dummyQueryListener"));
 
         assertEquals(1, springBundle.getCommandHandlers().size());
