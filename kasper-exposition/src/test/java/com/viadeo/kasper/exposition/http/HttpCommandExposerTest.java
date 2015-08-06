@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.api.annotation.XKasperAlias;
-import com.viadeo.kasper.api.annotation.XKasperUnexposed;
+import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;

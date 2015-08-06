@@ -7,7 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.api.annotation.XKasperUnexposed;
+import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;

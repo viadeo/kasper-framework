@@ -12,7 +12,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.annotation.XKasperAlias;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.annotation.XKasperDomain;
-import com.viadeo.kasper.api.annotation.XKasperPublic;
+import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
