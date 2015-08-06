@@ -28,7 +28,7 @@ dependencies {
     compile libraries.LOGBACK
 
     testCompile libraries.JUNIT
-//    tools "com.googlecode.jarjar:jarjar:1.3"
+    testCompile libraries.MOCKITO
 }
 
 
