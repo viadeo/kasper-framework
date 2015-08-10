@@ -114,7 +114,7 @@ A Kasper query handler is I/O component using a **Query** as input and responsib
 
 **A Query service is part of the QUERY architectural area**.
 
-It has to extend **QueryHandler<Query, QueryResult>** and specify its owning domain with the **@XKasperQueryHandler** annotation and ends with the '**QueryHandler**' suffix (recommended).
+It has to implements **QueryHandler<Query, QueryResult>**, or extends the base implementation **BaseQueryHandler<Query, QueryResult>** or the more complete **AutowiredQueryHandler<Query, QueryResult>** (containing the EventBus and the QueryGateway) and specify its owning domain with the **@XKasperQueryHandler** annotation and ends with the '**QueryHandler**' suffix (recommended).
 
 **usage**
 
@@ -122,16 +122,16 @@ It has to extend **QueryHandler<Query, QueryResult>** and specify its owning dom
     :linenos:
 
     @XKasperQueryHandler( domain = ThingsDomain.class )
-    public class GetThingsQueryHandler extends QueryHandler<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryHandler extends AutowiredQueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
-        public QueryResponse<ThingsListQueryResult> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryResult> handle(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
             ...
         }
 
     }
 
-You have to implement at least one of the **retrieve()** methods, the second one only takes the query without the enclosing message :
+By extending AutowiredQueryHandler, you only have to implement at least one **handle()** method :
 
 **usage**
 
@@ -139,10 +139,10 @@ You have to implement at least one of the **retrieve()** methods, the second one
     :linenos:
 
     @XKasperQueryHandler( domain = ThingsDomain.class )
-    public class GetThingsQueryHandler extends QueryHandler<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryHandler extends AutowiredQueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
-        public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryResult> handle(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 
@@ -165,7 +165,7 @@ To enable the cache for a query handler with default configuration, just put **@
     :linenos:
 
     @XKasperQueryHandler( domain = AwesomeDomain.class, cache = @XKasperQueryCache )
-    public class GetNiceDataQueryHandler extends QueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
+    public class GetNiceDataQueryHandler extends AutowiredQueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
         ...
     }
 
@@ -200,7 +200,7 @@ To add interceptor for a query handler, just put **@XKasperQueryFilter** annotat
 
     @XKasperQueryFilter(value = {InterceptorA.class})
     @XKasperQueryHandler( domain = AwesomeDomain.class, cache = @XKasperQueryCache )
-    public class GetNiceDataQueryHandler extends QueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
+    public class GetNiceDataQueryHandler extends AutowiredQueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
         ...
     }
 
