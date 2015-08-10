@@ -123,7 +123,8 @@ Defining an event listener
 
 An event listener "just" listens for events..
 
-A Kasper event listener have to extend the **EventListener<Event>**, declaring its owning domain using the **@XKasperEventListener** annotation, and have a name ending with '**EventListener**' (recommended).
+A Kasper event listener have to implements **EventListener<Event>**, declaring its owning domain using the **@XKasperEventListener** annotation, and have a name ending with '**EventListener**' (recommended).
+It can also extend **BaseEventListener<Event>** or AutowiredEventListener<Event>** which is the base kasper implementation containing the EventBus.
 
 **usage**
 
@@ -131,7 +132,7 @@ A Kasper event listener have to extend the **EventListener<Event>**, declaring i
     :linenos:
 
     @XKasperEventListener( domain = MyDomain.class, description = "Send a email when two users are connected" )
-    public class SendAnEmailWhenTwoUsersAreConnectedEventListener extends EventListener<UsersAreNowConnectedEvent> {
+    public class SendAnEmailWhenTwoUsersAreConnectedEventListener extends AutowiredEventListener<UsersAreNowConnectedEvent> {
 
         @Override
         public void handle(final UsersAreNowConnectedEvent event) {
@@ -142,7 +143,7 @@ A Kasper event listener have to extend the **EventListener<Event>**, declaring i
     }
 
 A common job of event listeners is to send new commands to the command gateway concerning its domain or another.
-You can access the **getCommandGateway()** getter in order to retrieve an (optional) reference to the command gateway.
+By Extending the **CommandEventListener<Event>** abstract class, you can access the **getCommandGateway()** getter in order to retrieve an (optional) reference to the command gateway.
 
 
 ..  _Defining_a_saga:

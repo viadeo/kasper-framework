@@ -7,7 +7,7 @@ Defining the command side
 Introduction
 ------------------------
 
-The command side is focused on processing of commands, maintenance of model coherency and data persistence with ACID propertes.
+The command side is focused on processing of commands, maintenance of model coherency and data persistence with ACID properties.
 
 Commands are created by the client application and then sent to the domain layer. Commands are messages that instruct a
 specific entity to perform a certain action. Commands are named like DoSomethingCommand (for example, ChangeMyNameCommand,
@@ -460,14 +460,17 @@ Defining a command handler
 ------------------------
 
 
-A command handler is an object extending **CommandHandler<Command>**, whose class name ends with '*CommandHandler*'.
+A command handler is an object implementing **CommandHandler<Command>**, whose class name ends with '*CommandHandler*'.
+
+It can also extend **BaseCommandHandler<Command>** which is the base implementation of an **CommandHandler**, or extend **AutowiredCommandHandler<Command>** which contains already the EventBus, the CommandGateway and the RepositoryManager.
 
 A command handler **have to** declares its owning domain into the annotation **@XKasperCommandHandler**.
 
 **A command handler is part of the COMMAND architectural area**.
 
-The abstract class **EntityCommandHandler<Command, Entity>** can be used to stick a command handler to a specific entity, it defines a method
-*getRepository()* used to retrieve easily the repository corresponding to this entity. This abstract class must generally be used when
+The interface class **EntityCommandHandler<Command, Entity>**, implemented by abstracts classes **BaseEntityCommandHandler<Command, Entity>** and
+**AutowiredEntityCommandHandler<Command, Entity>**, can be used to stick a command handler to a specific entity, it defines a method
+*getRepository()* used to retrieve easily the repository corresponding to this entity. This interface class must generally be used when
 defining a command mainly dedicated to create, modify and delete a domain entity.
 
 **usage**
@@ -476,7 +479,7 @@ defining a command mainly dedicated to create, modify and delete a domain entity
     :linenos:
 
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
-    public class CreateAUserCommandHandler extends EntityCommandHandler<User, CreateAUserCommand> {
+    public class CreateAUserCommandHandler extends AutowiredEntityCommandHandler<User, CreateAUserCommand> {
 
         public CommandResponse handle(final CreateAUserCommand command) {
             final UserRepository repository = this.getRepository();
@@ -495,7 +498,7 @@ If you need to retrieve a different repository, use the method **getRepositoryOf
     :linenos:
 
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
-    public class CreateAUserCommandHandler extends EntityCommandHandler<User, CreateAUserCommand> {
+    public class CreateAUserCommandHandler extends AutowiredEntityCommandHandler<User, CreateAUserCommand> {
 
         public Thing getThing() {
             Thing thing = null;
@@ -524,7 +527,7 @@ If you need to retrieve a different repository, use the method **getRepositoryOf
     }
 
 
-If you need to send non-domain events from the handler, use **this.publish(event)**, do not try to inject the event bus
+If you need to send non-domain events from the handler (available with **AutowiredCommandHandler** and **AutowiredEntityCommandHandler**), use **this.publish(event)**, do not try to inject the event bus
 unless your event will not be sent during unit of work commit process.
 
 

@@ -26,8 +26,7 @@ import static com.google.common.base.Preconditions.checkState;
  * This is a convenient class
  *
  * Extend it instead of implementing IQueryHandler will allow you to
- * override at your convenience retrieve(message) or simply retrieve(query)
- * if you are not interested by the message
+ * override at your convenience handle(query)
  *
  * The query gateway is aware of this internal convenience and will deal with it
  *
