@@ -45,6 +45,10 @@ public abstract class EntityCreatedEvent<D extends Domain> implements EntityEven
 
     @Override
     public boolean equals(final Object obj) {
+        if (null == obj) {
+            return false;
+        }
+
         if (this == checkNotNull(obj)) {
             return true;
         }

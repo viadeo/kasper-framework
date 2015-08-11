@@ -54,6 +54,10 @@ public class LinkedConcept<C extends Concept> implements KasperID {
 
     @Override
     public boolean equals(final Object value) {
+        if (null == value) {
+            return false;
+        }
+
         return this.linkedConceptId.equals(checkNotNull(value));
     }
 
