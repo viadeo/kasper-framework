@@ -111,10 +111,14 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 
     @Override
     public boolean equals(final Object o) {
+        if (null == o) {
+            return false;
+        }
+
         if (this == checkNotNull(o)) {
             return true;
         }
-        if ((null == o) || (getClass() != o.getClass())) {
+        if (getClass() != o.getClass()) {
             return false;
         }
 

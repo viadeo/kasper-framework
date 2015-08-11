@@ -41,6 +41,10 @@ public abstract class EnclosingValue<RESULT extends Serializable>
 	 */
 	@Override
 	public boolean equals(final Object otherValue) {
+        if (null == otherValue) {
+            return false;
+        }
+
 		if (this == checkNotNull(otherValue)) {
 			return true;
 		}

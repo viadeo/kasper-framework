@@ -50,6 +50,9 @@ public class QueryAttributesKeyGenerator<Q extends Query> implements QueryCacheK
 
         @Override
         public boolean equals(final Object o) {
+            if (null == o) {
+                return false;
+            }
 
             if (this == checkNotNull(o)) {
                 return true;
