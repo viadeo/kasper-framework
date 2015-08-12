@@ -15,7 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares an <code>Handler</code> as unexposed
+ *
+ * Indicate that the handler needs authorization to be executed
+ *
  */
 public interface XKasperAuthz {
 

@@ -6,6 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.api.context;
 
+/**
+ * Implemented by objects that apply a version to a given Context.
+ */
 public interface Version {
     Context apply(final Context context);
 }

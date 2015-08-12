@@ -17,6 +17,13 @@ import java.util.Set;
  */
 public interface StepResolver {
 
+    /**
+     * Extract different <code>Step</code> from the <code>Saga</code>
+     *
+     * @param sagaClass
+     * @param idReconciler
+     * @return
+     */
     Set<Step> resolve(Class<? extends Saga> sagaClass, SagaIdReconciler idReconciler);
 
 }

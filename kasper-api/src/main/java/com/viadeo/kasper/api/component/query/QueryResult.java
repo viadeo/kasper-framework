@@ -10,6 +10,9 @@ import com.viadeo.kasper.api.Immutable;
 
 import java.io.Serializable;
 
+/**
+ * The Kasper query result marker interface
+ */
 public interface QueryResult extends Serializable, Immutable {
 
 }

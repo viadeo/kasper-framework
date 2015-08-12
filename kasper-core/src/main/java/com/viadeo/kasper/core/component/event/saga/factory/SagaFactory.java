@@ -18,6 +18,15 @@ import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationEx
  */
 public interface  SagaFactory {
 
+    /**
+     * Instantiate a <code>Saga</code>
+     *
+     * @param identifier
+     * @param sagaClass
+     * @param <SAGA>
+     * @return the instantiated <code>Saga</code>
+     * @throws SagaInstantiationException
+     */
     <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) throws SagaInstantiationException;
 
 }

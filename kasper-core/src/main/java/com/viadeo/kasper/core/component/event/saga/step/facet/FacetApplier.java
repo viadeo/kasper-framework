@@ -11,6 +11,9 @@ import com.viadeo.kasper.core.component.event.saga.step.Step;
 
 import java.lang.reflect.Method;
 
+/**
+ * Decorator for <code>Step</code>
+ */
 public interface FacetApplier {
 
     Step apply(Method method, Step step);

@@ -15,6 +15,11 @@ import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
  */
 public interface Saga {
 
+    /**
+     * get the optional <code>SagaIdReconciler</code> used for ids conversion in order to retrieve a particular <code>Saga</code>
+     *
+     * @return the Optional <code>SagaIdReconciler</code>
+     */
     Optional<SagaIdReconciler> getIdReconciler();
 
 }

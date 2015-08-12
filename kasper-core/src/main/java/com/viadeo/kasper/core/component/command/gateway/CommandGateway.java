@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Axon interface definition for CommandGateway
+ * Kasper interface (based on Axon) definition for CommandGateway
  */
 public interface CommandGateway {
 

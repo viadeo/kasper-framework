@@ -11,6 +11,9 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 
+/**
+ * Provide a <code>SagaFactory</code> for a given <code>Saga</code>.
+ */
 public interface SagaFactoryProvider {
     SagaFactory getOrCreate(final Saga saga);
     Optional<SagaFactory> get(final Class<? extends Saga> sagaClass);
