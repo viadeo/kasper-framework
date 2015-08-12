@@ -102,6 +102,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
         }
     }
 
+    @Override
     public void shutdown() throws SchedulerException {
         this.scheduler.shutdown(true);
     }

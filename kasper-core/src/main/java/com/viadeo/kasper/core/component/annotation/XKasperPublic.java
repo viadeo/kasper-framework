@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares an <code>Handler</code> as public.
+ * Declares an <code>Handler</code> as public. No need to be authenticated (user not needed in the context)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

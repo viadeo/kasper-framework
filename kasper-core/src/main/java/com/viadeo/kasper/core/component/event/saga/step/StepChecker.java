@@ -16,6 +16,12 @@ import java.util.Set;
  */
 public interface StepChecker {
 
+    /**
+     * check if the <code>Step</code> are used correctly for the given <code>Saga</code>
+     *
+     * @param sagaClass
+     * @param steps
+     */
     void check(Class<? extends Saga> sagaClass, Set<Step> steps);
 
 }

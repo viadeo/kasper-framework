@@ -8,6 +8,9 @@ package com.viadeo.kasper.api.context;
 
 import java.util.Map;
 
+/**
+ * Implemented by objects that define a Context.
+ */
 public interface ContextHelper {
     Context createFrom(final Map<String, String> contextAsMap);
 }
