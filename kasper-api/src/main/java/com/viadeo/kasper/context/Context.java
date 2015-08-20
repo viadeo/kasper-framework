@@ -378,7 +378,7 @@ public final class Context implements Serializable {
             checkNotNull(key);
             checkNotNull(value);
 
-            if (SEQ_INC_SHORTNAME.equals(key) || KASPER_CID_SHORTNAME.equals(key)) {
+            if (SEQ_INC_SHORTNAME.equals(key)) {
                 // this properties are not overridable
                 return this;
             }
