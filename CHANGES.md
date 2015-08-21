@@ -1,5 +1,9 @@
 # Kasper Releases #
 
+### Snapshot 0.8.0-pre41 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre41~~))
+
+* [Pull 290](https://github.com/viadeo/kasper-framework/pull/290) Override kasperId if provided in headers
+
 ### Snapshot 0.8.0-pre39 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre39~~))
 
 * [Pull 282](https://github.com/viadeo/kasper-framework/pull/282) Added feature saga
