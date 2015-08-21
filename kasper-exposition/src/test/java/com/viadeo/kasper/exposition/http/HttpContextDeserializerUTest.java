@@ -38,7 +38,7 @@ public class HttpContextDeserializerUTest {
 
     // ------------------------------------------------------------------------
 
-    private HttpServletRequest mockHttpServletRequest(final Map<String, Serializable> properties){
+    private HttpServletRequest mockHttpServletRequest(final Map<String, Serializable> properties) {
         HttpServletRequest req = mock(HttpServletRequest.class);
 
         final Iterator<String> iterator = properties.keySet().iterator();
@@ -64,7 +64,7 @@ public class HttpContextDeserializerUTest {
         // Given
         final UUID kasperCorrelationId = UUID.randomUUID();
         final HttpServletRequest req = mockHttpServletRequest(
-                ImmutableMap.<String,Serializable>builder()
+                ImmutableMap.<String, Serializable>builder()
                         .put("aKey", "aValue")
                         .build()
         );
@@ -100,6 +100,30 @@ public class HttpContextDeserializerUTest {
             assertTrue(context.getProperty(header.toPropertyKey()).isPresent());
             assertEquals(properties.get(header.toHeaderName()), context.getProperty(header.toPropertyKey()).get());
         }
+    }
+
+    @Test
+    public void deserialize_without_kasperId_in_header_should_generate_id() {
+        // Given
+        ImmutableMap.Builder<String, Serializable> builder = ImmutableMap.builder();
+        for (HttpContextHeaders header : HttpContextHeaders.values()) {
+            if (header != HttpContextHeaders.HEADER_KASPER_ID) {
+                builder.put(header.toHeaderName(), UUID.randomUUID().toString());
+            }
+        }
+
+
+        final Map<String, Serializable> properties = builder.build();
+        final UUID kasperCorrelationId = UUID.randomUUID();
+        final HttpServletRequest req = mockHttpServletRequest(properties);
+
+        // When
+        final Context context = deserializer.deserialize(req, kasperCorrelationId);
+
+        // Then
+        assertNotNull(context);
+
+        assertEquals(kasperCorrelationId.toString(), context.getKasperCorrelationId().get());
     }
 
     @Test
