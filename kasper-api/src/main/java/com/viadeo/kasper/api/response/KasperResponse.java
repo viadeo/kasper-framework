@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.Immutable;
 
 import java.io.Serializable;
-import java.util.Optional;
+import com.google.common.base.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -85,7 +85,7 @@ public class KasperResponse implements Serializable, Immutable {
      * @return true if this command has answered with a reason
      */
     public boolean hasReason() {
-        return Optional.ofNullable(getReason()).isPresent();
+        return Optional.fromNullable(getReason()).isPresent();
     }
 
     // ------------------------------------------------------------------------
