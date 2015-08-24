@@ -20,39 +20,39 @@ import java.util.List;
 public interface Step {
 
     /**
-     * <code>Step</code>'s name
-     * @return
+     * @return the <code>Step</code>'s name
      */
     String name();
 
     /**
-     * invoke the <code>Saga</code>' <code>Step</code>
-     * @param saga
-     * @param context
-     * @param event
-     * @throws StepInvocationException
+     * invoke the <code>Saga</code>'s <code>Step</code>
+     *
+     * @param saga the instance of saga
+     * @param context the <code>Context</code>
+     * @param event the <code>Event</code>
+     * @throws StepInvocationException if an error occurs during invocation
      */
     void invoke(Saga saga, Context context, Event event) throws StepInvocationException;
 
     /**
      * clean all things to be cleaned before storing <code>Saga</code>
      *
-     * @param identifier
+     * @param identifier the saga identifier
      */
     void clean(Object identifier);
 
     /**
      * get the <code>Step</code>'s <code>Event</code> Class
      *
-     * @return
+     * @return supported event by this <code>Step</code>
      */
     Class<? extends Event> getSupportedEvent();
 
     /**
      * retrieve the <code>Saga</code> identifier from the given <code>Event</code>
      *
-     * @param event
-     * @param <T>
+     * @param event an <code>Event</code>
+     * @param <T> the identifier type
      * @return the optional identifier
      */
     <T> Optional<T> getSagaIdentifierFrom(Event event);
@@ -72,8 +72,7 @@ public interface Step {
     Class<? extends Step> getStepClass();
 
     /**
-     * list of identifier accessor
-     * @return
+     * @return a list of identifier accessor
      */
     List<String> getActions();
 }

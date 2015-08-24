@@ -19,8 +19,8 @@ public interface StepChecker {
     /**
      * check if the <code>Step</code> are used correctly for the given <code>Saga</code>
      *
-     * @param sagaClass
-     * @param steps
+     * @param sagaClass the saga class
+     * @param steps a list of <code>Step</code> describing this saga
      */
     void check(Class<? extends Saga> sagaClass, Set<Step> steps);
 

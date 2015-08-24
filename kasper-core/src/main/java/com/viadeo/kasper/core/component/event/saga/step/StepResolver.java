@@ -20,9 +20,9 @@ public interface StepResolver {
     /**
      * Extract different <code>Step</code> from the <code>Saga</code>
      *
-     * @param sagaClass
-     * @param idReconciler
-     * @return
+     * @param sagaClass the saga class
+     * @param idReconciler the id reconciler
+     * @return a set of <code>Step</code> defining by the saga class
      */
     Set<Step> resolve(Class<? extends Saga> sagaClass, SagaIdReconciler idReconciler);
 

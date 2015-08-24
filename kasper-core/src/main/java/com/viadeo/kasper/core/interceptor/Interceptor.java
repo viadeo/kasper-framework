@@ -11,8 +11,8 @@ import com.viadeo.kasper.api.context.Context;
 /**
  * The interceptors can be used to attach meta data to a command or do validation, for example.
  *
- * @param <INPUT>
- * @param <OUTPUT>
+ * @param <INPUT> the input
+ * @param <OUTPUT> the output
  */
 public interface Interceptor<INPUT, OUTPUT> {
 
