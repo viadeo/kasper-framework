@@ -21,11 +21,11 @@ public interface  SagaFactory {
     /**
      * Instantiate a <code>Saga</code>
      *
-     * @param identifier
-     * @param sagaClass
-     * @param <SAGA>
+     * @param identifier the saga identifier
+     * @param sagaClass the saga class
+     * @param <SAGA> the saga instance type
      * @return the instantiated <code>Saga</code>
-     * @throws SagaInstantiationException
+     * @throws SagaInstantiationException if an error occurs during the instantiation
      */
     <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) throws SagaInstantiationException;
 
