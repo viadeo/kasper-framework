@@ -18,7 +18,7 @@ configure(allprojects) {
 
 configure(rootProject) {
     idea.project {
-        languageLevel = '1.8'
+        languageLevel = '1.7'
         ipr {
             withXml { provider ->
                 def mapping = provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping
@@ -54,12 +54,12 @@ configure(subprojects) {
         sourceCompatibility = 1.6
         targetCompatibility = 1.6
     } else {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 1.7
+        targetCompatibility = 1.7
     }
 
     idea.module.iml.withXml {
-        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.8'
+        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.7'
     }
 
     configure([compileJava, compileTestJava]) {

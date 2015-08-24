@@ -9,7 +9,7 @@ machine:
     ## CircleCI AWS SecurityGroup Access
     nexus.viadeobackoffice.com: 10.69.181.179
   java:
-    version: oraclejdk8
+    version: oraclejdk7
 
 dependencies:
   cache_directories:
