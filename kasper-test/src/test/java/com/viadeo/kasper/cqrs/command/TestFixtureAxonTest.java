@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
-import static com.viadeo.kasper.common.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 import static org.mockito.Mockito.mock;
 
