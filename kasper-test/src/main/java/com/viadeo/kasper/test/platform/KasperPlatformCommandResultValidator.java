@@ -14,7 +14,6 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
-import com.viadeo.kasper.common.tools.KasperMatcher;
 import org.axonframework.test.AxonAssertionError;
 
 import java.util.Arrays;
@@ -22,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.viadeo.kasper.api.response.KasperResponse.Status.*;
-import static com.viadeo.kasper.common.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

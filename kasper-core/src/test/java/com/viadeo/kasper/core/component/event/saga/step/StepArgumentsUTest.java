@@ -10,7 +10,6 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.listener.EventMessage;
-import com.viadeo.kasper.core.component.event.saga.step.StepArguments;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
