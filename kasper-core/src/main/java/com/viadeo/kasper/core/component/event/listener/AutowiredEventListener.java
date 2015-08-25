@@ -7,6 +7,7 @@
 package com.viadeo.kasper.core.component.event.listener;
 
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.context.CurrentContext;
@@ -58,6 +59,14 @@ public abstract class AutowiredEventListener<E extends Event>
 
         org.axonframework.domain.EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
         this.eventBus.publish(eventMessage);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EventResponse handle(final EventMessage<E> message) {
+        CurrentContext.set(message.getContext());
+        return super.handle(message);
     }
 
     // ------------------------------------------------------------------------
