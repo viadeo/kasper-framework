@@ -15,6 +15,8 @@ import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.KasperMessage;
 import org.axonframework.domain.DomainEventMessage;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,6 +29,8 @@ import org.joda.time.DateTime;
  */
 public class EventMessage<E extends Event> extends KasperMessage<E> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventMessage.class);
+
     private final Optional<KasperID> optionalKapserID;
     private final DateTime timestamp;
 
@@ -34,7 +38,7 @@ public class EventMessage<E extends Event> extends KasperMessage<E> {
 
 	public EventMessage(final org.axonframework.domain.EventMessage<E> eventMessage) {
 		this(
-                (eventMessage instanceof DomainEventMessage ? Optional.fromNullable((KasperID)((DomainEventMessage) eventMessage).getAggregateIdentifier()) : Optional.<KasperID>absent()),
+                getEntityId(eventMessage),
                 eventMessage.getTimestamp(),
                 Objects.firstNonNull(
                         (Context) eventMessage.getMetaData().get(Context.METANAME),
@@ -78,5 +82,22 @@ public class EventMessage<E extends Event> extends KasperMessage<E> {
                 .add("context", getContext())
                 .add("version", getVersion())
                 .toString();
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected static Optional<KasperID> getEntityId(final org.axonframework.domain.EventMessage<? extends Event> eventMessage) {
+        if (eventMessage instanceof DomainEventMessage) {
+            Object identifier = ((DomainEventMessage) eventMessage).getAggregateIdentifier();
+            if (identifier != null && identifier instanceof KasperID) {
+                return Optional.of((KasperID) identifier);
+            } else {
+                LOGGER.warn(
+                        "A domain event message has no identifier or the expected type of identifier, <identifier={}> <eventType={}>",
+                        identifier, eventMessage.getPayloadType()
+                );
+            }
+        }
+        return Optional.absent();
     }
 }
