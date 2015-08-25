@@ -1,5 +1,6 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.rabbitmq.client.Channel;
 import org.apache.log4j.MDC;
@@ -17,16 +18,29 @@ public class MessageListenerContainer extends SimpleMessageListenerContainer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageListenerContainer.class);
 
     private final EventListener eventListener;
+    private final EventBusPolicy eventBusPolicy;
 
-    public MessageListenerContainer(final ConnectionFactory connectionFactory, EventListener eventListener) {
+    public MessageListenerContainer(
+            final EventBusPolicy eventBusPolicy,
+            final ConnectionFactory connectionFactory,
+            final EventListener eventListener
+    ) {
         super(connectionFactory);
+        this.eventBusPolicy = eventBusPolicy;
         this.eventListener = checkNotNull(eventListener);
     }
 
     @Override
     public void start() {
-        LOGGER.debug("starting message listener container on {}", Lists.newArrayList(getQueueNames()));
-        super.start();
+        if (eventBusPolicy == EventBusPolicy.NORMAL) {
+            LOGGER.debug("starting message listener container on {}", Lists.newArrayList(getQueueNames()));
+            super.start();
+        } else {
+            LOGGER.debug(
+                    "The event bus policy do not allow to start the events consumption, <listener={}> <policy={}>",
+                    eventListener.getClass().getName(), eventBusPolicy
+            );
+        }
     }
 
     @Override
@@ -51,5 +65,11 @@ public class MessageListenerContainer extends SimpleMessageListenerContainer {
 
     public EventListener getEventListener() {
         return eventListener;
+    }
+
+    @VisibleForTesting
+    @Override
+    protected void doStart() throws Exception {
+        super.doStart();
     }
 }
