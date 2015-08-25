@@ -132,6 +132,11 @@ public class EventBusConfiguration {
         }
 
         @Bean
+        public EventBusPolicy eventBusPolicy() {
+            return EventBusPolicy.NORMAL;
+        }
+
+        @Bean
         public AcknowledgeMode acknowledgeMode() {
             return AcknowledgeMode.AUTO;
         }
@@ -140,6 +145,7 @@ public class EventBusConfiguration {
         public MessageListenerContainerFactory messageListenerContainerFactory(
                 Config config,
                 MetricRegistry metricRegistry,
+                EventBusPolicy eventBusPolicy,
                 RabbitAdmin rabbitAdmin,
                 ConnectionFactory connectionFactory,
                 RetryOperationsInterceptor retryOperationsInterceptor,
@@ -148,6 +154,7 @@ public class EventBusConfiguration {
             Config amqpConfig = config.getConfig("runtime.eventbus.amqp");
 
             return new MessageListenerContainerFactory(
+                    eventBusPolicy,
                     rabbitAdmin,
                     connectionFactory,
                     new InstrumentedErrorHandler(new ConditionalRejectingErrorHandler(), metricRegistry)

@@ -21,24 +21,28 @@ public class MessageListenerContainerFactory {
     private final ConnectionFactory connectionFactory;
     private final ErrorHandler errorHandler;
     private final List<Advice> advices;
+    private final EventBusPolicy eventBusPolicy;
 
     private int prefetchCount;
     private AcknowledgeMode acknowledgeMode;
 
     public MessageListenerContainerFactory(
+            EventBusPolicy eventBusPolicy,
             RabbitAdmin rabbitAdmin,
             ConnectionFactory connectionFactory,
             ErrorHandler errorHandler
     ) {
-        this(rabbitAdmin, connectionFactory, errorHandler, DEFAULT_PREFETCH_COUNT);
+        this(eventBusPolicy, rabbitAdmin, connectionFactory, errorHandler, DEFAULT_PREFETCH_COUNT);
     }
 
     public MessageListenerContainerFactory(
+            EventBusPolicy eventBusPolicy,
             RabbitAdmin rabbitAdmin,
             ConnectionFactory connectionFactory,
             ErrorHandler errorHandler,
             int prefetchCount
     ) {
+        this.eventBusPolicy = eventBusPolicy;
         this.rabbitAdmin = rabbitAdmin;
         this.connectionFactory = connectionFactory;
         this.errorHandler = errorHandler;
@@ -69,7 +73,7 @@ public class MessageListenerContainerFactory {
     }
 
     public <LISTENER extends EventListener> MessageListenerContainer create(String queueName, LISTENER eventListener, MessageListener messageListener) {
-        MessageListenerContainer container = new MessageListenerContainer(connectionFactory, eventListener);
+        MessageListenerContainer container = new MessageListenerContainer(eventBusPolicy, connectionFactory, eventListener);
         container.setMessageListener(messageListener);
         container.setQueueNames(queueName);
         container.setPrefetchCount(prefetchCount);
