@@ -8,7 +8,9 @@ package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.core.context.DefaultContextHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +35,7 @@ public class HttpContextDeserializerUTest {
 
     @Before
     public void setUp() {
-        deserializer = new HttpContextDeserializer();
+        deserializer = new HttpContextWithVersionDeserializer(new DefaultContextHelper(new SimpleIDBuilder()));
     }
 
     // ------------------------------------------------------------------------

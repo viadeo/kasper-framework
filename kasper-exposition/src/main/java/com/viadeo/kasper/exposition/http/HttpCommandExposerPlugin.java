@@ -41,7 +41,7 @@ public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExpos
     }
 
     public HttpCommandExposerPlugin(final ObjectMapper objectMapper){
-        this(new HttpContextDeserializer(), objectMapper);
+        this(new SimpleHttpContextDeserializer(), objectMapper);
     }
 
     public HttpCommandExposerPlugin(final HttpContextDeserializer httpContextDeserializer, final ObjectMapper objectMapper){

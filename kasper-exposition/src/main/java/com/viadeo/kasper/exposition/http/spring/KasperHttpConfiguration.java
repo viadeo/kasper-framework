@@ -17,6 +17,7 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.context.ContextHelper;
 import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
@@ -28,10 +29,7 @@ import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.exposition.http.HttpCommandExposer;
-import com.viadeo.kasper.exposition.http.HttpContextDeserializer;
-import com.viadeo.kasper.exposition.http.HttpEventExposer;
-import com.viadeo.kasper.exposition.http.HttpQueryExposer;
+import com.viadeo.kasper.exposition.http.*;
 import com.viadeo.kasper.exposition.http.jetty.Server;
 import com.viadeo.kasper.exposition.http.jetty.ServerConfiguration;
 import com.viadeo.kasper.exposition.http.jetty.resource.KasperDocResource;
@@ -93,8 +91,8 @@ public class KasperHttpConfiguration {
     }
 
     @Bean
-    public HttpContextDeserializer httpContextDeserializer() {
-        return new HttpContextDeserializer();
+    public HttpContextDeserializer httpContextDeserializer(final ContextHelper contextHelper) {
+        return new HttpContextWithVersionDeserializer(contextHelper);
     }
 
     /**

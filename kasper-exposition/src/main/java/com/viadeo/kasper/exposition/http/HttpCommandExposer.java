@@ -51,7 +51,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
                 platform.getCommandGateway(),
                 platform.getMeta(),
                 descriptors,
-                new HttpContextDeserializer(),
+                new SimpleHttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }

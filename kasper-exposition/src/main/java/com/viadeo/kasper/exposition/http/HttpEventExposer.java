@@ -63,7 +63,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
                 platform.getEventBus(),
                 platform.getMeta(),
                 descriptors,
-                new HttpContextDeserializer(),
+                new SimpleHttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }

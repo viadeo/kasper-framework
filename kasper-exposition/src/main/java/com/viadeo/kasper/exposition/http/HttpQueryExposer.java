@@ -49,7 +49,7 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
                 platform.getMeta(),
                 descriptors,
                 new QueryFactoryBuilder().create(),
-                new HttpContextDeserializer(),
+                new SimpleHttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }

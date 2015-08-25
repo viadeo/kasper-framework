@@ -28,7 +28,7 @@ public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> 
     // ------------------------------------------------------------------------
 
     public HttpEventExposerPlugin(final ObjectMapper objectMapper) {
-        this(new HttpContextDeserializer(), objectMapper);
+        this(new SimpleHttpContextDeserializer(), objectMapper);
     }
 
     public HttpEventExposerPlugin(final HttpContextDeserializer httpContextDeserializer,

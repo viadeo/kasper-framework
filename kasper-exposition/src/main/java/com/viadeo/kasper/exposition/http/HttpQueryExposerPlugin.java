@@ -42,7 +42,7 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
     }
 
     public HttpQueryExposerPlugin(final ObjectMapper objectMapper){
-        this(new HttpContextDeserializer(), checkNotNull(objectMapper));
+        this(new SimpleHttpContextDeserializer(), checkNotNull(objectMapper));
     }
 
     public HttpQueryExposerPlugin(final HttpContextDeserializer httpContextDeserializer,
