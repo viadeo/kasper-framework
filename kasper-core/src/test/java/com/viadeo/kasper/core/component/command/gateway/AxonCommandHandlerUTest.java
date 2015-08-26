@@ -78,10 +78,18 @@ public class AxonCommandHandlerUTest {
         );
 
         // When
-        Object handle = axonHandler.handle(message, unitOfWork);
+        Object handle = null;
+        Exception exception = null;
+
+        try {
+            handle = axonHandler.handle(message, unitOfWork);
+        } catch (Exception e) {
+            exception = e;
+        }
 
         // Then
-        assertNotNull(handle);
+        assertNull(handle);
+        assertNotNull(exception);
         verify(unitOfWork).rollback(eq(toBeThrown));
     }
 

@@ -15,6 +15,7 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.context.CurrentContext;
+import org.axonframework.repository.ConflictingAggregateVersionException;
 import org.axonframework.unitofwork.UnitOfWork;
 
 public class AxonCommandHandler<COMMAND extends Command> implements org.axonframework.commandhandling.CommandHandler<COMMAND> {
@@ -39,8 +40,11 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
 
         try {
             response = commandHandler.handle(kmessage);
+        } catch (final ConflictingAggregateVersionException e) {
+            response = CommandResponse.error(CoreReasonCode.CONFLICT, e.getMessage());
         } catch (Exception e) {
             response = CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
+            exception = Optional.of(e);
         }
 
         switch (response.getStatus()) {
@@ -54,7 +58,6 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
             case FAILURE:
             default:
                 isError = true;
-                exception = response.getReason().getException();
         }
 
         /* rollback uow on failure */
@@ -65,6 +68,10 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
                 unitOfWork.rollback();
             }
             unitOfWork.start();
+        }
+
+        if (exception.isPresent()) {
+            throw exception.get();
         }
 
         return response;
