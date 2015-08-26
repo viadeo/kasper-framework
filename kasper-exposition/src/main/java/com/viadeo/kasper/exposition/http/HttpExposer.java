@@ -46,6 +46,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_KASPER_ID;
 import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_REQUEST_CORRELATION_ID;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
@@ -116,6 +117,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         try {
             MDC.clear();
             MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
+            MDC.put(Context.KASPER_CID_SHORTNAME, extractKasperId(httpRequest, kasperCorrelationUUID));
             requestLogger.debug("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
 
             /* 1) Check that we support the requested media type*/
@@ -273,7 +275,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         }
     }
 
-    protected void flushBuffer(final HttpServletResponse httpResponse){
+    protected void flushBuffer(final HttpServletResponse httpResponse) {
         /*
          * must be last call to ensure that everything is sent to the client
          *(even if an error occurred)
@@ -291,6 +293,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             requestCorrelationId = UUID.randomUUID().toString();
         }
         return requestCorrelationId;
+    }
+
+    protected String extractKasperId(final HttpServletRequest httpRequest, final UUID kasperCorrelationUUID) {
+        String kasperId = httpRequest.getHeader(HEADER_KASPER_ID.toHeaderName());
+        if (null == kasperId) {
+            kasperId = kasperCorrelationUUID.toString();
+        }
+        return kasperId;
     }
 
     protected Context extractContext(
@@ -337,7 +347,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final String requestName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
 
             /* 2) Check that the request is manageable*/
-            if( ! isManageable(requestName)){
+            if ( ! isManageable(requestName)) {
                 throw new HttpExposerException(
                         CoreReasonCode.NOT_FOUND,
                         getInputTypeName() + "[" + requestName + "] not found."
@@ -361,7 +371,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected String getInputTypeName() {
         ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) getClass().getGenericSuperclass();
-        final Class inputClass = (Class)parameterizedType.getActualTypeArguments()[0];
+        final Class inputClass = (Class) parameterizedType.getActualTypeArguments()[0];
         return inputClass.getSimpleName();
     }
 
@@ -416,25 +426,25 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     // ------------------------------------------------------------------------
 
-	protected final String resourceName(final String uri) {
-		checkNotNull(uri);
+    protected final String resourceName(final String uri) {
+        checkNotNull(uri);
 
         final String resName;
 
-		final int idx = uri.lastIndexOf('/');
-		if (-1 < idx) {
-			resName = uri.substring(idx + 1);
-		} else {
-			resName = uri;
-		}
+        final int idx = uri.lastIndexOf('/');
+        if (-1 < idx) {
+            resName = uri.substring(idx + 1);
+        } else {
+            resName = uri;
+        }
 
         return Introspector.decapitalize(resName);
-	}
+    }
 
     // ------------------------------------------------------------------------
 
-    protected String serverName(){
-        if(serverName.isPresent()){
+    protected String serverName() {
+        if (serverName.isPresent()) {
             return serverName.get();
         }
 
@@ -456,7 +466,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     // ------------------------------------------------------------------------
 
-    public <HANDLER> HttpExposer<INPUT, RESPONSE> expose(final ExposureDescriptor<INPUT,HANDLER> descriptor) {
+    public <HANDLER> HttpExposer<INPUT, RESPONSE> expose(final ExposureDescriptor<INPUT, HANDLER> descriptor) {
         checkNotNull(descriptor);
 
         final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public" : "protected";
@@ -495,8 +505,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         return this;
     }
 
-    public <HANDLER> boolean isExposable(final ExposureDescriptor<INPUT,HANDLER> descriptor) {
-        return ! descriptor.getHandler().isAnnotationPresent(XKasperUnexposed.class);
+    public <HANDLER> boolean isExposable(final ExposureDescriptor<INPUT, HANDLER> descriptor) {
+        return !descriptor.getHandler().isAnnotationPresent(XKasperUnexposed.class);
     }
 
     protected void checkAvailabilityOfResourcePath(final String path) {
@@ -534,7 +544,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         private final CoreReasonCode coreReasonCode;
         private final String message;
 
-        public HttpExposerException(final CoreReasonCode coreReasonCode, final String message){
+        public HttpExposerException(final CoreReasonCode coreReasonCode, final String message) {
             this.coreReasonCode = coreReasonCode;
             this.message = message;
         }
@@ -557,7 +567,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         private final String requestsHandleTimeName;
 
         public MetricNames(final Class clazz) {
-            this.errorsName =  name(clazz, "errors");
+            this.errorsName = name(clazz, "errors");
             this.requestsTimeName = name(clazz, "requests-time");
             this.requestsHandleTimeName = name(clazz, "requests-handle-time");
         }
