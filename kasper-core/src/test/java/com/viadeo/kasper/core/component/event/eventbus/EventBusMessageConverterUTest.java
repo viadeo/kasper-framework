@@ -1,12 +1,17 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.collect.ImmutableMap;
+import com.rabbitmq.client.AMQP;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
 import org.axonframework.domain.GenericDomainEventMessage;
 import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.eventhandling.io.EventMessageType;
 import org.axonframework.serializer.SerializedObject;
 import org.axonframework.serializer.Serializer;
 import org.axonframework.serializer.SimpleSerializedObject;
@@ -23,6 +28,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.support.DefaultMessagePropertiesConverter;
 import org.springframework.amqp.support.converter.MessageConversionException;
 
 import java.util.Arrays;
@@ -36,7 +42,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EventMessageConverterUTest {
+public class EventBusMessageConverterUTest {
 
     @Mock
     private Serializer serializer;
@@ -85,7 +91,7 @@ public class EventMessageConverterUTest {
         assertTrue(headers.containsKey(PAYLOAD_TYPE_KEY));
         assertEquals("1.0", headers.get(SERIALIZER_VERSION_KEY));
         assertEquals(timestamp.toString(), headers.get(EVENT_TIMESTAMP_KEY));
-        assertEquals("event-aggregate-id", headers.get(AGGREGATE_ID_KEY));
+        assertEquals("\"event-aggregate-id\"", headers.get(AGGREGATE_ID_KEY));
         assertEquals(1L, headers.get(SEQUENCE_NUMBER_KEY));
         assertEquals((byte) 3, headers.get(EVENT_TYPE_KEY));
         assertEquals("payload-revision", headers.get(PAYLOAD_REVISION_KEY));
@@ -180,6 +186,120 @@ public class EventMessageConverterUTest {
     }
 
     @Test
+    public void fromMessage_fromDomainEventMessage_usingKasperIdAsAggregateId_withSpecifiedType_isOk() throws Exception {
+        // Given
+        final String payload = "foobar";
+        when(serializer.deserialize(any(SerializedObject.class))).thenReturn(payload);
+
+        DefaultKasperId kasperId = new DefaultKasperId();
+
+        Message amqpMessage = MessageBuilder.withBody(payload.getBytes())
+                .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                .setContentEncoding("charset=utf-8")
+                .setContentType("application/json")
+                .setType("java.lang.String")
+                .setHeader(AGGREGATE_ID_KEY, ObjectMapperProvider.INSTANCE.mapper().writeValueAsString(kasperId))
+                .setHeader(AGGREGATE_ID_TYPE_KEY, kasperId.getClass().getName())
+                .setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName())
+                .setHeader(PAYLOAD_REVISION_KEY, "0")
+                .setHeader(SEQUENCE_NUMBER_KEY, 1L)
+                .setHeader(EVENT_TYPE_KEY, EventMessageType.DOMAIN_EVENT_MESSAGE.getTypeByte())
+                .setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00")
+                .setHeader(SERIALIZER_VERSION_KEY, "1.0")
+                .build();
+
+        DefaultMessagePropertiesConverter messagePropertiesConverter = new DefaultMessagePropertiesConverter();
+        AMQP.BasicProperties basicProperties = messagePropertiesConverter.fromMessageProperties(amqpMessage.getMessageProperties(), "UTF-8");
+        MessageProperties messageProperties = messagePropertiesConverter.toMessageProperties(basicProperties, null, "UTF-8");
+        amqpMessage = new Message(payload.getBytes(), messageProperties);
+
+        // When
+        Object convertedMessage = converter.fromMessage(amqpMessage);
+
+        // Then
+        assertNotNull(convertedMessage);
+        assertTrue(convertedMessage instanceof GenericDomainEventMessage);
+
+        final GenericDomainEventMessage eventMessage = (GenericDomainEventMessage) convertedMessage;
+        assertEquals(payload, eventMessage.getPayload());
+        assertEquals(payload.getClass(), eventMessage.getPayloadType());
+        assertEquals(1L, eventMessage.getSequenceNumber());
+        assertEquals(kasperId, eventMessage.getAggregateIdentifier());
+    }
+
+    @Test
+    public void fromMessage_fromDomainEventMessage_usingKasperIdAsAggregateId_withoutSpecifiedType_isOk() throws Exception {
+        // Given
+        final String payload = "foobar";
+        when(serializer.deserialize(any(SerializedObject.class))).thenReturn(payload);
+
+        DefaultKasperId kasperId = new DefaultKasperId();
+
+        Message amqpMessage = MessageBuilder.withBody(payload.getBytes())
+                .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                .setContentEncoding("charset=utf-8")
+                .setContentType("application/json")
+                .setType("java.lang.String")
+                .setHeader(AGGREGATE_ID_KEY, kasperId)
+                .setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName())
+                .setHeader(PAYLOAD_REVISION_KEY, "0")
+                .setHeader(SEQUENCE_NUMBER_KEY, 1L)
+                .setHeader(EVENT_TYPE_KEY, EventMessageType.DOMAIN_EVENT_MESSAGE.getTypeByte())
+                .setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00")
+                .setHeader(SERIALIZER_VERSION_KEY, "1.0")
+                .build();
+
+        DefaultMessagePropertiesConverter messagePropertiesConverter = new DefaultMessagePropertiesConverter();
+        AMQP.BasicProperties basicProperties = messagePropertiesConverter.fromMessageProperties(amqpMessage.getMessageProperties(), "UTF-8");
+        MessageProperties messageProperties = messagePropertiesConverter.toMessageProperties(basicProperties, null, "UTF-8");
+        amqpMessage = new Message(payload.getBytes(), messageProperties);
+
+        // When
+        final GenericEventMessage eventMessage = (GenericEventMessage) converter.fromMessage(amqpMessage);
+
+        // Then
+        assertNotNull(eventMessage);
+        assertEquals(payload, eventMessage.getPayload());
+        assertEquals(payload.getClass(), eventMessage.getPayloadType());
+    }
+
+    @Test
+    public void fromMessage_fromDomainEventMessage_usingKasperIdAsAggregateId_withUnknownSpecifiedType_isOk() throws Exception {
+        // Given
+        final String payload = "foobar";
+        when(serializer.deserialize(any(SerializedObject.class))).thenReturn(payload);
+
+        DefaultKasperId kasperId = new DefaultKasperId();
+
+        Message amqpMessage = MessageBuilder.withBody(payload.getBytes())
+                .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                .setContentEncoding("charset=utf-8")
+                .setContentType("application/json")
+                .setType("java.lang.String")
+                .setHeader(AGGREGATE_ID_KEY, kasperId)
+                .setHeader(PAYLOAD_TYPE_KEY, "miaou")
+                .setHeader(PAYLOAD_REVISION_KEY, "0")
+                .setHeader(SEQUENCE_NUMBER_KEY, 1L)
+                .setHeader(EVENT_TYPE_KEY, EventMessageType.DOMAIN_EVENT_MESSAGE.getTypeByte())
+                .setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00")
+                .setHeader(SERIALIZER_VERSION_KEY, "1.0")
+                .build();
+
+        DefaultMessagePropertiesConverter messagePropertiesConverter = new DefaultMessagePropertiesConverter();
+        AMQP.BasicProperties basicProperties = messagePropertiesConverter.fromMessageProperties(amqpMessage.getMessageProperties(), "UTF-8");
+        MessageProperties messageProperties = messagePropertiesConverter.toMessageProperties(basicProperties, null, "UTF-8");
+        amqpMessage = new Message(payload.getBytes(), messageProperties);
+
+        // When
+        final GenericEventMessage eventMessage = (GenericEventMessage) converter.fromMessage(amqpMessage);
+
+        // Then
+        assertNotNull(eventMessage);
+        assertEquals(payload, eventMessage.getPayload());
+        assertEquals(payload.getClass(), eventMessage.getPayloadType());
+    }
+
+    @Test
     public void fromMessage_fromDomainEventMessage_isOk() throws Exception {
         // Given
         final String payload = "foobar";
@@ -189,11 +309,12 @@ public class EventMessageConverterUTest {
                 .setContentEncoding("charset=utf-8")
                 .setContentType("application/json")
                 .setType("java.lang.String")
-                .setHeader(AGGREGATE_ID_KEY, "aggregate-id")
+                .setHeader(AGGREGATE_ID_KEY, ObjectMapperProvider.INSTANCE.mapper().writeValueAsString("aggregate-id"))
+                .setHeader(AGGREGATE_ID_TYPE_KEY, String.class.getName())
                 .setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName())
                 .setHeader(PAYLOAD_REVISION_KEY, "0")
                 .setHeader(SEQUENCE_NUMBER_KEY, 1L)
-                .setHeader(EVENT_TYPE_KEY, "")
+                .setHeader(EVENT_TYPE_KEY, EventMessageType.DOMAIN_EVENT_MESSAGE.getTypeByte())
                 .setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00")
                 .setHeader(SERIALIZER_VERSION_KEY, "1.0")
                 .build();
@@ -234,7 +355,7 @@ public class EventMessageConverterUTest {
 
 
         // When
-        final GenericDomainEventMessage eventMessage = (GenericDomainEventMessage) converter.fromMessage(amqpMessage);
+        final GenericEventMessage eventMessage = (GenericEventMessage) converter.fromMessage(amqpMessage);
 
         // Then
         assertNotNull(eventMessage);
@@ -268,7 +389,7 @@ public class EventMessageConverterUTest {
                 .build();
 
         // When
-        final GenericDomainEventMessage eventMessage = (GenericDomainEventMessage) converter.fromMessage(amqpMessage);
+        final GenericEventMessage eventMessage = (GenericEventMessage) converter.fromMessage(amqpMessage);
 
         // Then
         assertNotNull(eventMessage);

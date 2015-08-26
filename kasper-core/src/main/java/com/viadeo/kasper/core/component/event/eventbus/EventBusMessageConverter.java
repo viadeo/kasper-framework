@@ -6,10 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.ContextHelper;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.axonframework.domain.DomainEventMessage;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericDomainEventMessage;
@@ -20,6 +23,8 @@ import org.axonframework.serializer.SerializedObject;
 import org.axonframework.serializer.Serializer;
 import org.axonframework.serializer.SimpleSerializedObject;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -31,10 +36,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class EventBusMessageConverter implements MessageConverter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventBusMessageConverter.class);
+
     private static final String HEADER_REQUIRED_MESSAGE = "header %s is required";
 
     protected static final String SERIALIZER_VERSION_KEY = "X-SERIALIZER-VERSION";
     protected static final String AGGREGATE_ID_KEY = "X-AGGREGATE-ID";
+    protected static final String AGGREGATE_ID_TYPE_KEY = "X-AGGREGATE-TYPE-ID";
     protected static final String SEQUENCE_NUMBER_KEY = "X-SEQUENCE-NUMBER";
 
     protected static final String PAYLOAD_REVISION_KEY = "X-PAYLOAD-REVISION";
@@ -53,6 +61,7 @@ public class EventBusMessageConverter implements MessageConverter {
 
     private final MessageSerializer serializer;
     private final ContextHelper contextHelper;
+    private final ObjectMapper objectMapper;
 
     /**
      * Constructor
@@ -63,6 +72,7 @@ public class EventBusMessageConverter implements MessageConverter {
     public EventBusMessageConverter(final ContextHelper contextHelper, final Serializer serializer) {
         this.serializer = new MessageSerializer(checkNotNull(serializer));
         this.contextHelper = checkNotNull(contextHelper);
+        this.objectMapper = ObjectMapperProvider.INSTANCE.mapper();
     }
 
     /**
@@ -143,8 +153,14 @@ public class EventBusMessageConverter implements MessageConverter {
 
         if (eventMessage instanceof DomainEventMessage) {
             final DomainEventMessage domainEventMessage = (DomainEventMessage) eventMessage;
-            builder.setHeader(AGGREGATE_ID_KEY, checkNotNull(domainEventMessage.getAggregateIdentifier()))
-                   .setHeader(SEQUENCE_NUMBER_KEY, checkNotNull(domainEventMessage.getSequenceNumber()));
+            final Object aggregateIdentifier = checkNotNull(domainEventMessage.getAggregateIdentifier());
+            try {
+                builder.setHeader(AGGREGATE_ID_KEY, objectMapper.writeValueAsString(aggregateIdentifier))
+                       .setHeader(AGGREGATE_ID_TYPE_KEY, aggregateIdentifier.getClass().getName())
+                       .setHeader(SEQUENCE_NUMBER_KEY, checkNotNull(domainEventMessage.getSequenceNumber()));
+            } catch (JsonProcessingException e) {
+                LOGGER.warn("Failed to specify properties of a domain event message", e);
+            }
         }
 
         serializeMetadata(eventMessage, builder);
@@ -160,7 +176,7 @@ public class EventBusMessageConverter implements MessageConverter {
     /**
      * Serialize metadata
      * If null value is encountered for context, then an exception is thrown
-     * If null value is encoutnered for other keys, a warn message is logged
+     * If null value is encountered for other keys, a warn message is logged
      *
      * @param eventMessage event message
      * @param builder builder
@@ -187,8 +203,7 @@ public class EventBusMessageConverter implements MessageConverter {
         try {
             checkNotNull(message);
 
-            MessageProperties messageProperties = message.getMessageProperties();
-
+            final MessageProperties messageProperties = message.getMessageProperties();
             final Map<String, Object> headers = messageProperties.getHeaders();
             final DateTime timestamp = new DateTime(checkAndGetHeader(headers, EVENT_TIMESTAMP_KEY));
             final Object payloadType = checkAndGetHeader(headers, PAYLOAD_TYPE_KEY);
@@ -202,20 +217,32 @@ public class EventBusMessageConverter implements MessageConverter {
 
             final Object deserializedObject = serializer.deserialize(serializedPayload);
 
-            if (checkAndGetHeader(headers, EVENT_TYPE_KEY).equals(EventMessageType.EVENT_MESSAGE.getTypeByte())) {
-                return new GenericEventMessage<>(
-                        messageProperties.getMessageId(),
-                        timestamp,
-                        deserializedObject,
-                        toMetadata(messageProperties)
-                );
+            if (checkAndGetHeader(headers, EVENT_TYPE_KEY).equals(EventMessageType.DOMAIN_EVENT_MESSAGE.getTypeByte())) {
+                if (headers.containsKey(AGGREGATE_ID_TYPE_KEY)) {
+                    try {
+                        final Class<?> aggregateIdentifierClass = Class.forName(String.valueOf(headers.get(AGGREGATE_ID_TYPE_KEY)));
+                        final Object aggregateIdentifier = objectMapper.readValue(
+                                String.valueOf(checkAndGetHeader(headers, AGGREGATE_ID_KEY)),
+                                aggregateIdentifierClass
+                        );
+
+                        return new GenericDomainEventMessage<>(
+                                messageProperties.getMessageId(),
+                                timestamp,
+                                aggregateIdentifier,
+                                (Long) checkAndGetHeader(headers, SEQUENCE_NUMBER_KEY),
+                                deserializedObject,
+                                toMetadata(messageProperties)
+                        );
+                    } catch (ClassNotFoundException e) {
+                        LOGGER.warn("Failed to restore properties of a domain event message", e);
+                    }
+                }
             }
 
-            return new GenericDomainEventMessage<>(
+            return new GenericEventMessage<>(
                     messageProperties.getMessageId(),
                     timestamp,
-                    checkAndGetHeader(headers, AGGREGATE_ID_KEY),
-                    (Long) checkAndGetHeader(headers, SEQUENCE_NUMBER_KEY),
                     deserializedObject,
                     toMetadata(messageProperties)
             );
