@@ -295,9 +295,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         return requestCorrelationId;
     }
 
-    protected String extractKasperId(final HttpServletRequest httpRequest, UUID kasperCorrelationUUID) {
+    protected String extractKasperId(final HttpServletRequest httpRequest, final UUID kasperCorrelationUUID) {
         String kasperId = httpRequest.getHeader(HEADER_KASPER_ID.toHeaderName());
-        if (kasperId == null) {
+        if (null == kasperId) {
             kasperId = kasperCorrelationUUID.toString();
         }
         return kasperId;
@@ -347,7 +347,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final String requestName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
 
             /* 2) Check that the request is manageable*/
-            if (!isManageable(requestName)) {
+            if ( ! isManageable(requestName)) {
                 throw new HttpExposerException(
                         CoreReasonCode.NOT_FOUND,
                         getInputTypeName() + "[" + requestName + "] not found."
@@ -476,7 +476,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final String path = toPath(inputClass);
         final String name = inputClass.getSimpleName();
 
-        if (!isExposable(descriptor)) {
+        if ( ! isExposable(descriptor)) {
             LOGGER.info("-> Unexposed {}[{}]", getInputTypeName(), name);
             unexposedInputs.put(path, inputClass);
             return this;
