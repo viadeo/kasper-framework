@@ -20,6 +20,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.MDCUtils;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
@@ -107,6 +108,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         RESPONSE response = null;
         ErrorHandlingDescriptor errorHandlingDescriptor = null;
 
+        Timer.Context timerInput = null;
         final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
@@ -124,6 +126,10 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             /* 3) Extract the input from request */
             input = extractInput(httpRequest, payload, requestToObject);
+
+            timerInput = getMetricRegistry().timer(
+                name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "http-exposer", "requests-time")
+            ).time();
 
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
 
@@ -174,6 +180,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     th
             );
         } finally {
+            if (null != timerInput) {
+                timerInput.stop();
+            }
             long duration = timer.stop();
             MDC.put("duration", String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS)));
         }
