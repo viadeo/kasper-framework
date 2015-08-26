@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see com.viadeo.kasper.api.component.Domain
  */
 public abstract class AggregateRoot<I extends KasperID>
-		extends AbstractAnnotatedAggregateRoot<KasperID>
+		extends AbstractAnnotatedAggregateRoot<I>
         implements Entity {
 
 	private static final long serialVersionUID = 8352516744342839116L;
