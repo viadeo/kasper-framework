@@ -159,14 +159,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     validationException
             );
 
-        } catch (final IOException e) {
-            errorHandlingDescriptor = new ErrorHandlingDescriptor(
-                    ErrorState.ERROR,
-                    CoreReasonCode.INVALID_INPUT,
-                    Lists.newArrayList((null == e.getMessage()) ? "Unknown" : e.getMessage()),
-                    e
-            );
-
         } catch (final KasperSecurityException kse) {
             errorHandlingDescriptor = new ErrorHandlingDescriptor(
                     ErrorState.REFUSED,
@@ -254,8 +246,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     );
                 }
             } else {
-                requestLogger.debug("Request processed in {} [{}]", getInputTypeName(), inputName);
+                requestLogger.debug("Request processed in {} [{}] : {}", getInputTypeName(), inputName, response.getStatus());
             }
+
         } finally {
             MDC.clear();
         }
