@@ -234,7 +234,7 @@ public class EventBusMessageConverter implements MessageConverter {
                                 deserializedObject,
                                 toMetadata(messageProperties)
                         );
-                    } catch (ClassNotFoundException e) {
+                    } catch (Exception e) {
                         LOGGER.warn("Failed to restore properties of a domain event message", e);
                     }
                 }
