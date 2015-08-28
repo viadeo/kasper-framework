@@ -1,5 +1,14 @@
 # Kasper Releases #
 
+### Version 1.0.0 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.0.0~~))
+
+* Migrated to Gradle 2.5
+* Added server implementation based on Jetty
+* Added event bus implementation based on RabbitMQ
+* Added sample module
+* Reorganize packaging
+* Refactored API of our components (CommandHandler, QueryHandler, EventListener, etc)
+
 ### Snapshot 0.8.0-pre41 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre41~~))
 
 * [Pull 290](https://github.com/viadeo/kasper-framework/pull/290) Override kasperId if provided in headers
