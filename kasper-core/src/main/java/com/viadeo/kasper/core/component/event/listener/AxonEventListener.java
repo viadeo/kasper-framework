@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.listener;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.event.Event;
@@ -17,7 +15,6 @@ import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.metrics.MetricNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,18 +25,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AxonEventListener<EVENT extends Event> implements org.axonframework.eventhandling.EventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AxonEventListener.class);
-
-    private final MetricRegistry metricRegistry;
-    private final MetricNames globalMetricNames;
-    private final MetricNames inputMetricNames;
-    private final MetricNames domainMetricNames;
-
-    public AxonEventListener(final MetricRegistry metricRegistry) {
-        this.metricRegistry = checkNotNull(metricRegistry);
-        this.globalMetricNames = MetricNames.of(EventListener.class, "errors", "handles", "handle-time");
-        this.inputMetricNames = MetricNames.of(getClass(), "errors", "handles", "handle-time");
-        this.domainMetricNames = MetricNames.byDomainOf(getClass(), "errors", "handles", "handle-time");
-    }
 
     @Override
     public final void handle(final org.axonframework.domain.EventMessage eventMessage) {
@@ -77,14 +62,6 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
             ));
         }
 
-        metricRegistry.meter(globalMetricNames.requests).mark();
-        metricRegistry.meter(inputMetricNames.requests).mark();
-        metricRegistry.meter(domainMetricNames.requests).mark();
-
-        final Timer.Context inputTimer = metricRegistry.timer(inputMetricNames.requestsTime).time();
-        final Timer.Context domainTimer = metricRegistry.timer(domainMetricNames.requestsTime).time();
-        final Timer.Context globalTimer = metricRegistry.timer(globalMetricNames.requestsTime).time();
-
         @SuppressWarnings("unchecked")
         final EventMessage<EVENT> kmessage = new EventMessage<EVENT>(eventMessage);
         final EVENT event = kmessage.getEvent();
@@ -98,17 +75,10 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
             response = this.handle(kmessage);
         } catch (Exception e) {
             response =  EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
-        } finally {
-            inputTimer.stop();
-            domainTimer.stop();
-            globalTimer.stop();
         }
 
         switch (response.getStatus()) {
             case FAILURE:
-                metricRegistry.meter(globalMetricNames.errors).mark();
-                metricRegistry.meter(inputMetricNames.errors).mark();
-                metricRegistry.meter(domainMetricNames.errors).mark();
             case ERROR:
                 try {
                     rollback(kmessage);

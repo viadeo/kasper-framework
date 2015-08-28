@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga;
 
-import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.response.CoreReasonCode;
@@ -25,8 +24,8 @@ public class SagaWrapper extends AxonEventListener<Event> implements EventListen
 
     // ------------------------------------------------------------------------
 
-    public SagaWrapper(final MetricRegistry metricRegistry, final SagaExecutor executor) {
-        super(metricRegistry);
+    public SagaWrapper(final SagaExecutor executor) {
+        super();
         this.executor = checkNotNull(executor);
     }
 

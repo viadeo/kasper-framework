@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.listener;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.event.Event;
@@ -24,8 +23,8 @@ public class BaseEventListener<EVENT extends Event>
 
     private final Class<EVENT> eventClass;
 
-    public BaseEventListener(final MetricRegistry metricRegistry) {
-        super(metricRegistry);
+    public BaseEventListener() {
+        super();
         @SuppressWarnings("unchecked")
         final Optional<Class<EVENT>> eventClassOpt =
                 (Optional<Class<EVENT>>)

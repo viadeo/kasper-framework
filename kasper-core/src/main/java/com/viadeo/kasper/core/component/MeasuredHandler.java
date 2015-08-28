@@ -104,24 +104,29 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
             globalTimer.stop();
         }
 
+        if (isErrorResponse(response)) {
+            metricRegistry.meter(inputMetricNames.errors).mark();
+            metricRegistry.meter(domainMetricNames.errors).mark();
+            metricRegistry.meter(KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
+            metricRegistry.meter(globalMetricNames.errors).mark();
+        }
+
+        return response;
+    }
+
+    protected boolean isErrorResponse(final KasperResponse response) {
         switch (response.getStatus()) {
             case OK:
             case SUCCESS:
             case ACCEPTED:
             case REFUSED:
-                // nothing
-                break;
+                return Boolean.FALSE;
 
             case ERROR:
             case FAILURE:
-                metricRegistry.meter(inputMetricNames.errors).mark();
-                metricRegistry.meter(domainMetricNames.errors).mark();
-                metricRegistry.meter(KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
-                metricRegistry.meter(globalMetricNames.errors).mark();
-                break;
+            default :
+                return Boolean.TRUE;
         }
-
-        return response;
     }
 
     @Override

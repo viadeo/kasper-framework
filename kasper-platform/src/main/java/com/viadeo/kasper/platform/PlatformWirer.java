@@ -126,7 +126,7 @@ public class PlatformWirer {
 
         for (final Saga saga : bundle.getSagas()) {
             final SagaExecutor executor = sagaManager.register(saga);
-            eventBus.subscribe(new SagaWrapper(metricRegistry, executor));
+            eventBus.subscribe(new SagaWrapper(executor));
         }
 
         for (final CommandInterceptorFactory factory : bundle.getCommandInterceptorFactories()) {

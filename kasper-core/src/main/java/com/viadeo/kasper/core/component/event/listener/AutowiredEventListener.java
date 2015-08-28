@@ -11,7 +11,6 @@ import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 
@@ -30,12 +29,6 @@ public abstract class AutowiredEventListener<E extends Event>
 {
 
     private EventBus eventBus;
-
-	// ------------------------------------------------------------------------
-	
-	public AutowiredEventListener() {
-        super(KasperMetrics.getMetricRegistry());
-	}
 
     // ------------------------------------------------------------------------
 

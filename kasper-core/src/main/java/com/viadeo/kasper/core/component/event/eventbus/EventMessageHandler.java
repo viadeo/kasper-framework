@@ -14,6 +14,7 @@ import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.exception.KasperEventException;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.MeasuredEventListener;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.EventMessage;
 import org.joda.time.DateTime;
@@ -57,7 +58,7 @@ public class EventMessageHandler implements ChannelAwareMessageListener {
             int requeueThresholdInHours
     ) {
         this.converter = converter;
-        this.eventListener = eventListener;
+        this.eventListener = new MeasuredEventListener(metricRegistry, eventListener);
         this.metricRegistry = metricRegistry;
         this.messageRecoverer = messageRecoverer;
         this.maxAttempts = maxAttempts;
