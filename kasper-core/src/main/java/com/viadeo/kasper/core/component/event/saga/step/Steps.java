@@ -7,16 +7,17 @@
 package com.viadeo.kasper.core.component.event.saga.step;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.SchedulableSagaMethod;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
+import com.viadeo.kasper.core.component.event.saga.step.facet.SchedulingStep;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -85,6 +86,21 @@ public final class Steps {
                 stepsByTypes.get(EndStep.class).size() >= 1,
                 String.format("Should have at less one end method : %s", sagaClass.getName())
             );
+
+            final Collection<Step> schedulingByEventSteps = Collections2.filter(steps, new Predicate<Step>() {
+                @Override
+                public boolean apply(Step input) {
+                    return SchedulingStep.class.isAssignableFrom(input.getClass()) &&
+                            ((SchedulingStep) input).getOperationType() == SchedulingStep.OperationType.SCHEDULE_BY_EVENT;
+                }
+            });
+
+            for (final Step step : schedulingByEventSteps) {
+                checkState(
+                        SchedulableSagaMethod.class.isAssignableFrom(step.getSupportedEvent()),
+                        String.format("The event should be assignment-compatible with '%s' : <saga=%s>", SchedulableSagaMethod.class.getName(), sagaClass.getName())
+                );
+            }
         }
     }
 

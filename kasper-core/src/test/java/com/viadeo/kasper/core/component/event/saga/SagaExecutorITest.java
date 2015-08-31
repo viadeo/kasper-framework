@@ -19,6 +19,7 @@ import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -239,6 +240,30 @@ public class SagaExecutorITest {
 
         //Then
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
+                if (sagaOptional.isPresent()) {
+                    TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
+                    return 1 == saga.getInvokedMethodCount();
+                }
+                return Boolean.FALSE;
+            }
+        });
+    }
+
+    @Test
+    public void execute_a_scheduled_step_by_an_event_is_ok() throws InterruptedException {
+        // Given
+        final UUID identifierSaga = UUID.randomUUID();
+        SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));
+        sagaExecutor.execute(Contexts.empty(), new TestFixture.StartEvent(identifierSaga));
+
+        // When
+        sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent4(identifierSaga, DateTime.now().plusMillis(200)));
+
+        //Then
+        Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
