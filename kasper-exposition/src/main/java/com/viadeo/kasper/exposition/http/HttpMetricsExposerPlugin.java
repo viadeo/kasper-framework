@@ -8,9 +8,9 @@ package com.viadeo.kasper.exposition.http;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,13 +35,13 @@ public class HttpMetricsExposerPlugin extends HttpExposerPlugin<HttpMetricsExpos
     }
 
     public HttpMetricsExposerPlugin(final ObjectMapper objectMapper) {
-        this(new HttpContextDeserializer(), objectMapper, DEFAULT_RATE_UNIT, DEFAULT_DURATION_UNIT);
+        this(new SimpleHttpContextDeserializer(), objectMapper, DEFAULT_RATE_UNIT, DEFAULT_DURATION_UNIT);
     }
 
     public HttpMetricsExposerPlugin(final ObjectMapper objectMapper,
                                     final TimeUnit rateUnit,
                                     final TimeUnit durationUnit) {
-        this(new HttpContextDeserializer(), objectMapper, rateUnit, durationUnit);
+        this(new SimpleHttpContextDeserializer(), objectMapper, rateUnit, durationUnit);
     }
 
     public HttpMetricsExposerPlugin(final HttpContextDeserializer httpContextDeserializer,

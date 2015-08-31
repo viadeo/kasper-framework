@@ -11,14 +11,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
-import com.viadeo.kasper.client.platform.domain.descriptor.QueryHandlerDescriptor;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
+import com.viadeo.kasper.platform.bundle.descriptor.QueryHandlerDescriptor;
+import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
     }
 
     public HttpQueryExposerPlugin(final ObjectMapper objectMapper){
-        this(new HttpContextDeserializer(), checkNotNull(objectMapper));
+        this(new SimpleHttpContextDeserializer(), checkNotNull(objectMapper));
     }
 
     public HttpQueryExposerPlugin(final HttpContextDeserializer httpContextDeserializer,

@@ -7,12 +7,12 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -24,13 +24,13 @@ public class CommandHandlerResolverTest {
 
     @XKasperUnregistered
     @XKasperCommandHandler( domain = TestDomain.class )
-    private static class TestCommandHandler extends CommandHandler { }
+    private static class TestCommandHandler extends AutowiredCommandHandler { }
 
     @XKasperUnregistered
     private static class TestCommand implements Command { }
 
     @XKasperUnregistered
-    private static class TestCommandHandler2 extends CommandHandler<TestCommand> { }
+    private static class TestCommandHandler2 extends AutowiredCommandHandler<TestCommand> { }
 
     // ------------------------------------------------------------------------
 
@@ -68,8 +68,7 @@ public class CommandHandlerResolverTest {
 
         // When
         try {
-            final Class<? extends Command> command =
-                    resolver.getCommandClass(TestCommandHandler.class);
+            resolver.getCommandClass(TestCommandHandler.class);
             fail();
         } catch (final KasperException e) {
             // Then exception is raised

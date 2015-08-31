@@ -6,17 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.api.validation.validator;
 
-import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.api.IDBuilder;
-import com.viadeo.kasper.api.SimpleIDBuilder;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.id.IDBuilder;
+import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import com.viadeo.kasper.api.validation.AssertID;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 
-import static com.viadeo.kasper.api.TestFormats.DB_ID;
-import static com.viadeo.kasper.api.TestFormats.UUID;
+import static com.viadeo.kasper.api.id.TestFormats.DB_ID;
+import static com.viadeo.kasper.api.id.TestFormats.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;

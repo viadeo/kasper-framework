@@ -7,13 +7,13 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -25,10 +25,10 @@ public class QueryHandlerResolverTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler(domain = TestDomain.class)
-    private static final class TestQueryHandler extends QueryHandler { }
+    private static final class TestQueryHandler extends AutowiredQueryHandler { }
 
     @XKasperUnregistered
-    private static final class TestQueryHandler2 extends QueryHandler { }
+    private static final class TestQueryHandler2 extends AutowiredQueryHandler { }
 
     @XKasperUnregistered
     private static final class TestQuery implements Query { }
@@ -37,7 +37,7 @@ public class QueryHandlerResolverTest {
     private static final class TestQueryResult implements QueryResult { }
 
     @XKasperUnregistered
-    private static final class TestQueryHandler3 extends QueryHandler<TestQuery, TestQueryResult> { }
+    private static final class TestQueryHandler3 extends AutowiredQueryHandler<TestQuery, TestQueryResult> { }
 
     // ------------------------------------------------------------------------
 

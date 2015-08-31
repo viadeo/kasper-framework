@@ -9,7 +9,7 @@ ext.nexusCredentials = {
     password nexus_password
 }
 
-wrapper.gradleVersion = '2.1'
+wrapper.gradleVersion = '2.5'
 
 configure(allprojects) {
     apply plugin: 'idea'
@@ -48,7 +48,7 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '0.8.0-pre43'
+    version = '1.0.0'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
@@ -85,6 +85,14 @@ configure(subprojects) {
         maven {
             url "https://${nexus_host}/content/groups/all_repositories"
             credentials nexusCredentials
+        }
+    }
+
+    test {
+        // Ensure we don't write where the task 'test' already writes
+        def junitXmlDestination = System.getenv("CIRCLE_TEST_REPORTS") ?: "${rootProject.buildDir}"
+        reports {
+            junitXml.destination = "${junitXmlDestination}/test-results"
         }
     }
 
@@ -150,28 +158,6 @@ configure(subprojects) {
             property "sonar.sourceEncoding", "UTF-8"
         }
     }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    apply plugin: 'findbugs'
-
-    findbugs {
-        toolVersion = "2.0.1"
-        sourceSets = [sourceSets.main]
-        ignoreFailures = false
-        reportsDir = file("$project.buildDir/findbugsReports")
-        effort = "max"
-        reportLevel = "high"
-        visitors = ["FindSqlInjection", "SwitchFallthrough"]
-        omitVisitors = ["FindNonShortCircuit"]
-    }
-
-    tasks.withType(FindBugs) {
-        reports {
-            xml.enabled = false
-            html.enabled = true
-        }
-    }
 }
 
 task alljavadoc(type: Javadoc) {
@@ -179,3 +165,6 @@ task alljavadoc(type: Javadoc) {
     classpath = files(rootProject.subprojects.collect { project -> project.sourceSets.main.compileClasspath })
     destinationDir = file('build/javadoc')
 }
+
+apply from: "${gradleDir}/circleci.gradle"
+

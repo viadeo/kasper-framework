@@ -1,4 +1,6 @@
 machine:
+  services:
+   - docker
   environment:
     TERM: dumb
   timezone:
@@ -6,23 +8,41 @@ machine:
   hosts:
     ## CircleCI AWS SecurityGroup Access
     nexus.viadeobackoffice.com: 10.69.181.179
+  java:
+    version: oraclejdk7
 
 dependencies:
   cache_directories:
     - "~/.gradle"
 
+  pre:
+    # install docker-compose
+    - sudo pip install docker-compose==1.3.3
+
   override:
-    - ./gradlew assemble --parallel-threads=2:
+    - ./gradlew --no-daemon compileJava compileTestJava assemble --parallel --max-workers=2:
         timeout: 300
+
+  post:
+    # Stop the services provided by default by CircleCI
+    - sudo /etc/init.d/rabbitmq-server stop
+    # start docker containers
+    - docker login -e "architecture@viadeoteam.com" -u "viadeo+default" -p "$QUAY_READ_PASSWORD" quay.io
+    - docker-compose up -d
 
 test:
   override:
-    - ./gradlew check:
+    - ./gradlew --no-daemon -a circleCheck --parallel --max-workers=2:
         parallel: true
+  post:
+      # Delete useless report files that would slow the Collect phase of CircleCi
+      - echo "Delete success report"
+      - grep -lRL "failure message" $CIRCLE_TEST_REPORTS | xargs rm -f
+
 
 deployment:
   nexus:
-    branch: develop
+    branch: [develop, prepare_1.0.0]
     owner: viadeo
     commands:
-      - ./gradlew build uploadArchives --parallel-threads=2
+      - ./gradlew --no-daemon uploadArchives --parallel-threads=2

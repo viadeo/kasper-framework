@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
-import com.viadeo.kasper.query.exposition.query.QueryBuilder;
-import com.viadeo.kasper.query.exposition.query.QueryParser;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.common.exposition.TypeAdapter;
+import com.viadeo.kasper.common.exposition.query.QueryBuilder;
+import com.viadeo.kasper.common.exposition.query.QueryParser;
 import org.joda.time.DateTime;
 import org.junit.Test;
 

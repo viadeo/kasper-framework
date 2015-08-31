@@ -12,15 +12,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.FeatureConfiguration;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
-import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
-import com.viadeo.kasper.query.exposition.query.BeanAdapter;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
-import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.common.exposition.FeatureConfiguration;
+import com.viadeo.kasper.common.exposition.TypeAdapter;
+import com.viadeo.kasper.common.exposition.adapters.TypeAdapterFactory;
+import com.viadeo.kasper.common.exposition.query.BeanAdapter;
+import com.viadeo.kasper.common.exposition.query.QueryFactory;
+import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.common.exposition.query.VisibilityFilter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,7 +30,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This builder must be used if you want to change KasperClient configuration. By default all queries will be sent to
- * {@value #DEFAULT_QUERY_URL} url and commands to {@value #DEFAULT_COMMAND_URL}. <br/>
+ * {@value #DEFAULT_QUERY_URL} url and commands to {@value #DEFAULT_COMMAND_URL}.
+ *
  * Queries can have attributes of primitive types, arrays, collections and some date types (including jodatime). If some
  * type is missing just open an issue and it will be added.
  */
@@ -67,13 +68,13 @@ public class KasperClientBuilder {
     /**
      * Registers an adapter for its parameterized type for query ser/deser. Registration of adapters should be done in
      * domain api projects as they are shared between server and clients. To allow adapters discovery prefer using java
-     * service loader mechanism. Create a file named com.viadeo.kasper.query.exposition.TypeAdapter under
+     * service loader mechanism. Create a file named com.viadeo.kasper.common.exposition.TypeAdapter under
      * META-INF/services and put inside the name of your adapters. They will be automatically discovered by the
      * KasperClient.
      * 
      * @param mapper to register for query serialization/deserialization.
      * @return a reference to this builder.
-     * @see com.viadeo.kasper.query.exposition.TypeAdapter
+     * @see com.viadeo.kasper.common.exposition.TypeAdapter
      */
     public KasperClientBuilder use(final ObjectMapper mapper) {
         this.mapper = checkNotNull(mapper);
@@ -101,7 +102,9 @@ public class KasperClientBuilder {
     }
 
     /**
-     * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
+     * @param factory a factory
+     * @return a reference to this builder.
+     * @see #use(com.viadeo.kasper.common.exposition.TypeAdapter)
      */
     public KasperClientBuilder use(final TypeAdapterFactory factory) {
         qFactoryBuilder.use(checkNotNull(factory));
@@ -134,7 +137,7 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for query submission.
      * @return a reference to this builder.
-     * @throws KasperException
+     * @throws KasperException a kasper exception
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
         return queryBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
@@ -143,7 +146,7 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for commands submission.
      * @return a reference to this builder.
-     * @throws KasperException
+     * @throws KasperException a kasper exception
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
         return commandBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
@@ -152,7 +155,7 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for event submission.
      * @return a reference to this builder.
-     * @throws KasperException
+     * @throws KasperException a kasper exception
      */
     public KasperClientBuilder eventBaseLocation(final String url) {
         return eventBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
@@ -162,7 +165,7 @@ public class KasperClientBuilder {
      * Add a trailing "/" at the end of the base URL.
      * Also check url is not null as a precondition
      * In case of URL without trailing "/", the last part of it is removed by java.net.URL constructor otherwise
-     * @param url
+     * @param url the base URL
      * @return url plus trailing "/"
      */
     private String getCanonicalUrl(final String url) {

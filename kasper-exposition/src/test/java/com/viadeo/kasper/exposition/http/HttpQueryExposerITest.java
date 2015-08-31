@@ -1,13 +1,13 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.Meta;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.platform.Meta;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import org.joda.time.DateTime;
 import org.junit.Before;

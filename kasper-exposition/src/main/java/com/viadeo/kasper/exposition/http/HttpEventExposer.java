@@ -10,18 +10,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.client.platform.Meta;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.platform.Meta;
+import com.viadeo.kasper.platform.Platform;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 
@@ -38,12 +38,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * WARNING:
- * <p/>
+ * <p>
  * Domain events exposing is an anti-pattern of the platform's spirit in itself
  * this endpoint is provided as a migration helper when dealing with a
  * legacy platform allowing a smooth decoupling : the legacy platform can
  * then send domain events in place of the not-yet-implemented platform's
  * domain to come
+ * </p>
  */
 public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
@@ -62,7 +63,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
                 platform.getEventBus(),
                 platform.getMeta(),
                 descriptors,
-                new HttpContextDeserializer(),
+                new SimpleHttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }

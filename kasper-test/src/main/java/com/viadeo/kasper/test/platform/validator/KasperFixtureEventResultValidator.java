@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform.validator;
 
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 
 public interface KasperFixtureEventResultValidator<VALIDATOR extends KasperFixtureEventResultValidator> {
 

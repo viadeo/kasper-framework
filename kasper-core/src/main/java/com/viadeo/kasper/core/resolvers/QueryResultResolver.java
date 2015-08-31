@@ -8,14 +8,14 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.api.annotation.XKasperQueryResult;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.query.CollectionQueryResult;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;

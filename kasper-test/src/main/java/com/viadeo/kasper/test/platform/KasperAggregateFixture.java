@@ -8,18 +8,20 @@ package com.viadeo.kasper.test.platform;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.event.DomainEvent;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
+import com.viadeo.kasper.core.component.command.RepositoryManager;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
+import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.RepositoryManager;
-import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
-import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
-import com.viadeo.kasper.ddd.repository.Repository;
-import com.viadeo.kasper.event.domain.DomainEvent;
-import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
@@ -85,10 +87,16 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
     }
 
     public KasperAggregateFixture<AGR> registerCommandHandler(final CommandHandler commandHandler) {
-        commandHandler.setEventBus(fixture.getEventBus());
-        commandHandler.setRepositoryManager(repositoryManager);
+        if (commandHandler instanceof AutowiredCommandHandler) {
+            AutowiredCommandHandler autoWiringCommandHandler = (AutowiredCommandHandler) commandHandler;
+            autoWiringCommandHandler.setEventBus(fixture.getEventBus());
+            autoWiringCommandHandler.setRepositoryManager(repositoryManager);
+        }
 
-        fixture.registerCommandHandler(commandHandler.getCommandClass(), commandHandler);
+        fixture.registerCommandHandler(
+                commandHandler.getInputClass(),
+                new AxonCommandHandler(commandHandler)
+        );
         return this;
     }
 

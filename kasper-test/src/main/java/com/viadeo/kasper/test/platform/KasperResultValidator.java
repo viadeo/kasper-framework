@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.tools.KasperMatcher;
 import org.axonframework.test.ResultValidator;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;

@@ -9,7 +9,7 @@ package com.viadeo.kasper.doc.element;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 
 import java.util.List;

@@ -8,18 +8,18 @@ package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.client.platform.Meta;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.platform.Meta;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;
@@ -51,7 +51,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
                 platform.getCommandGateway(),
                 platform.getMeta(),
                 descriptors,
-                new HttpContextDeserializer(),
+                new SimpleHttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }

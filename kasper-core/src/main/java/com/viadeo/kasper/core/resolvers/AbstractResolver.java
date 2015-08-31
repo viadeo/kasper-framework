@@ -9,9 +9,9 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.annotation.XKasperAlias;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
+import com.viadeo.kasper.api.annotation.XKasperAlias;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;

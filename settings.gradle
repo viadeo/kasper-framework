@@ -5,8 +5,9 @@ include ':kasper-api',
         ':kasper-core', 
         ':kasper-platform',
         ':kasper-exposition',
-        ':kasper-client', 
+        ':kasper-client',
         ':kasper-common', 
         ':kasper-test', 
-        ':kasper-documentation'
+        ':kasper-documentation',
+        ':kasper-domain-sample'
 

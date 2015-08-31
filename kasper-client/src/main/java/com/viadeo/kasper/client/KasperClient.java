@@ -16,24 +16,22 @@ import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
-import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
-import com.viadeo.kasper.query.exposition.query.QueryBuilder;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.common.exposition.exception.KasperQueryAdapterException;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.common.exposition.TypeAdapter;
+import com.viadeo.kasper.common.exposition.query.QueryBuilder;
+import com.viadeo.kasper.common.exposition.query.QueryFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -49,8 +47,8 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_ACCESS_TOKEN;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_ACCESS_TOKEN;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
  * <p>
@@ -63,17 +61,20 @@ import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN
  * reused</strong> as internally some caching is done in order to improve
  * performances (mainly to avoid java introspection overhead).
  * </p>
+ *
  * <p>
- * <strong>Usage</strong><br />
- * <p/>
+ * <strong>Usage</strong>
+ * </p>
+ * <p>
  * KasperClient supports synchronous and asynchronous requests. Sending
  * asynchronous requests can be done by asking for a java Future or by passing a
  * {@link Callback callback} argument. For example
  * submitting a command asynchronously with a callback (we will use here a
- * client with its default configuration). <br/>
+ * client with its default configuration).
  * Command and query methods can throw KasperClientException, which are
  * unchecked exceptions in order to avoid boilerplate code.
- * <p/>
+ * </p>
+ *
  * <pre>
  *      KasperClient client = new KasperClient();
  *
@@ -93,32 +94,36 @@ import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN
  *      // block until the response is obtained
  *      ICommandResponse commandResponse = futureCommandResponse.get();
  * </pre>
- * <p/>
+ *
+ * <p>
  * Using a similar pattern you can submit a query.
  * </p>
  * <p>
- * <strong>Customization</strong><br />
- * <p/>
+ * <strong>Customization</strong>
+ * </p>
+ *
+ * <p>
  * To customize a KasperClient instance you can use the
  * {@link KasperClientBuilder}, implementing the builder pattern in order to
  * allow a fluent and intuitive construction of KasperClient instances.
  * </p>
+ *
  * <p>
- * <strong>Important notes</strong><br />
- * <p/>
+ * <strong>Important notes</strong>
+ * </p>
+ *
  * <ul>
  * <li>Query implementations must be composed only of simple types (serialized
  * to litterals), if you need a complex query or some type used in your query is
  * not supported you should ask the team responsible of maintaining the kasper
  * platform to implement a custom
- * {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific
+ * {@link com.viadeo.kasper.common.exposition.TypeAdapter} for that specific
  * type.</li>
  * <li>At the moment the Response to which the response should be mapped is free,
  * but take care it must match the responseing stream. This will probably change
  * in the future by making IQuery parameterized with a Response. Thus query
  * methods signature could change.</li>
  * </ul>
- * </p>
  */
 public class KasperClient {
     private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
@@ -253,6 +258,7 @@ public class KasperClient {
     /**
      * Sends a command and waits until a response is returned.
      *
+     * @param context a related context
      * @param command to submit
      * @return the command response, indicating if the command has been processed
      *         successfully or not (in that case you can get the error message
@@ -280,6 +286,7 @@ public class KasperClient {
      * Sends a command and returns immediately a future allowing to retrieve the
      * response later.
      *
+     * @param context a related context
      * @param command to submit
      * @return a Future allowing to retrieve the response later.
      * @throws KasperException if something went wrong.
@@ -307,6 +314,7 @@ public class KasperClient {
      * Sends a command and returns immediately, when the response is ready the
      * callback will be called with the obtained ICommandResponse as parameter.
      *
+     * @param context a related context
      * @param command  to submit
      * @param callback to call when the response is ready.
      * @throws KasperException if something went wrong.
@@ -386,9 +394,9 @@ public class KasperClient {
     /**
      * Sends an event and waits until a response is returned.
      *
+     * @param context a related context
      * @param event to submit
-     * @throws KasperException|KasperClientException
-     *          if something went wrong.
+     * @throws KasperException if something went wrong.
      */
     public void emit(final Context context, final Event event) {
         checkNotNull(event);
@@ -421,7 +429,9 @@ public class KasperClient {
     /**
      * Send a query and maps the result to a Response.
      *
+     * @param context a related context
      * @param query to submit.
+     * @param <P> the type of result.
      * @param mapTo Response class to which we want to map the response.
      * @return an instance of the Response for this query.
      * @throws KasperException if something went wrong.
@@ -434,22 +444,25 @@ public class KasperClient {
     /**
      * Send a query and maps the response to a Response. Here we use guavas
      * TypeToken allowing to define a generic type. This is useful if you want
-     * to map the response to a IQueryCollectionResponse. <br/>
+     * to map the response to a IQueryCollectionResponse.
      * <p>
      * Type tokens are used like that:
-     * <p/>
+     *
      * <pre>
      * SomeCollectionResponse&lt;SomeResponse&gt; someResponseCollection = client.query(someQuery,
      *         new TypeToken&lt;SomeCollectionResponse&lt;SomeResponse&gt;&gt;());
      * </pre>
-     * <p/>
+     *
+     * <p>
      * If you are not familiar with the concept of TypeTokens you can read <a
      * href="http://gafter.blogspot.fr/2006/12/super-type-tokens.html">this blog
      * post</a> who explains a bit more in details what it is about.
-     * </p>
      *
+     *
+     * @param context a related context
      * @param query to submit.
      * @param mapTo Response class to which we want to map the response.
+     * @param <P> the type of the <code>QueryResult</code>
      * @return an instance of the Response for this query.
      * @throws KasperException if something went wrong.
      */
@@ -488,8 +501,14 @@ public class KasperClient {
      * FIXME should we also handle async in the platform side ?? Is it really
      * useful?
      *
-     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command)
+     * @param context a related context
+     * @param query to submit.
+     * @param mapTo Response class to which we want to map the response.
+     * @param <P> the type of the <code>QueryResult</code>
+     * @return a future of the Response for this query.
+     *
+     * @see KasperClient#query(Context, com.viadeo.kasper.api.component.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.api.component.command.Command)
      */
     public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
             final Context context, final Query query, final TypeToken<P> mapTo) {
@@ -518,22 +537,37 @@ public class KasperClient {
     // --
 
     /**
-     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-        * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command, Callback)
+     * @param context a related context
+     * @param query to submit.
+     * @param mapTo Response class to which we want to map the response.
+     * @param callback a callback
+     * @param <P> the type of the <code>QueryResult</code>
+     *
+     * @see KasperClient#query(Context, com.viadeo.kasper.api.component.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.api.component.command.Command, Callback)
      */
     public <P extends QueryResult> void queryAsync(
-            final Context context, final Query query, final Class<P> mapTo,
+            final Context context,
+            final Query query,
+            final Class<P> mapTo,
             final Callback<QueryResponse<P>> callback) {
         queryAsync(context, query, TypeToken.of(mapTo), callback);
     }
 
     /**
-     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command,
+     * @param context a related context
+     * @param query to submit.
+     * @param mapTo TypeToken to which we want to map the response.
+     * @param callback a callback
+     * @param <P> the type of the <code>QueryResult</code>
+     *
+     * @see KasperClient#query(Context, com.viadeo.kasper.api.component.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.api.component.command.Command,
      *      Callback)
      */
     public <P extends QueryResult> void queryAsync(
-            final Context context, final Query query,
+            final Context context,
+            final Query query,
             final TypeToken<P> mapTo,
             final Callback<QueryResponse<P>> callback) {
         checkNotNull(query);

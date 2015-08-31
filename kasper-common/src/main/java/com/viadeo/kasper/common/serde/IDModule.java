@@ -10,9 +10,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.api.IDBuilder;
-import com.viadeo.kasper.api.RelationID;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.id.IDBuilder;
+import com.viadeo.kasper.api.id.RelationID;
 
 import java.io.IOException;
 
@@ -28,6 +28,8 @@ public class IDModule extends SimpleModule {
         addDeserializer(RelationID.class, new RelationIDDeserializer(builder));
     }
 
+    // ------------------------------------------------------------------------
+
     private static class IDSerializer extends JsonSerializer<ID> {
 
         @Override
@@ -35,6 +37,8 @@ public class IDModule extends SimpleModule {
             jgen.writeString(value.toString());
         }
     }
+
+    // ------------------------------------------------------------------------
 
     private static class IDDeserializer extends JsonDeserializer<ID> {
 
@@ -51,6 +55,8 @@ public class IDModule extends SimpleModule {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     private static class IDKeySerializer extends JsonSerializer<ID> {
 
         @Override
@@ -58,6 +64,8 @@ public class IDModule extends SimpleModule {
             jgen.writeFieldName(value.toString());
         }
     }
+
+    // ------------------------------------------------------------------------
 
     private static class IDKeyDeserializer extends KeyDeserializer {
         private IDBuilder builder;
@@ -72,12 +80,16 @@ public class IDModule extends SimpleModule {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     private static class RelationIDSerializer extends JsonSerializer<RelationID> {
         @Override
         public void serialize(final RelationID value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
             jgen.writeString(value.toString());
         }
     }
+
+    // ------------------------------------------------------------------------
 
     private static class RelationIDDeserializer extends JsonDeserializer<RelationID> {
 
@@ -93,4 +105,6 @@ public class IDModule extends SimpleModule {
             return new RelationID(builder.build(split[0]), builder.build(split[1]));
         }
     }
+
+    // ------------------------------------------------------------------------
 }

@@ -7,14 +7,14 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.EventResponse;
-import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -26,7 +26,7 @@ public class EventListenerResolverTest {
 
     @XKasperUnregistered
     @XKasperEventListener( domain = TestDomain.class )
-    private static class TestEventListener extends EventListener {
+    private static class TestEventListener extends AutowiredEventListener {
         @Override
         public EventResponse handle(Context context, Event event) {
             return EventResponse.success();
@@ -37,7 +37,7 @@ public class EventListenerResolverTest {
     private static class TestEvent implements Event { }
 
     @XKasperUnregistered
-    private static class TestEventListener2 extends EventListener<TestEvent> {
+    private static class TestEventListener2 extends AutowiredEventListener<TestEvent> {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
             return EventResponse.success();

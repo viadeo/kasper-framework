@@ -12,25 +12,24 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.annotation.XKasperUnexposed;
-import com.viadeo.kasper.client.platform.Meta;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.context.MDCUtils;
+import com.viadeo.kasper.core.component.annotation.XKasperPublic;
+import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.exception.KasperSecurityException;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
+import com.viadeo.kasper.exposition.context.MDCUtils;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
-import com.viadeo.kasper.security.exception.KasperSecurityException;
+import com.viadeo.kasper.platform.Meta;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,14 +39,15 @@ import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.ParameterizedType;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_KASPER_ID;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_REQUEST_CORRELATION_ID;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_REQUEST_CORRELATION_ID;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_KASPER_ID;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -159,14 +159,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     validationException
             );
 
-        } catch (final IOException e) {
-            errorHandlingDescriptor = new ErrorHandlingDescriptor(
-                    ErrorState.ERROR,
-                    CoreReasonCode.INVALID_INPUT,
-                    Lists.newArrayList((null == e.getMessage()) ? "Unknown" : e.getMessage()),
-                    e
-            );
-
         } catch (final KasperSecurityException kse) {
             errorHandlingDescriptor = new ErrorHandlingDescriptor(
                     ErrorState.REFUSED,
@@ -254,8 +246,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     );
                 }
             } else {
-                requestLogger.debug("Request processed in {} [{}]", getInputTypeName(), inputName);
+                requestLogger.debug("Request processed in {} [{}] : {}", getInputTypeName(), inputName, response.getStatus());
             }
+
         } finally {
             MDC.clear();
         }
@@ -370,8 +363,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     }
 
     protected String getInputTypeName() {
-        ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) getClass().getGenericSuperclass();
-        final Class inputClass = (Class) parameterizedType.getActualTypeArguments()[0];
+        ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
+        final Class inputClass = (Class)parameterizedType.getActualTypeArguments()[0];
         return inputClass.getSimpleName();
     }
 

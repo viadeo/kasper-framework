@@ -7,11 +7,11 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.er.Concept;
-import com.viadeo.kasper.er.LinkedConcept;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
+import com.viadeo.kasper.core.component.command.aggregate.LinkedConcept;
+import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

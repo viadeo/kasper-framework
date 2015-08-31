@@ -14,14 +14,13 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -291,8 +290,10 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // Then
         Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+        Assert.assertTrue(response instanceof HTTPQueryResponse);
+
+        HTTPQueryResponse httpResponse = (HTTPQueryResponse) response;
+        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
     @Test public void queryAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException, ExecutionException {
@@ -308,8 +309,10 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // Then
         Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+        Assert.assertTrue(response instanceof HTTPQueryResponse);
+
+        HTTPQueryResponse httpResponse = (HTTPQueryResponse) response;
+        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
 }

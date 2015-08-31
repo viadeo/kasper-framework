@@ -9,29 +9,34 @@ package com.viadeo.kasper.context;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.AbstractPlatformTests;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestId;
-import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
-import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.api.annotation.XKasperCommand;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.annotation.XKasperEvent;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.event.EntityCreatedEvent;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.annotation.XKasperRepository;
+import com.viadeo.kasper.core.component.command.AutowiredEntityCommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
+import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.repository.ClientRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.cqrs.command.*;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.repository.ClientRepository;
-import com.viadeo.kasper.ddd.repository.Repository;
-import com.viadeo.kasper.er.Concept;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
-import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.EntityCreatedEvent;
-import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
 import org.junit.Test;
@@ -56,8 +61,8 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public static class ContextTestCommand implements Command { }
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
-    public static class ContextTestHandler extends EntityCommandHandler<ContextTestCommand, ContextTestAGR> {
-        public CommandResponse handle(final ContextTestCommand command) throws Exception {
+    public static class ContextTestHandler extends AutowiredEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
+        public CommandResponse handle(final ContextTestCommand command) {
 
             StaticChecker.verify(CurrentContext.value().get());
 

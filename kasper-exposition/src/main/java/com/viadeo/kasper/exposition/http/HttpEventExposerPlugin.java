@@ -10,12 +10,12 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 
 import java.util.Set;
 
@@ -28,7 +28,7 @@ public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> 
     // ------------------------------------------------------------------------
 
     public HttpEventExposerPlugin(final ObjectMapper objectMapper) {
-        this(new HttpContextDeserializer(), objectMapper);
+        this(new SimpleHttpContextDeserializer(), objectMapper);
     }
 
     public HttpEventExposerPlugin(final HttpContextDeserializer httpContextDeserializer,

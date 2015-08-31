@@ -1,0 +1,23 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+package com.viadeo.kasper.core.component.event.saga.step.facet;
+
+import com.viadeo.kasper.core.component.event.saga.step.Step;
+import com.viadeo.kasper.core.component.event.saga.step.Step;
+
+import java.lang.reflect.Method;
+
+/**
+ * Decorator for <code>Step</code>
+ */
+public interface FacetApplier {
+
+    Step apply(Method method, Step step);
+
+    int getPhase();
+
+}

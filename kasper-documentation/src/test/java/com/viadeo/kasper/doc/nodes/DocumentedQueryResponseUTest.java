@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import com.viadeo.kasper.test.root.queries.GetAllMembersQueryHandler;
-import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
+import com.viadeo.kasper.domain.sample.root.api.query.GetAllMembersQueryHandler;
+import com.viadeo.kasper.domain.sample.root.api.query.GetMembersQueryHandler;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

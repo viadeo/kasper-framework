@@ -7,18 +7,22 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandlerAdapter;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.component.Domain;
 
 import java.util.Collection;
 
 /** The Kasper query handlers locator */
 public interface QueryHandlersLocator {
 
-	/** @param handler the handler to be registered */
+    /**
+     * @param name the name
+     * @param handler the handler to be registered
+     * @param domainClass the related domain class
+     */
 	void registerHandler(String name, QueryHandler handler, Class<? extends Domain> domainClass);
 
     /**

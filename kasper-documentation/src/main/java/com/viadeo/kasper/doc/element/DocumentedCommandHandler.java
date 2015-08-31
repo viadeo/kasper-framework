@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.doc.element;
 
-import com.viadeo.kasper.client.platform.domain.descriptor.CommandHandlerDescriptor;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.platform.bundle.descriptor.CommandHandlerDescriptor;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
 

@@ -7,8 +7,10 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.ImmutableMap;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.HttpContextHeaders;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.SimpleIDBuilder;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.core.context.DefaultContextHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_TAGS;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_TAGS;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,7 +35,7 @@ public class HttpContextDeserializerUTest {
 
     @Before
     public void setUp() {
-        deserializer = new HttpContextDeserializer();
+        deserializer = new HttpContextWithVersionDeserializer(new DefaultContextHelper(new SimpleIDBuilder()));
     }
 
     // ------------------------------------------------------------------------

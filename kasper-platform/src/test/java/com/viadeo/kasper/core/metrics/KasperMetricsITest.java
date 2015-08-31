@@ -7,13 +7,13 @@
 package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.platform.Platforms;
+import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class KasperMetricsITest {
 
     private static void buildPlatformWith(final MetricRegistry metricRegistry) {
-        new Platform.Builder(new KasperPlatformConfiguration())
+        Platforms.newDefaultBuilder(new KasperPlatformConfiguration())
                 .withMetricRegistry(metricRegistry)
                 .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();
@@ -172,7 +172,7 @@ public class KasperMetricsITest {
         final String name = KasperMetrics.name(MetricNameStyle.NONE, MyCustomDomainBox.MyCustomCommand.class, "bip");
 
         // Then
-        assertEquals("com.viadeo.kasper.client.platform.domain.sample.mycustomdomainbox$mycustomcommand.bip", name);
+        assertEquals("com.viadeo.kasper.platform.bundle.sample.mycustomdomainbox$mycustomcommand.bip", name);
     }
 
     @Test

@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.client.platform.domain.descriptor.*;
-import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.query.CollectionQueryResult;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.platform.bundle.descriptor.*;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

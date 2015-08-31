@@ -7,14 +7,16 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
-import com.viadeo.kasper.ddd.repository.Repository;
-import com.viadeo.kasper.impl.DefaultKasperId;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.api.id.DefaultKasperId;
 import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
@@ -29,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
-import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 import static org.mockito.Mockito.mock;
 
@@ -72,12 +74,12 @@ public class TestFixtureAxonTest {
         // Register the update handler
         final TestChangeLastNameCommandHandler updateHandler = new TestChangeLastNameCommandHandler();
         updateHandler.setRepository(this.testRepository);
-        fixture.registerCommandHandler(TestChangeLastNameCommand.class, updateHandler);
+        fixture.registerCommandHandler(TestChangeLastNameCommand.class, new AxonCommandHandler<>(updateHandler));
 
         // Register the create handler
         final TestCreateCommandHandler createHandler = new TestCreateCommandHandler();
         createHandler.setRepository(this.testRepository);
-        fixture.registerCommandHandler(TestCreateCommand.class, createHandler);
+        fixture.registerCommandHandler(TestCreateCommand.class, new AxonCommandHandler<>(createHandler));
     }
 
     private Map<String, Object> newContext() {

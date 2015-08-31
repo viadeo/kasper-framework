@@ -7,13 +7,16 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
-import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandlerAdapter;
+import com.viadeo.kasper.core.component.query.QueryMessage;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,9 +41,9 @@ public class KasperQueryHandlersLocatorBaseTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class )
-	private static class TestHandler extends QueryHandler<TestQuery, TestResult> {
+	private static class TestHandler extends AutowiredQueryHandler<TestQuery, TestResult> {
 		@Override
-		public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery> message) {
+		public QueryResponse<TestResult> handle(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -49,12 +52,7 @@ public class KasperQueryHandlersLocatorBaseTest {
 
 	@Before
 	public void setUp() throws Exception {
-        final DomainResolver domainResolver = new DomainResolver();
-
-        final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
-        queryHandlerResolver.setDomainResolver(domainResolver);
-
-		locator = new DefaultQueryHandlersLocator(queryHandlerResolver);
+		locator = new DefaultQueryHandlersLocator();
 	}
 
     // ------------------------------------------------------------------------
@@ -81,7 +79,7 @@ public class KasperQueryHandlersLocatorBaseTest {
 
 	@Test
 	public void oneHandlerRegistered() {
-		final TestHandler handler = mock(TestHandler.class);
+		final TestHandler handler = new TestHandler();
 		locator.registerHandler("test", handler, TestDomain.class);
 		assertEquals(locator.getHandlers().size(), 1);
 
@@ -161,9 +159,9 @@ public class KasperQueryHandlersLocatorBaseTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain2.class )
-    private static class TestHandler2 extends QueryHandler<TestQuery2, TestResult> {
+    private static class TestHandler2 extends AutowiredQueryHandler<TestQuery2, TestResult> {
         @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery2> message) {
+        public QueryResponse<TestResult> handle(final QueryMessage<TestQuery2> message) {
             throw new UnsupportedOperationException();
         }
     }

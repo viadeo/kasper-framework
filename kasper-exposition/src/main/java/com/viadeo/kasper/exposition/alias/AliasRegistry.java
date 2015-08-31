@@ -9,7 +9,7 @@ package com.viadeo.kasper.exposition.alias;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.annotation.XKasperAlias;
+import com.viadeo.kasper.api.annotation.XKasperAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
