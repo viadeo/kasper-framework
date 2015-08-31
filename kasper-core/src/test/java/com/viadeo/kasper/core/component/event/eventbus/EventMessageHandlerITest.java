@@ -32,6 +32,8 @@ import com.viadeo.kasper.core.config.spring.KasperConfiguration;
 import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
 import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
+import io.github.fallwizard.rabbitmq.mgmt.model.Queue;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.serializer.Serializer;
@@ -55,8 +57,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import rabbitmq.mgmt.RabbitMgmtService;
-import rabbitmq.mgmt.model.Queue;
 
 import javax.inject.Inject;
 import java.util.Collection;

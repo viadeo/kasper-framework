@@ -63,7 +63,7 @@ ext.libraries = [
         JCACHE: 'javax.cache:cache-api:0.5',
         JCACHE_EHCACHE: 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
 
-        RABBITMQ_MGMT            : dependencies.create('rabbitmq:mgmt:3.7.0') {
+        RABBITMQ_MGMT            : dependencies.create('io.github.fallwizard:rabbitmq-mgmt:3.8.1') {
             exclude group: 'junit'
             exclude group: 'org.mockito'
             exclude group: 'org.slf4j'

@@ -2,16 +2,13 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPComponentNameFormatter;
-import com.viadeo.kasper.core.component.event.eventbus.QueueFinder;
-import com.viadeo.kasper.core.component.event.eventbus.QueueInfo;
+import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import rabbitmq.mgmt.RabbitMgmtService;
 
 import javax.inject.Inject;
 import java.util.Collection;

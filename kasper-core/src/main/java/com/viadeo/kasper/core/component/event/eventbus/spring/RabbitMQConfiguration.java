@@ -7,6 +7,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.event.eventbus.MetricConnectionListener;
+import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -16,7 +17,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
-import rabbitmq.mgmt.RabbitMgmtService;
 
 @Configuration
 @Profile(value = { "rabbitmq" } )

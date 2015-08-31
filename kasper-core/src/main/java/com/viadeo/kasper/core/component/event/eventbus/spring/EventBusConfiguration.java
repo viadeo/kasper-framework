@@ -7,6 +7,7 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.api.context.ContextHelper;
 import com.viadeo.kasper.core.component.event.eventbus.*;
 import com.viadeo.kasper.core.interceptor.tags.TagsInterceptor;
+import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
 import org.axonframework.eventhandling.ClassNamePatternClusterSelector;
 import org.axonframework.eventhandling.Cluster;
 import org.axonframework.eventhandling.SimpleCluster;
@@ -26,7 +27,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 import org.springframework.retry.support.RetryTemplate;
-import rabbitmq.mgmt.RabbitMgmtService;
 
 import java.util.List;
 import java.util.regex.Pattern;

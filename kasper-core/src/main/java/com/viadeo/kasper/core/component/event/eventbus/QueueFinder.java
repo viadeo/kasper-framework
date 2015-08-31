@@ -2,11 +2,11 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
+import io.github.fallwizard.rabbitmq.mgmt.model.Queue;
 import org.springframework.amqp.core.Binding;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import rabbitmq.mgmt.RabbitMgmtService;
-import rabbitmq.mgmt.model.Queue;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +48,7 @@ public class QueueFinder {
 
     protected Collection<Binding> getQueueBindings(QueueInfo queueInfo) {
         List<Binding> bindings = Lists.newArrayList();
-        Optional<Collection<rabbitmq.mgmt.model.Binding>> optionalBindings = rabbitMgmtService.bindings().get(
+        Optional<Collection<io.github.fallwizard.rabbitmq.mgmt.model.Binding>> optionalBindings = rabbitMgmtService.bindings().get(
                 vhost,
                 queueInfo.isDeadLetter() ? queueInfo.getExchangeName() + AMQPComponentNameFormatter.DEAD_LETTER_SUFFIX : queueInfo.getExchangeName(),
                 queueInfo.getQueueName(),
@@ -56,7 +56,7 @@ public class QueueFinder {
         );
 
         if (optionalBindings.isPresent()) {
-            for (rabbitmq.mgmt.model.Binding binding : optionalBindings.get()) {
+            for (io.github.fallwizard.rabbitmq.mgmt.model.Binding binding : optionalBindings.get()) {
                 bindings.add(
                         new Binding(
                                 binding.getDestination(),
