@@ -5,8 +5,8 @@
 ext.gradleDir = "${rootProject.rootDir}/gradle"
 
 ext.nexusCredentials = {
-    username nexus_username
-    password nexus_password
+    username ultron_nexus_username
+    password ultron_nexus_password
 }
 
 wrapper.gradleVersion = '2.5'
@@ -18,7 +18,7 @@ configure(allprojects) {
 
 configure(rootProject) {
     idea.project {
-        languageLevel = '1.7'
+        languageLevel = '1.8'
         ipr {
             withXml { provider ->
                 def mapping = provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping
@@ -48,18 +48,18 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '1.0.0'
+    version = '1.0.0-K-SNAPSHOT'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
         targetCompatibility = 1.6
     } else {
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
     idea.module.iml.withXml {
-        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.7'
+        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.8'
     }
 
     configure([compileJava, compileTestJava]) {
@@ -96,25 +96,6 @@ configure(subprojects) {
         }
     }
 
-    // Adding javadoc and sources jars, it is really nice to have! --------------
-    // custom tasks for creating source jar
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    // custom tasks for creating javadoc jar
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
-    // add the jars as artifacts
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
     jar {
         manifest {
             attributes(
@@ -141,11 +122,11 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "https://${nexus_host}/content/repositories/kasper-releases") {
-                authentication(userName: nexus_username, password: nexus_password)
+            repository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-releases") {
+                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
             }
-            snapshotRepository(url: "https://${nexus_host}/content/repositories/kasper-snapshots") {
-                authentication(userName: nexus_username, password: nexus_password)
+            snapshotRepository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-snapshots") {
+                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
             }
         }
     }
@@ -159,12 +140,4 @@ configure(subprojects) {
         }
     }
 }
-
-task alljavadoc(type: Javadoc) {
-    source rootProject.subprojects.collect { project -> project.sourceSets.main.allJava }
-    classpath = files(rootProject.subprojects.collect { project -> project.sourceSets.main.compileClasspath })
-    destinationDir = file('build/javadoc')
-}
-
-apply from: "${gradleDir}/circleci.gradle"
 
