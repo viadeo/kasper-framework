@@ -35,7 +35,9 @@ import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -48,6 +50,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PlatformWirerUTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Mock
     private Config config;
@@ -287,6 +292,31 @@ public class PlatformWirerUTest {
         verifyNoMoreInteractions(commandGateway);
         verifyNoMoreInteractions(interceptorFactory);
     }
+
+    @Test
+    public void wire_two_bundles_with_the_same_name_is_not_permitted() {
+        // Given
+
+
+        final DomainBundle bundleA = new DomainBundle.Builder(new MyCustomDomainBox.MyCustomDomain())
+                .with(new MyCustomDomainBox.MyCustomCommandHandler())
+                .with(new MyCustomDomainBox.MyCustomRepository())
+                .build();
+
+        final DomainBundle bundleB = new DomainBundle.Builder(new MyCustomDomainBox.MyCustomDomain())
+                .with(new MyCustomDomainBox.MyCustomQueryHandler())
+                .build();
+
+        // Then
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Bundle name already wired : <name=MyCustomDomain>");
+
+        // When
+        platformWirer.wire(bundleA);
+        platformWirer.wire(bundleB);
+    }
+
+
 
     private static class TestRepository extends Repository<MyCustomDomainBox.MyCustomEntity> {
 

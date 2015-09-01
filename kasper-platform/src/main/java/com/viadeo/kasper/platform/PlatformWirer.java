@@ -8,6 +8,7 @@ package com.viadeo.kasper.platform;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.MeasuredCommandHandler;
@@ -36,8 +37,10 @@ import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public class PlatformWirer {
 
@@ -50,6 +53,7 @@ public class PlatformWirer {
     private final List<ExtraComponent> extraComponents;
     private final Config config;
     private final MetricRegistry metricRegistry;
+    private final Set<String> registeredBundleNames;
 
     public PlatformWirer(
             final Config config,
@@ -69,9 +73,12 @@ public class PlatformWirer {
         this.repositoryManager = checkNotNull(repositoryManager);
         this.domainDescriptorFactory = new DomainDescriptorFactory();
         this.extraComponents = Lists.newArrayList();
+        this.registeredBundleNames = Sets.newHashSet();
     }
 
     public DomainDescriptor wire(DomainBundle bundle) {
+        checkState(!registeredBundleNames.contains(bundle.getName()), "Bundle name already wired : <name=%s>", bundle.getName());
+
         bundle.configure(
                 new BuilderContext(
                         config,
@@ -139,6 +146,8 @@ public class PlatformWirer {
         for (final EventInterceptorFactory factory : bundle.getEventInterceptorFactories()) {
             wire(factory);
         }
+
+        registeredBundleNames.add(bundle.getName());
 
         return domainDescriptorFactory.createFrom(bundle);
     }
