@@ -7,16 +7,16 @@
 package com.viadeo.kasper.core.component.event.saga;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.SchedulableSagaMethod;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.annotation.XKasperSaga;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import com.viadeo.kasper.api.component.Domain;
-import com.viadeo.kasper.api.annotation.XKasperDomain;
-import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.listener.EventMessage;
-import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -174,6 +174,10 @@ public class TestFixture {
         }
 
         @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.ScheduledByEvent(methodName = "invokedMethod")
+        public void scheduledByEventStep(StepEvent4 event){ }
+
+        @XKasperSaga.Step(getter = "getId")
         @XKasperSaga.CancelSchedule(methodName = "invokedMethod")
         public void cancelScheduledStep(StepEvent2 event){
             System.err.println("A scheduled method invocation is canceled !");
@@ -225,6 +229,23 @@ public class TestFixture {
         }
     }
 
+    // --------------------------------------------------------------
+
+    @XKasperSaga(domain = TestDomain.class)
+    public static class TestSagaC implements Saga {
+
+        @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.ScheduledByEvent(methodName = "invokedMethod")
+        public void scheduledByEventStep(StepEvent1 event){ }
+
+        @Override
+        public Optional<SagaIdReconciler> getIdReconciler() {
+            return Optional.absent();
+        }
+    }
+
+    // --------------------------------------------------------------
+
     public static class StartEvent extends AbstractEvent {
         public StartEvent(UUID id) {
             super(id);
@@ -252,6 +273,21 @@ public class TestFixture {
     public static class StepEvent3 extends AbstractEvent {
         public StepEvent3(UUID id) {
             super(id);
+        }
+    }
+
+    public static class StepEvent4 extends AbstractEvent implements SchedulableSagaMethod {
+
+        private final DateTime scheduledTime;
+
+        public StepEvent4(UUID id, DateTime scheduledTime) {
+            super(id);
+            this.scheduledTime = scheduledTime;
+        }
+
+        @Override
+        public DateTime getScheduledDate() {
+            return scheduledTime;
         }
     }
 

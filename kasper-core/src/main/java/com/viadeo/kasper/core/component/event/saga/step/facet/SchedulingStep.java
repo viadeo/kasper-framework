@@ -7,12 +7,10 @@
 package com.viadeo.kasper.core.component.event.saga.step.facet;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.SchedulableSagaMethod;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.event.saga.step.Step;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
@@ -25,29 +23,54 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SchedulingStep extends DecorateStep {
 
-    protected interface SchedulingOperation {
-        void execute(Object identifier);
-        void clean(Object identifier);
-        String getAction();
+    public enum OperationType {
+        CANCEL {
+            @Override
+            public String action(String methodName) {
+                return String.format("Cancel(methodName=%s)", methodName);
+            }
+        },
+        SCHEDULE {
+            @Override
+            public String action(String methodName) {
+                return String.format("Schedule(methodName=%s)", methodName);
+            }
+        },
+        SCHEDULE_BY_EVENT {
+            @Override
+            public String action(String methodName) {
+                return String.format("SchedulingByEvent(methodName=%s)", methodName);
+            }
+        };
+
+        public abstract String action(final String methodName);
     }
 
-    public static class CancelOperation implements SchedulingOperation {
+    // ------------------------------------------------------------------------
 
-        private final Scheduler scheduler;
-        private final String methodName;
-        private final Class<? extends Saga> sagaClass;
-        private String action;
+    protected interface Operation {
+        void execute(Event event, Object identifier);
+        void clean(Object identifier);
+        String getAction();
+        OperationType getType();
+    }
 
-        public CancelOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName) {
+    // ------------------------------------------------------------------------
+
+    public static abstract class OperationAdapter implements Operation {
+
+        protected final Scheduler scheduler;
+        protected final String methodName;
+        protected final Class<? extends Saga> sagaClass;
+        private final String action;
+        private final OperationType operationType;
+
+        public OperationAdapter(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName, final OperationType operationType) {
             this.sagaClass = checkNotNull(sagaClass);
             this.scheduler = checkNotNull(scheduler);
             this.methodName = checkNotNull(methodName);
-            this.action = String.format("Cancel(methodName=%s)", methodName);
-        }
-
-        @Override
-        public void execute(final Object identifier) {
-            scheduler.cancelSchedule(sagaClass, methodName, identifier);
+            this.operationType = checkNotNull(operationType);
+            this.action = operationType.action(methodName);
         }
 
         @Override
@@ -56,48 +79,79 @@ public class SchedulingStep extends DecorateStep {
         }
 
         @Override
-        public void clean(Object identifier) { }
-    }
-
-    public static class ScheduleOperation implements SchedulingOperation {
-
-        private final Scheduler scheduler;
-        private final String methodName;
-        private final Duration duration;
-        private final Class<? extends Saga> sagaClass;
-        private String action;
-
-        public ScheduleOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName, final Long delay, final TimeUnit unit) {
-            checkNotNull(delay);
-            checkNotNull(unit);
-            this.sagaClass = checkNotNull(sagaClass);
-            this.scheduler = checkNotNull(scheduler);
-            this.methodName = checkNotNull(methodName);
-            this.duration = new Duration(TimeUnit.MILLISECONDS.convert(delay, unit));
-            this.action = String.format("Schedule(delay=%s, unit=%s, methodName=%s)", delay, unit, methodName);
+        public OperationType getType() {
+            return operationType;
         }
 
         @Override
-        public void execute(final Object identifier) {
+        public void execute(final Event event, final Object identifier) { }
+
+        @Override
+        public void clean(final Object identifier) { }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class CancelOperation extends OperationAdapter {
+
+        public CancelOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName) {
+            super(scheduler, sagaClass, methodName, OperationType.CANCEL);
+        }
+
+        @Override
+        public void execute(final Event event, final Object identifier) {
+            scheduler.cancelSchedule(sagaClass, methodName, identifier);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class ScheduleOperation extends OperationAdapter {
+
+        private final Duration duration;
+
+        public ScheduleOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName, final Long delay, final TimeUnit unit) {
+            super(scheduler, sagaClass, methodName, OperationType.SCHEDULE);
+            checkNotNull(delay);
+            checkNotNull(unit);
+            this.duration = new Duration(TimeUnit.MILLISECONDS.convert(delay, unit));
+        }
+
+        @Override
+        public void execute(final Event event, final Object identifier) {
             scheduler.schedule(sagaClass, methodName, identifier, duration);
         }
 
         @Override
-        public String getAction() {
-            return action;
-        }
-
-        @Override
-        public void clean(Object identifier) {
+        public void clean(final Object identifier) {
             scheduler.cancelSchedule(sagaClass, methodName, identifier);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    private final SchedulingOperation operation;
+    public static class ScheduleByEventOperation extends OperationAdapter {
+
+        public ScheduleByEventOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName) {
+            super(scheduler, sagaClass, methodName, OperationType.SCHEDULE_BY_EVENT);
+        }
+
+        @Override
+        public void execute(final Event event, final Object identifier) {
+            if (SchedulableSagaMethod.class.isAssignableFrom(event.getClass())) {
+                scheduler.schedule(sagaClass, methodName, identifier, ((SchedulableSagaMethod) event).getScheduledDate());
+            }
+        }
+
+        @Override
+        public void clean(final Object identifier) {
+            scheduler.cancelSchedule(sagaClass, methodName, identifier);
+        }
+    }
 
     // ------------------------------------------------------------------------
+
+    private final Operation operation;
 
     public SchedulingStep(
             final Scheduler scheduler,
@@ -125,13 +179,23 @@ public class SchedulingStep extends DecorateStep {
         ));
     }
 
+    public SchedulingStep(
+            final Scheduler scheduler,
+            final Step delegateStep,
+            final XKasperSaga.ScheduledByEvent annotation
+    ) {
+        this(delegateStep, new ScheduleByEventOperation(
+                scheduler,
+                delegateStep.getSagaClass(),
+                annotation.methodName()
+        ));
+    }
+
     public SchedulingStep(final Step delegateStep,
-                          final SchedulingOperation operation) {
+                          final Operation operation) {
         super(delegateStep);
         this.operation = checkNotNull(operation);
     }
-
-    // ------------------------------------------------------------------------
 
     @Override
     public void invoke(final Saga saga, final Context context, final Event event) throws StepInvocationException {
@@ -139,7 +203,7 @@ public class SchedulingStep extends DecorateStep {
 
         final Optional<Object> identifier = getSagaIdentifierFrom(event);
         if (identifier.isPresent()) {
-            operation.execute(identifier.get());
+            operation.execute(event, identifier.get());
         }
     }
 
@@ -153,4 +217,7 @@ public class SchedulingStep extends DecorateStep {
         operation.clean(identifier);
     }
 
+    public OperationType getOperationType() {
+        return operation.getType();
+    }
 }

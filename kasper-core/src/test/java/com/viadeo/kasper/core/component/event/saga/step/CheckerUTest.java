@@ -6,10 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga.step;
 
+import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
-import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
-import com.viadeo.kasper.core.component.event.saga.step.Step;
-import com.viadeo.kasper.core.component.event.saga.step.Steps;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import com.viadeo.kasper.core.component.event.saga.step.facet.SchedulingStep;
 import org.junit.Before;
@@ -29,7 +27,7 @@ public class CheckerUTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     private Steps.Checker checker;
-    private Class<TestFixture.TestSagaA> sagaClass;
+    private Class<? extends Saga> sagaClass;
 
     @Before
     public void setUp() throws Exception {
@@ -156,6 +154,42 @@ public class CheckerUTest {
         // Then
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("Should handle an event type per step : <saga=" + TestSagaA.class.getName());
+
+        // When
+        checker.check(sagaClass, steps);
+    }
+
+    @Test
+    public void check_withScheduleByEventStep_withSchedulableSagaMethodEvent_isOk() {
+        // Given
+        sagaClass = TestFixture.TestSagaB.class;
+        Set<Step> steps = Sets.newSet();
+        steps.add(new Steps.StartStep(getMethod(TestSagaB.class, "start", StartEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaB.class, "end", EndEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new SchedulingStep(
+                new Steps.BasicStep(getMethod(TestSagaB.class, "scheduledByEventStep", StepEvent4.class), "getId", mock(SagaIdReconciler.class)),
+                new SchedulingStep.ScheduleByEventOperation(mock(Scheduler.class), TestSagaA.class, "init")
+        ));
+
+        // Then
+        checker.check(sagaClass, steps);
+    }
+
+    @Test
+    public void check_withScheduleByEventStep_withoutSchedulableSagaMethodEvent_isKo() {
+        // Given
+        sagaClass = TestFixture.TestSagaB.class;
+        Set<Step> steps = Sets.newSet();
+        steps.add(new Steps.StartStep(getMethod(TestSagaB.class, "start", StartEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaB.class, "end", EndEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new SchedulingStep(
+                new Steps.BasicStep(getMethod(TestSagaC.class, "scheduledByEventStep", StepEvent1.class), "getId", mock(SagaIdReconciler.class)),
+                new SchedulingStep.ScheduleByEventOperation(mock(Scheduler.class), TestSagaA.class, "init")
+        ));
+
+        // Then
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("The event should be assignment-compatible with");
 
         // When
         checker.check(sagaClass, steps);

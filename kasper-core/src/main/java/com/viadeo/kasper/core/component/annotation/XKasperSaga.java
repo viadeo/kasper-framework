@@ -115,6 +115,22 @@ public @interface XKasperSaga {
     // ------------------------------------------------------------------------
 
     /**
+     * The <code>ScheduledByEvent</code> annotation is used to schedule a method invocation when the related step is triggered.
+     * The annotation must be used in addition to the following annotations : <code>Start</code>, <code>Step</code>. and <code>End</code>.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface ScheduledByEvent {
+
+        /**
+         * @return the method name to be invoked
+         */
+        String methodName();
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
      * The <code>CancelSchedule</code> annotation is used to schedule a method invocation when the related step is triggered.
      * The annotation must be used in addition to the following annotations : <code>Start</code>, <code>Step</code>. and <code>End</code>.
      */
