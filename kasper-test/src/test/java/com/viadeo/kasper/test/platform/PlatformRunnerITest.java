@@ -36,15 +36,13 @@ public class PlatformRunnerITest {
 
     public static class TestDomainBundleA extends DefaultDomainBundle {
         public TestDomainBundleA() {
-            super(new Domain() {
-            });
+            super(new Domain() { }, "bundleA");
         }
     }
 
     public static class TestDomainBundleB extends DefaultDomainBundle {
         public TestDomainBundleB(ExecutorService executorService) {
-            super(new Domain() {
-            });
+            super(new Domain() { }, "bundleB");
             checkNotNull(executorService);
         }
     }
