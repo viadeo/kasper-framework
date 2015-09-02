@@ -56,8 +56,6 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
         try {
             LOGGER.info("Call handler " + queryHandler.getClass().getSimpleName());
             ret = queryHandler.handle(new QueryMessage<>(context, query));
-        } catch (Exception e) {
-            ret = QueryResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         } finally {
             timer.stop();
             classTimer.stop();
