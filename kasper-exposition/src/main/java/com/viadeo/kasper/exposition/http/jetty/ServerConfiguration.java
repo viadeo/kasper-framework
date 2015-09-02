@@ -88,6 +88,10 @@ public class ServerConfiguration {
         return getInt(this.config, "maxThreads");
     }
 
+    public int getMaxQueued() {
+        return getInt(this.config, "maxQueued");
+    }
+
     public int getShutdownGracePeriod() {
         return getMilliseconds(this.config, "shutdownGracePeriod").intValue();
     }
