@@ -236,6 +236,7 @@ public class ServerBuilder {
         }
         pool.setMinThreads(config.getPoolMinThreads());
         pool.setMaxThreads(config.getPoolMaxThreads());
+        pool.setMaxQueued(config.getMaxQueued());
         return pool;
     }
 
