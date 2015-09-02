@@ -53,10 +53,10 @@ ext.libraries = [
         METRICS_GRAPHITE         : 'io.dropwizard.metrics:metrics-graphite:3.1.0',
         METRICS_SERVLET          : 'io.dropwizard.metrics:metrics-servlets:3.1.0',
 
-        AXON_TEST: 'org.axonframework:axon-test:2.2',
+        AXON_TEST: 'org.axonframework:axon-test:2.4.2',
         AXON_CORE: [
                 'javax.persistence:persistence-api:1.0',
-                'org.axonframework:axon-core:2.2'
+                'org.axonframework:axon-core:2.4.2'
         ],
         QUARTZ_SCHEDULER: 'org.quartz-scheduler:quartz:2.2.1',
         QUARTZ_JOBS: 'org.quartz-scheduler:quartz-jobs:2.2.1',
