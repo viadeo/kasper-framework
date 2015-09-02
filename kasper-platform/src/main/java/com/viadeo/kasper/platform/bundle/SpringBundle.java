@@ -9,6 +9,7 @@ import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
@@ -100,7 +101,7 @@ public class SpringBundle extends DefaultDomainBundle {
         ClassPathBeanDefinitionScanner queryScanner = new ClassPathBeanDefinitionScanner(queryContext, false);
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperQueryHandler.class, makePaths("query")));
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperEventListener.class, makePaths("query")));
-        queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperSaga.class, makePaths("command")));
+        queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperSaga.class, makePaths("query")));
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(Configuration.class, makePaths("query.spring", "common.spring")));
         queryScanner.addExcludeFilter(new AnnotationAndPathFilter(XKasperUnregistered.class, makePaths("query")));
         total += queryScanner.scan(getClass().getPackage().getName());
@@ -158,11 +159,13 @@ public class SpringBundle extends DefaultDomainBundle {
         repositories.addAll(commandContext.getBeansOfType(Repository.class).values());
         eventListeners.addAll(commandContext.getBeansOfType(EventListener.class).values());
         commandInterceptorFactories.addAll(commandContext.getBeansOfType(CommandInterceptorFactory.class).values());
+        sagas.addAll(commandContext.getBeansOfType(Saga.class).values());
 
         queryContext.refresh();
         eventListeners.addAll(queryContext.getBeansOfType(EventListener.class).values());
         queryHandlers.addAll(queryContext.getBeansOfType(QueryHandler.class).values());
         queryInterceptorFactories.addAll(queryContext.getBeansOfType(QueryInterceptorFactory.class).values());
+        sagas.addAll(queryContext.getBeansOfType(Saga.class).values());
 
         long refreshTimeInMillis = System.currentTimeMillis() - startRefreshTimeInMillis;
 

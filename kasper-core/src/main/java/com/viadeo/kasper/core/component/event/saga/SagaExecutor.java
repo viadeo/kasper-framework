@@ -157,8 +157,9 @@ public class SagaExecutor {
                         e
                 );
             }
-
-            return factory.create(sagaIdentifier, sagaClass);
+            final Saga saga = factory.create(sagaIdentifier, sagaClass);
+            persistSaga(step, sagaIdentifier, saga);
+            return saga;
         }
 
         return getSaga(sagaIdentifier);
@@ -166,7 +167,7 @@ public class SagaExecutor {
 
     // ------------------------------------------------------------------------
 
-    protected Saga getSaga(final Object sagaIdentifier) {
+    public Saga getSaga(final Object sagaIdentifier) {
         try {
             final Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
 
