@@ -50,6 +50,7 @@ public class ServerBuilderITest {
                     .put("lowResourcesMaxIdleTime", "5s")
                     .put("acceptorThreadPriorityOffset", 0)
                     .put("acceptQueueSize", 5)
+                    .put("maxQueued", 0)
                     .put("maxBufferCount", 1024)
                     .put("requestBufferSize", "16KiB")
                     .put("requestHeaderBufferSize", "16KiB")
