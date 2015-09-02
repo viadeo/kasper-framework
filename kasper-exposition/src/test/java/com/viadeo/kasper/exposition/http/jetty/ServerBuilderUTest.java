@@ -43,6 +43,7 @@ public class ServerBuilderUTest {
             .put("lowResourcesMaxIdleTime", "11ms")
             .put("acceptorThreadPriorityOffset", 10)
             .put("acceptQueueSize", 65)
+            .put("maxQueued", 0)
             .put("requestBufferSize", "64KiB")
             .put("requestHeaderBufferSize", "128KiB")
             .put("responseBufferSize", "12KiB")
