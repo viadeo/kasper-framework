@@ -177,6 +177,7 @@ public class ServerITest {
                 .put("maxThreads", 140)
                 .put("maxIdleTime", "200s")
                 .put("acceptQueueSize", 25)
+                .put("maxQueued", 0)
                 .put("requestBufferSize", "16KiB")
                 .put("requestHeaderBufferSize", "6KiB")
                 .put("responseBufferSize", "48KiB")
