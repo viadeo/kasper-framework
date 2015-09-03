@@ -25,18 +25,62 @@ public class CommandResponse extends KasperResponse {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Get a failure response which is an unexpected and can require intervention before the system can resume at the
+     * same level of operation. This does not mean that failures are always fatal, rather that some capacity of the
+     * system will be reduced following a failure.
+     *
+     * @param reason a reason
+     * @return a failure response
+     */
+    public static CommandResponse failure(final KasperReason reason) {
+        return new CommandResponse(Status.FAILURE, reason);
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get an error response which is an expected part of normal operations, are dealt with immediately and the system
+     * will continue to operate at the same capacity following an error.
+     *
+     * @param reason a reason
+     * @return an error response
+     */
     public static CommandResponse error(final KasperReason reason) {
         return new CommandResponse(Status.ERROR, reason);
     }
 
+    /**
+     * Get an error response which is an expected part of normal operations, are dealt with immediately and the system
+     * will continue to operate at the same capacity following an error.
+     *
+     * @param code the core reason code
+     * @param reason a reason
+     * @return an error response
+     */
     public static CommandResponse error(final String code, final String reason) {
         return error(new KasperReason(code, reason));
     }
 
+    /**
+     * Get an error response which is an expected part of normal operations, are dealt with immediately and the system
+     * will continue to operate at the same capacity following an error.
+     *
+     * @param code the core reason code
+     * @param reason a reason
+     * @return an error response
+     */
     public static CommandResponse error(final CoreReasonCode code, final String reason) {
         return error(new KasperReason(checkNotNull(code), reason));
     }
 
+    /**
+     * Get an error response which is an expected part of normal operations, are dealt with immediately and the system
+     * will continue to operate at the same capacity following an error.
+     *
+     * @param code the core reason code
+     * @return an error response
+     */
     public static CommandResponse error(final CoreReasonCode code) {
         return error(new KasperReason(checkNotNull(code)));
     }
