@@ -12,6 +12,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.api.context.Context;
@@ -245,6 +248,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                             errorHandlingDescriptor.getThrowable()
                     );
                 }
+            } else if(response.getStatus() == KasperResponse.Status.FAILURE) {
+                final String truncatedPayload = payload.substring(0, Math.min(payload.length(), PAYLOAD_DEBUG_MAX_SIZE));
+
+                requestLogger.error("Failure in {} [{}] : <reason={}> <payload={}>",
+                        getInputTypeName(), inputName, response.getReason(), truncatedPayload,
+                        response.getReason().getException().orNull()
+                );
+
             } else {
                 requestLogger.debug("Request processed in {} [{}] : {}", getInputTypeName(), inputName, response.getStatus());
             }
