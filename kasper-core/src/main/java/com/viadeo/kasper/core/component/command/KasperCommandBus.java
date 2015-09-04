@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import org.axonframework.commandhandling.AsynchronousCommandBus;
 import org.axonframework.commandhandling.CommandHandler;
@@ -14,12 +15,23 @@ import org.axonframework.commandhandling.NoHandlerForCommandException;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
 
 import static java.lang.String.format;
 
 public class KasperCommandBus extends AsynchronousCommandBus {
 
-    private final ConcurrentMap<String, CommandHandler<?>> subscriptions = new ConcurrentHashMap<String, CommandHandler<?>>();
+    private final ConcurrentMap<String, CommandHandler<?>> subscriptions = new ConcurrentHashMap<>();
+
+    // ------------------------------------------------------------------------
+
+    public KasperCommandBus() {
+        super(Executors.newCachedThreadPool(
+                new ThreadFactoryBuilder()
+                        .setNameFormat("command-thread-%d")
+                        .build()
+        ));
+    }
 
     // ------------------------------------------------------------------------
 

@@ -6,24 +6,24 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryHandlerAdapter;
+import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptorFactory;
-import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import org.axonframework.commandhandling.callbacks.FutureCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,26 +34,24 @@ public class KasperQueryGateway implements QueryGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
 
+    private final KasperQueryBus queryBus;
     private final QueryHandlersLocator queryHandlersLocator;
-    private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
 
     // -----------------------------------------------------------------------
 
     public KasperQueryGateway() {
-        this(new DefaultQueryHandlersLocator());
-    }
-
-    public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator) {
         this(
-            checkNotNull(queryHandlersLocator),
-            new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>()
+                new KasperQueryBus(new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>()),
+                new DefaultQueryHandlersLocator()
         );
     }
 
-    public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator,
-                              final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry) {
+    public KasperQueryGateway(
+            final KasperQueryBus queryBus,
+            final QueryHandlersLocator queryHandlersLocator
+    ) {
         this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
-        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
+        this.queryBus = checkNotNull(queryBus);
     }
 
     // ------------------------------------------------------------------------
@@ -66,37 +64,33 @@ public class KasperQueryGateway implements QueryGateway {
         checkNotNull(context);
         checkNotNull(query);
 
-        final Class<? extends Query> queryClass = query.getClass();
+        FutureCallback<QueryResponse<RESULT>> future = new FutureCallback<>();
 
-        /* Sets current thread context */
-        CurrentContext.set(context);
-
-        // Search for associated handler --------------------------------------
-        LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
-        final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
-                getInterceptorChain(queryClass);
-
-        if ( ! optionalRequestChain.isPresent()) {
-            throw new KasperException("Unable to find the handler implementing query class " + queryClass);
-        }
-
-        Exception exception = null;
-        QueryResponse<RESULT> ret = null;
+        queryBus.dispatch(new QueryMessage<>(context, query), future);
 
         try {
-            LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
-            ret = (QueryResponse<RESULT>) optionalRequestChain.get().next(query, context);
-        } catch (final RuntimeException e) {
-            exception = e;
-        } catch (final Exception e) {
-            exception = e;
+            return future.get();
+        } catch (ExecutionException e) {
+            if (e.getCause() != null && e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
+            } else {
+                throw e;
+            }
         }
+    }
 
-        if (null != exception) {
-            throw exception;
-        }
+    @Override
+    public <RESULT extends QueryResult> Future<QueryResponse<RESULT>> retrieveForFuture(Query query, Context context)
+            throws Exception
+    {
+        checkNotNull(context);
+        checkNotNull(query);
 
-        return ret;
+        FutureCallback<QueryResponse<RESULT>> future = new FutureCallback<>();
+
+        queryBus.dispatch(new QueryMessage<>(context, query), future);
+
+        return future;
     }
 
     // ------------------------------------------------------------------------
@@ -127,7 +121,7 @@ public class KasperQueryGateway implements QueryGateway {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 
-        interceptorChainRegistry.register(interceptorFactory);
+        queryBus.register(interceptorFactory);
     }
 
     /**
@@ -153,36 +147,8 @@ public class KasperQueryGateway implements QueryGateway {
 
         queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
 
-        // create immediately the interceptor chain instead of lazy mode
-        interceptorChainRegistry.create(
-                queryHandler.getHandlerClass(),
-                new QueryHandlerInterceptorFactory(queryHandler)
-        );
-    }
+        queryBus.register(queryHandler);
 
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> getInterceptorChain(
-            final Class<? extends Query> queryClass
-    ) {
-        final Optional<QueryHandler<Query, QueryResult>> queryHandlerOptional =
-                queryHandlersLocator.getHandlerFromQueryClass(queryClass);
-
-        if ( ! queryHandlerOptional.isPresent()) {
-            return Optional.absent();
-        }
-
-        final Class<? /*extends QueryHandler*/> queryHandlerClass = queryHandlerOptional.get().getHandlerClass();
-
-        final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> chainOptional =
-                interceptorChainRegistry.get(queryHandlerClass);
-
-        if (chainOptional.isPresent()) {
-            return chainOptional;
-        }
-
-        return interceptorChainRegistry.create(
-                queryHandlerClass,
-                new QueryHandlerInterceptorFactory(queryHandlerOptional.get())
-        );
     }
 
 }
