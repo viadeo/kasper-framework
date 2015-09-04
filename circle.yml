@@ -42,7 +42,7 @@ test:
 
 deployment:
   nexus:
-    branch: [develop, prepare_1.0.0]
+    branch: [develop, prepare_1.1.0]
     owner: viadeo
     commands:
       - ./gradlew --no-daemon uploadArchives --parallel-threads=2
