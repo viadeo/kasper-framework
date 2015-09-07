@@ -96,7 +96,7 @@ public class KasperDocStandalone {
                                         MemberCreatedEvent.class,
                                         new SchedulingStep(
                                                 new Steps.StartStep(ConfirmEmailSaga.class.getMethod("onMemberCreated", MemberCreatedEvent.class), "getEntityId", mock(SagaIdReconciler.class)),
-                                                new SchedulingStep.ScheduleOperation(mock(Scheduler.class), ConfirmEmailSaga.class, "notConfirmed", 60L, TimeUnit.MINUTES)
+                                                new SchedulingStep.ScheduleOperation(mock(Scheduler.class), ConfirmEmailSaga.class, "notConfirmed", 60L, TimeUnit.MINUTES, false)
                                         ).getActions()
                                 ),
                                 new SagaDescriptor.StepDescriptor(

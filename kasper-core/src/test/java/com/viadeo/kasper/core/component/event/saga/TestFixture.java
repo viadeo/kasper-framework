@@ -184,6 +184,10 @@ public class TestFixture {
         }
 
         @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.Schedule(methodName = "invokedMethod", end = true, unit = TimeUnit.MILLISECONDS, delay = 150)
+        public void scheduledAndEnd(StepEvent5 event){ }
+
+        @XKasperSaga.Step(getter = "getId")
         @XKasperSaga.Schedule(delay = 1, unit = TimeUnit.SECONDS, methodName = "invokedMethod")
         public void sleepOneSec(StepEvent3 event){
             System.err.println("A method invocation is scheduled !");
@@ -234,6 +238,11 @@ public class TestFixture {
     @XKasperSaga(domain = TestDomain.class)
     public static class TestSagaC implements Saga {
 
+        @XKasperSaga.Start(getter = "getId")
+        public void start(StartEvent event){
+            System.err.println("Saga is started !");
+        }
+
         @XKasperSaga.Step(getter = "getId")
         @XKasperSaga.ScheduledByEvent(methodName = "invokedMethod")
         public void scheduledByEventStep(StepEvent1 event){ }
@@ -241,6 +250,16 @@ public class TestFixture {
         @Override
         public Optional<SagaIdReconciler> getIdReconciler() {
             return Optional.absent();
+        }
+
+        @XKasperSaga.End(getter = "getId")
+        @XKasperSaga.CancelSchedule(methodName = "invokedMethod")
+        public void endWithCancelSchedule(StepEvent3 event){
+            System.err.println("Saga is ended !");
+        }
+
+        public void invokedMethod(){
+            System.err.println("the method is invoked !");
         }
     }
 
@@ -288,6 +307,12 @@ public class TestFixture {
         @Override
         public DateTime getScheduledDate() {
             return scheduledTime;
+        }
+    }
+
+    public static class StepEvent5 extends AbstractEvent {
+        public StepEvent5(UUID id) {
+            super(id);
         }
     }
 

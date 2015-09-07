@@ -109,17 +109,19 @@ public class SchedulingStep extends DecorateStep {
     public static class ScheduleOperation extends OperationAdapter {
 
         private final Duration duration;
+        private final boolean endAfterExecution;
 
-        public ScheduleOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName, final Long delay, final TimeUnit unit) {
+        public ScheduleOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName, final Long delay, final TimeUnit unit, final boolean endAfterExecution) {
             super(scheduler, sagaClass, methodName, OperationType.SCHEDULE);
             checkNotNull(delay);
             checkNotNull(unit);
+            this.endAfterExecution = endAfterExecution;
             this.duration = new Duration(TimeUnit.MILLISECONDS.convert(delay, unit));
         }
 
         @Override
         public void execute(final Event event, final Object identifier) {
-            scheduler.schedule(sagaClass, methodName, identifier, duration);
+            scheduler.schedule(sagaClass, methodName, identifier, duration, endAfterExecution);
         }
 
         @Override
@@ -132,14 +134,17 @@ public class SchedulingStep extends DecorateStep {
 
     public static class ScheduleByEventOperation extends OperationAdapter {
 
-        public ScheduleByEventOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName) {
+        private final boolean endAfterExecution;
+
+        public ScheduleByEventOperation(final Scheduler scheduler, final Class<? extends Saga> sagaClass, final String methodName, final boolean endAfterExecution) {
             super(scheduler, sagaClass, methodName, OperationType.SCHEDULE_BY_EVENT);
+            this.endAfterExecution = endAfterExecution;
         }
 
         @Override
         public void execute(final Event event, final Object identifier) {
             if (SchedulableSagaMethod.class.isAssignableFrom(event.getClass())) {
-                scheduler.schedule(sagaClass, methodName, identifier, ((SchedulableSagaMethod) event).getScheduledDate());
+                scheduler.schedule(sagaClass, methodName, identifier, ((SchedulableSagaMethod) event).getScheduledDate(), endAfterExecution);
             }
         }
 
@@ -175,7 +180,8 @@ public class SchedulingStep extends DecorateStep {
                 delegateStep.getSagaClass(),
                 annotation.methodName(),
                 annotation.delay(),
-                annotation.unit()
+                annotation.unit(),
+                annotation.end()
         ));
     }
 
@@ -187,7 +193,8 @@ public class SchedulingStep extends DecorateStep {
         this(delegateStep, new ScheduleByEventOperation(
                 scheduler,
                 delegateStep.getSagaClass(),
-                annotation.methodName()
+                annotation.methodName(),
+                annotation.end()
         ));
     }
 

@@ -110,6 +110,12 @@ public @interface XKasperSaga {
          * @return the method name to be invoked
          */
         String methodName();
+
+        /**
+         *
+         * @return true if the saga should end immediately after scheduled method execution (same as EndStep)
+         */
+        boolean end() default false;
     }
 
     // ------------------------------------------------------------------------
@@ -126,6 +132,12 @@ public @interface XKasperSaga {
          * @return the method name to be invoked
          */
         String methodName();
+
+        /**
+         *
+         * @return if the saga should end immediately after scheduled method execution (same as EndStep)
+         */
+        boolean end() default false;
     }
 
     // ------------------------------------------------------------------------
