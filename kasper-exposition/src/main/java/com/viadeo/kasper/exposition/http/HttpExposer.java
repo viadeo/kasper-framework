@@ -109,8 +109,16 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         RESPONSE response = null;
         ErrorHandlingDescriptor errorHandlingDescriptor = null;
 
-        Timer.Context timerInput = null;
-        final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+        final Timer.Context timerHandleRequestWithoutResponse = getMetricRegistry().timer(
+                name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "http-exposer", "requests-time")
+        ).time();
+
+        final Timer.Context timerHandlerRequestWithResponse = getMetricRegistry().timer(
+                name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "http-exposer", "requests-time-with-response")
+        ).time();
+
+        final Timer.Context timerHandleRequest = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
         final String payload = getPayloadAsString(httpRequest);
@@ -128,10 +136,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             /* 3) Extract the input from request */
             input = extractInput(httpRequest, payload, requestToObject);
-
-            timerInput = getMetricRegistry().timer(
-                name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "http-exposer", "requests-time")
-            ).time();
 
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
 
@@ -174,8 +178,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     th
             );
         } finally {
-            if (null != timerInput) {
-                timerInput.stop();
+            if (null != timerHandleRequestWithoutResponse) {
+                timerHandleRequestWithoutResponse.stop();
             }
         }
 
@@ -243,12 +247,11 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                             errorHandlingDescriptor.getThrowable()
                     );
                 }
-            } else {
-
             }
 
         } finally {
-            long duration = timer.stop();
+            timerHandlerRequestWithResponse.stop();
+            long duration = timerHandleRequest.stop();
             String durationInMillis = String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS));
             MDC.put("duration", durationInMillis);
             requestLogger.debug("Request processed in {} [{}] : {} - {} ms", getInputTypeName(), inputName, response.getStatus(), durationInMillis);
