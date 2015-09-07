@@ -177,8 +177,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             if (null != timerInput) {
                 timerInput.stop();
             }
-            long duration = timer.stop();
-            MDC.put("duration", String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS)));
         }
 
         if (null == response && null == errorHandlingDescriptor) {
@@ -189,6 +187,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     new IllegalStateException()
             );
         }
+
+        final String inputName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
 
         try {
             if (null != response) {
@@ -213,8 +213,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     );
                 }
             }
-
-            final String inputName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
 
             /* 5bis) Manage and respond an error to the request */
             if (null != errorHandlingDescriptor) {
@@ -246,10 +244,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     );
                 }
             } else {
-                requestLogger.debug("Request processed in {} [{}] : {}", getInputTypeName(), inputName, response.getStatus());
+
             }
 
         } finally {
+            long duration = timer.stop();
+            String durationInMillis = String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS));
+            MDC.put("duration", durationInMillis);
+            requestLogger.debug("Request processed in {} [{}] : {} - {} ms", getInputTypeName(), inputName, response.getStatus(), durationInMillis);
             MDC.clear();
         }
     }
