@@ -60,7 +60,7 @@ public class KasperEventBusTest {
     @Test
     public void nominal() throws Exception {
         // Given
-        final KasperEventBus eventBus = spy(new KasperEventBus());
+        final KasperEventBus eventBus = spy(new KasperEventBus(new MetricRegistry()));
         final TestEvent dummyEvent = new TestEvent();
         CurrentContext.set(Contexts.empty());
 
@@ -113,7 +113,7 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        final KasperEventBus eventBus = new KasperEventBus(Policy.ASYNCHRONOUS,new MetricRegistry());
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
 
@@ -145,7 +145,7 @@ public class KasperEventBusTest {
     @Test
     public void listeningSyncError() {
         // Given
-        final KasperEventBus syncEventBus = new KasperEventBus(Policy.SYNCHRONOUS);
+        final KasperEventBus syncEventBus = new KasperEventBus(Policy.SYNCHRONOUS, new MetricRegistry());
         final Event event = new TestEvent();
 
         // When

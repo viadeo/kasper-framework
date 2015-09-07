@@ -7,6 +7,8 @@
 
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.codahale.metrics.InstrumentedExecutorService;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -33,10 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -106,21 +105,28 @@ public class KasperEventBus extends ClusteringEventBus {
     public static ClusterSelector getCluster(
             final Policy busPolicy,
             final ErrorHandler errorHandler,
+            final MetricRegistry metricRegistry,
             final KasperProcessorDownLatch processorDownLatch) {
 
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
             final BlockingQueue<Runnable> busQueue = new LinkedBlockingQueue<Runnable>();
 
+            final ExecutorService threadPool = new ThreadPoolExecutor(
+                CORE_POOL_SIZE,
+                MAXIMUM_POOL_SIZE,
+                KEEP_ALIVE_TIME,
+                TIME_UNIT,
+                busQueue
+            );
+
+            final ExecutorService instrumentedThreadPool = new InstrumentedExecutorService(
+                    threadPool, metricRegistry, KasperEventBus.class.getName()
+            );
+
             return new DefaultClusterSelector(
                 new AsynchronousCluster(
                     KASPER_CLUSTER_NAME,
-                    new ThreadPoolExecutor(
-                        CORE_POOL_SIZE,
-                        MAXIMUM_POOL_SIZE,
-                        KEEP_ALIVE_TIME,
-                        TIME_UNIT,
-                        busQueue
-                    ),
+                    instrumentedThreadPool,
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
                     errorHandler
@@ -154,15 +160,15 @@ public class KasperEventBus extends ClusteringEventBus {
     /*
      * Build a default synchronous event bus
      */
-    public KasperEventBus() {
-        this(DEFAULT_POLICY);
+    public KasperEventBus(final MetricRegistry metricRegistry) {
+        this(DEFAULT_POLICY, metricRegistry);
     }
 
     /*
      * Build a Kasper event bus using the specified policy
      */
-    public KasperEventBus(final Policy busPolicy) {
-        this(busPolicy, new KasperProcessorDownLatch());
+    public KasperEventBus(final Policy busPolicy, final MetricRegistry metricRegistry) {
+        this(busPolicy, metricRegistry, new KasperProcessorDownLatch(metricRegistry));
     }
 
     /*
@@ -188,20 +194,26 @@ public class KasperEventBus extends ClusteringEventBus {
     /*
      * Build an asynchronous Kasper event bus with the specified error handler
      */
-    public KasperEventBus(final ErrorHandler errorHandler) {
-        this(Policy.ASYNCHRONOUS, errorHandler, new KasperProcessorDownLatch());
+    public KasperEventBus(final ErrorHandler errorHandler, final MetricRegistry metricRegistry) {
+        this(Policy.ASYNCHRONOUS, errorHandler, metricRegistry, new KasperProcessorDownLatch(metricRegistry));
     }
 
-    public KasperEventBus(final Policy busPolicy, final KasperProcessorDownLatch processorDownLatch) {
-        this(busPolicy, getDefaultErrorHandler(), processorDownLatch);
+    public KasperEventBus(final Policy busPolicy, final MetricRegistry metricRegistry, final KasperProcessorDownLatch processorDownLatch) {
+        this(busPolicy, getDefaultErrorHandler(), metricRegistry, processorDownLatch);
     }
 
     public KasperEventBus(
             final Policy busPolicy,
             final ErrorHandler errorHandler,
+            final MetricRegistry metricRegistry,
             final KasperProcessorDownLatch processorDownLatch
     ) {
-        super(getCluster(checkNotNull(busPolicy), checkNotNull(errorHandler), checkNotNull(processorDownLatch)));
+        super(getCluster(
+                checkNotNull(busPolicy),
+                checkNotNull(errorHandler),
+                checkNotNull(metricRegistry),
+                checkNotNull(processorDownLatch)
+        ));
         this.currentPolicy = busPolicy;
         this.optionalProcessorDownLatch = Optional.of(processorDownLatch);
         intInterceptorChainRegistry();

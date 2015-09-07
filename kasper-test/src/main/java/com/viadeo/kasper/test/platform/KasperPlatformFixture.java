@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
@@ -216,7 +217,13 @@ public class KasperPlatformFixture implements
 
         // -----
 
+        protected SpyEventBus(RecordingPlatform recordingPlatform, MetricRegistry metricRegistry){
+            super(metricRegistry);
+            this.recordingPlatform = recordingPlatform;
+        }
+
         protected SpyEventBus(RecordingPlatform recordingPlatform){
+            super(new MetricRegistry());
             this.recordingPlatform = recordingPlatform;
         }
 
