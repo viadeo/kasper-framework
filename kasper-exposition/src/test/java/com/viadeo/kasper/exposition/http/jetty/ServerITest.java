@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition.http.jetty;
 
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.Client;
@@ -209,7 +210,7 @@ public class ServerITest {
         DocumentationPlugin documentationPlugin = new DocumentationPlugin();
 
         new DefaultPlatform.Builder(new KasperPlatformConfiguration())
-                .withEventBus(new KasperEventBus())
+                .withEventBus(new KasperEventBus(new MetricRegistry()))
                 .withConfiguration(config)
                 .addPlugin(httpCommandExposerPlugin)
                 .addPlugin(httpQueryExposerPlugin)

@@ -6,10 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch;
-import com.viadeo.kasper.core.component.event.eventbus.KasperShutdownCallback;
 import org.axonframework.eventhandling.EventListener;
 import org.axonframework.eventhandling.MultiplexingEventProcessingMonitor;
 import org.axonframework.eventhandling.async.ErrorHandler;
@@ -37,7 +36,7 @@ public class KasperProcessorDownLatchUTest {
 
     @Before
     public void setUp(){
-        processorDownLatch = new KasperProcessorDownLatch();
+        processorDownLatch = new KasperProcessorDownLatch(new MetricRegistry());
     }
 
     // ------------------------------------------------------------------------
@@ -185,7 +184,7 @@ public class KasperProcessorDownLatchUTest {
     @Test(expected = KasperException.class)
     public void await_withEventProcessor_exceedingTimeout_throwException() {
         // Given
-        processorDownLatch= new KasperProcessorDownLatch(100);
+        processorDownLatch= new KasperProcessorDownLatch(100, new MetricRegistry());
         processorDownLatch.process(new MockEventProcessor(processorDownLatch, 500));
 
         // When

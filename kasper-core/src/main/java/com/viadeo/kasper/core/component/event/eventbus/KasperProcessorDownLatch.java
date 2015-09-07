@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.codahale.metrics.InstrumentedExecutorService;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.viadeo.kasper.api.exception.KasperException;
@@ -39,18 +41,18 @@ public class KasperProcessorDownLatch {
 
     // ------------------------------------------------------------------------
 
-    public KasperProcessorDownLatch() {
-        this(TIMEOUT_IN_MILLIS);
+    public KasperProcessorDownLatch(final MetricRegistry metricRegistry) {
+        this(TIMEOUT_IN_MILLIS, metricRegistry);
     }
 
-    public KasperProcessorDownLatch(final long timeout) {
+    public KasperProcessorDownLatch(final long timeout, final MetricRegistry metricRegistry) {
         this.awaiting = false;
         this.timeout = timeout;
         this.eventProcessors = Sets.newHashSet();
-        this.executor = Executors.newFixedThreadPool(
+        this.executor = new InstrumentedExecutorService(Executors.newFixedThreadPool(
             N_THREADS,
             new ThreadFactoryBuilder().setNameFormat("event-shutdown-hook-%d").build()
-        );
+        ), metricRegistry, KasperProcessorDownLatch.class.getName());
     }
 
     // ------------------------------------------------------------------------

@@ -63,7 +63,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     }
 
     public KasperPlatformConfiguration(MetricRegistry metricRegistry) {
-        this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS, metricRegistry);
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = metricRegistry;
         this.extraComponents = Lists.newArrayList();
