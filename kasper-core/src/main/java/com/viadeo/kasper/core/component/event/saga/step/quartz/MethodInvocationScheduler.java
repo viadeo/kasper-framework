@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.component.event.saga.step.quartz;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
@@ -66,6 +67,8 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
 
     public static final String IDENTIFIER_CLASS_KEY = "Identifier_class";
 
+    public static final String SHOULD_END_SAGA_KEY = "Should_end_saga";
+
     public static final String DEFAULT_GROUP_NAME = "Kasper-Scheduled-Saga";
 
     private final ObjectMapper mapper;
@@ -110,12 +113,12 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
     // ------------------------------------------------------------------------
 
     @Override
-    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final Duration triggerDuration) {
-        return schedule(sagaClass, methodName, identifier, new DateTime().plus(triggerDuration));
+    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final Duration triggerDuration, final boolean endAfterExecution) {
+        return schedule(sagaClass, methodName, identifier, new DateTime().plus(triggerDuration), endAfterExecution);
     }
 
     @Override
-    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final DateTime triggerDateTime) {
+    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final DateTime triggerDateTime, final boolean endAfterExecution) {
         checkState(initialized, "Scheduler is not yet initialized");
 
         checkNotNull(identifier);
@@ -126,7 +129,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
         final String jobIdentifier = buildJobIdentifier(sagaClass, methodName, identifier);
 
         try {
-            JobDetail jobDetail = buildJobDetail(sagaClass, methodName, identifier, jobKey(jobIdentifier, groupIdentifier));
+            JobDetail jobDetail = buildJobDetail(sagaClass, methodName, identifier, jobKey(jobIdentifier, groupIdentifier), endAfterExecution);
             scheduler.scheduleJob(jobDetail, buildTrigger(triggerDateTime, jobDetail.getKey()));
         } catch (final SchedulerException e) {
             throw new SchedulingException("An error occurred while setting a timer for a saga", e);
@@ -181,12 +184,13 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
 
     // ------------------------------------------------------------------------
 
-    protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final JobKey jobKey) throws JsonProcessingException {
+    protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final JobKey jobKey, final boolean endAfterExecution) throws JsonProcessingException {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SAGA_CLASS_KEY, sagaClass.getName());
         jobDataMap.put(METHOD_KEY, methodName);
         jobDataMap.put(IDENTIFIER_KEY, mapper.writeValueAsString(identifier));
         jobDataMap.put(IDENTIFIER_CLASS_KEY, identifier.getClass().getName());
+        jobDataMap.put(SHOULD_END_SAGA_KEY, endAfterExecution);
 
         return JobBuilder.newJob(MethodInvocationJob.class)
                 .withDescription(sagaClass.getName())
@@ -240,6 +244,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             final String sagaClassName = (String) checkNotNull(dataMap.get(SAGA_CLASS_KEY));
             final String sagaIdentifier = (String) checkNotNull(dataMap.get(IDENTIFIER_KEY));
             final String sagaIdentifierClassName = (String) checkNotNull(dataMap.get(IDENTIFIER_CLASS_KEY));
+            final boolean endAfterExecution = (boolean) checkNotNull(dataMap.get(SHOULD_END_SAGA_KEY));
 
             final Object identifier;
 
@@ -261,7 +266,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
                 final Optional<SagaExecutor> sagaExecutor = sagaManager.get(sagaClass);
 
                 if (sagaExecutor.isPresent()){
-                    sagaExecutor.get().execute(identifier, sagaMethodName);
+                    sagaExecutor.get().execute(identifier, sagaMethodName, endAfterExecution);
                 } else {
                     throw new StepInvocationException(
                         String.format(

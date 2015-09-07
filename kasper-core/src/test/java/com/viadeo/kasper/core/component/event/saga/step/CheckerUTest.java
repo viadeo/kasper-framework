@@ -65,7 +65,7 @@ public class CheckerUTest {
         steps.add(
                 new SchedulingStep(
                         new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)),
-                        new SchedulingStep.ScheduleOperation(mock(Scheduler.class), TestSagaA.class, "init", 4L, TimeUnit.MILLISECONDS)
+                        new SchedulingStep.ScheduleOperation(mock(Scheduler.class), TestSagaA.class, "init", 4L, TimeUnit.MILLISECONDS, false)
                 )
         );
 
@@ -168,7 +168,7 @@ public class CheckerUTest {
         steps.add(new Steps.EndStep(getMethod(TestSagaB.class, "end", EndEvent.class), "getId", mock(SagaIdReconciler.class)));
         steps.add(new SchedulingStep(
                 new Steps.BasicStep(getMethod(TestSagaB.class, "scheduledByEventStep", StepEvent4.class), "getId", mock(SagaIdReconciler.class)),
-                new SchedulingStep.ScheduleByEventOperation(mock(Scheduler.class), TestSagaA.class, "init")
+                new SchedulingStep.ScheduleByEventOperation(mock(Scheduler.class), TestSagaA.class, "init", false)
         ));
 
         // Then
@@ -184,12 +184,33 @@ public class CheckerUTest {
         steps.add(new Steps.EndStep(getMethod(TestSagaB.class, "end", EndEvent.class), "getId", mock(SagaIdReconciler.class)));
         steps.add(new SchedulingStep(
                 new Steps.BasicStep(getMethod(TestSagaC.class, "scheduledByEventStep", StepEvent1.class), "getId", mock(SagaIdReconciler.class)),
-                new SchedulingStep.ScheduleByEventOperation(mock(Scheduler.class), TestSagaA.class, "init")
+                new SchedulingStep.ScheduleByEventOperation(mock(Scheduler.class), TestSagaA.class, "init", false)
         ));
 
         // Then
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("The event should be assignment-compatible with");
+
+        // When
+        checker.check(sagaClass, steps);
+    }
+
+    @Test
+    public void check_withScheduleStep_onEndStep_isKo() {
+        // Given
+        sagaClass = TestFixture.TestSagaC.class;
+        Set<Step> steps = Sets.newSet();
+        steps.add(new Steps.StartStep(getMethod(TestSagaC.class, "start", StartEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(
+                new SchedulingStep(
+                        new Steps.EndStep(getMethod(TestSagaC.class, "endWithCancelSchedule", StepEvent3.class), "getId", mock(SagaIdReconciler.class)),
+                        new SchedulingStep.CancelOperation(mock(Scheduler.class), TestSagaC.class, "invokedMethod")
+                )
+        );
+
+        // Then
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage(String.format("Should not use scheduling step on an end step : %s" , TestSagaC.class.getName()));
 
         // When
         checker.check(sagaClass, steps);

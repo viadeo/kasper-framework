@@ -75,9 +75,10 @@ public class MethodInvocationSchedulerUTest {
         Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
         String identifier = UUID.randomUUID().toString();
         JobKey jobKey = new JobKey(stepScheduler.buildJobIdentifier(sagaClass, methodName, identifier), DEFAULT_GROUP_NAME);
+        boolean endAfterExecution = true;
 
         // When
-        JobDetail jobDetail = stepScheduler.buildJobDetail(sagaClass, methodName, identifier, jobKey);
+        JobDetail jobDetail = stepScheduler.buildJobDetail(sagaClass, methodName, identifier, jobKey, endAfterExecution);
 
         // Then
         assertNotNull(jobDetail);
@@ -85,6 +86,7 @@ public class MethodInvocationSchedulerUTest {
         assertEquals(methodName, jobDetail.getJobDataMap().getString(METHOD_KEY));
         assertEquals("\"" + identifier + "\"", jobDetail.getJobDataMap().getString(IDENTIFIER_KEY));
         assertEquals(sagaClass.getName(), jobDetail.getJobDataMap().getString(SAGA_CLASS_KEY), sagaClass.getName());
+        assertEquals(endAfterExecution, jobDetail.getJobDataMap().getBoolean(SHOULD_END_SAGA_KEY));
     }
 
     @Test
@@ -114,7 +116,7 @@ public class MethodInvocationSchedulerUTest {
         String identifier = UUID.randomUUID().toString();
 
         // When
-        String jobIdentifier = stepScheduler.schedule(sagaClass, methodName, identifier, dateTime);
+        String jobIdentifier = stepScheduler.schedule(sagaClass, methodName, identifier, dateTime, false);
 
         // Then
         assertNotNull(jobIdentifier);
@@ -127,7 +129,7 @@ public class MethodInvocationSchedulerUTest {
         String methodName = "cancelSchedule_whitGoodEntries_shouldCancelScheduledJob";
         Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
         String identifier = UUID.randomUUID().toString();
-        String jobIdentifier = stepScheduler.schedule(sagaClass, methodName, identifier, dateTime);
+        String jobIdentifier = stepScheduler.schedule(sagaClass, methodName, identifier, dateTime, false);
 
         // When
         stepScheduler.cancelSchedule(sagaClass, methodName, identifier, DEFAULT_GROUP_NAME);
