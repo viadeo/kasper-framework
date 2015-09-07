@@ -9,15 +9,8 @@ package com.viadeo.kasper.core.component.event.saga;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.annotation.XKasperSaga;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
-import com.viadeo.kasper.core.component.event.saga.step.Step;
-import com.viadeo.kasper.core.component.event.saga.step.Steps;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
-import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
@@ -27,7 +20,6 @@ import com.viadeo.kasper.core.component.event.saga.step.Steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -77,7 +69,17 @@ public class SagaExecutor {
             final Method method = sagaClass.getDeclaredMethod(methodName);
             method.setAccessible(Boolean.TRUE);
 
-            final Saga saga = getSaga(sagaIdentifier);
+            final Optional<Saga> optionalSaga = getSaga(sagaIdentifier);
+
+            if ( ! optionalSaga.isPresent()) {
+                LOGGER.error(
+                        "Unexpected error in executing saga method : No saga available, <method={}> <saga={}> <identifier={}>",
+                        methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier
+                );
+                return;
+            }
+
+            final Saga saga = optionalSaga.get();
 
             try {
                 method.invoke(saga);
@@ -108,7 +110,7 @@ public class SagaExecutor {
 
         if (null == step) {
             throw new SagaExecutionException(
-                    String.format("No step defined in the saga '%s' to the specified event : %s", getSagaClass().getSimpleName(), event.getClass().getName())
+                    String.format("No step defined in the optionalSaga '%s' to the specified event : %s", getSagaClass().getSimpleName(), event.getClass().getName())
             );
         }
 
@@ -116,28 +118,31 @@ public class SagaExecutor {
 
         if (!optionalSagaIdentifier.isPresent()) {
             throw new SagaExecutionException(
-                    String.format("Failed to retrieve saga identifier, <saga=%s> <event=%s>", getSagaClass().getSimpleName(), event.getClass().getName())
+                    String.format("Failed to retrieve optionalSaga identifier, <optionalSaga=%s> <event=%s>", getSagaClass().getSimpleName(), event.getClass().getName())
             );
         }
 
         final Object sagaIdentifier = optionalSagaIdentifier.get();
-        final Saga saga = getOrCreateSaga(step, sagaIdentifier);
+        final Optional<Saga> optionalSaga = getOrCreateSaga(step, sagaIdentifier);
 
-        try {
-            step.invoke(saga, context, event);
-        } catch (Exception e) {
-            throw new SagaExecutionException(
-                    String.format("Unexpected error in invoking step, <step=%s> <saga=%s> <identifier=%s>", step.name(), step.getSagaClass(), sagaIdentifier),
-                    e
-            );
+        if (optionalSaga.isPresent()) {
+            final Saga saga = optionalSaga.get();
+            try {
+                step.invoke(saga, context, event);
+            } catch (Exception e) {
+                throw new SagaExecutionException(
+                        String.format("Unexpected error in invoking step, <step=%s> <optionalSaga=%s> <identifier=%s>", step.name(), step.getSagaClass(), sagaIdentifier),
+                        e
+                );
+            }
+
+            persistSaga(step, sagaIdentifier, saga);
         }
-
-        persistSaga(step, sagaIdentifier, saga);
     }
 
     // ------------------------------------------------------------------------
 
-    protected Saga getOrCreateSaga(final Step step, final Object sagaIdentifier) {
+    protected Optional<Saga> getOrCreateSaga(final Step step, final Object sagaIdentifier) {
 
         if (Steps.StartStep.class.isAssignableFrom(step.getStepClass())) {
             try {
@@ -154,7 +159,7 @@ public class SagaExecutor {
             }
             final Saga saga = factory.create(sagaIdentifier, sagaClass);
             persistSaga(step, sagaIdentifier, saga);
-            return saga;
+            return Optional.of(saga);
         }
 
         return getSaga(sagaIdentifier);
@@ -162,17 +167,9 @@ public class SagaExecutor {
 
     // ------------------------------------------------------------------------
 
-    public Saga getSaga(final Object sagaIdentifier) {
+    public Optional<Saga> getSaga(final Object sagaIdentifier) {
         try {
-            final Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
-
-            if (!sagaOptional.isPresent()) {
-                throw new SagaExecutionException(
-                        String.format("Error in loading saga : no available saga instance, <identifier=%s>", sagaIdentifier)
-                );
-            }
-
-            return sagaOptional.get();
+            return repository.load(sagaIdentifier);
 
         } catch (SagaPersistenceException e) {
             throw new SagaExecutionException(
