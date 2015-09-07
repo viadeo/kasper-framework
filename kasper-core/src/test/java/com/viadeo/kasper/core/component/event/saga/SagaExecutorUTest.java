@@ -58,7 +58,7 @@ public class SagaExecutorUTest {
     public void execute_withUnknownEvent_isOK() {
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No step defined in the saga 'TestSagaA' to the specified event");
+        expectedException.expectMessage("No step defined in the optionalSaga 'TestSagaA' to the specified event");
 
         // When
         executor.execute(Contexts.empty(), new Event() { });

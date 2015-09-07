@@ -79,29 +79,29 @@ public class SagaExecutorITest {
     }
 
     @Test
-    public void execute_end_step_on_no_available_saga_instance_should_throw_exception() {
+    public void execute_end_step_on_no_available_saga_instance_should_not_find_saga() throws SagaPersistenceException {
         // Given
+        UUID identifier = UUID.randomUUID();
         SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));
 
-        // Then
-        expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("Error in loading saga : no available saga instance");
-
         // When
-        sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(UUID.randomUUID()));
+        sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
+
+        // Then
+        assertFalse(sagaRepository.load(identifier).isPresent());
     }
 
     @Test
-    public void execute_basic_step_on_no_available_saga_instance_should_throw_exception() {
+    public void execute_basic_step_on_no_available_saga_instance_should_not_find_saga() throws SagaPersistenceException {
         // Given
+        UUID identifier = UUID.randomUUID();
         SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));
 
-        // Then
-        expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("Error in loading saga : no available saga instance");
-
         // When
-        sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(UUID.randomUUID()));
+        sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(identifier));
+
+        // Then
+        assertFalse(sagaRepository.load(identifier).isPresent());
     }
 
     @Test
@@ -179,35 +179,33 @@ public class SagaExecutorITest {
     }
 
     @Test
-    public void execute_basic_step_on_ended_saga_instance_should_throw_exception() {
+    public void execute_basic_step_on_ended_saga_instance_should_not_find_saga() throws SagaPersistenceException {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StartEvent(identifier));
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
-
-        // Then
-        expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("Error in loading saga : no available saga instance");
 
         // When
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(identifier));
+
+        // Then
+        assertFalse(sagaRepository.load(identifier).isPresent());
     }
 
     @Test
-    public void execute_end_step_on_ended_saga_instance_should_throw_exception() {
+    public void execute_end_step_on_ended_saga_instance_should_not_find_saga() throws SagaPersistenceException {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StartEvent(identifier));
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
 
-        // Then
-        expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("Error in loading saga : no available saga instance");
-
         // When
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
+
+        // Then
+        assertFalse(sagaRepository.load(identifier).isPresent());
     }
 
     @Test
