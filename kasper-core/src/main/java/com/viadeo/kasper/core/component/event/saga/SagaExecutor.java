@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.core.component.annotation.XKasperSaga;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
 import com.viadeo.kasper.core.component.event.saga.step.Steps;
@@ -26,6 +27,7 @@ import com.viadeo.kasper.core.component.event.saga.step.Steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class SagaExecutor {
 
     // ------------------------------------------------------------------------
 
-    public void execute(final Object sagaIdentifier, final String methodName) {
+    public void execute(final Object sagaIdentifier, final String methodName, final boolean endAfterExecution) {
         checkNotNull(sagaIdentifier);
         checkNotNull(methodName);
 
@@ -81,19 +83,12 @@ public class SagaExecutor {
                 method.invoke(saga);
             } catch (final IllegalAccessException | InvocationTargetException e) {
                 LOGGER.error(
-                    "Unexpected error in executing saga method, <method={}> <saga={}> <identifier={}>",
-                    methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier, e
+                        "Unexpected error in executing saga method, <method={}> <saga={}> <identifier={}>",
+                        methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier, e
                 );
             }
 
-            try {
-                repository.save(sagaIdentifier, saga);
-            } catch (final SagaPersistenceException e) {
-                throw new SagaExecutionException(
-                        String.format("Unexpected error in executing saga method, <method=%s> <saga=%s> <identifier=%s>", methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier),
-                        e
-                );
-            }
+            persistSaga(sagaIdentifier, saga, endAfterExecution);
 
         } catch (final NoSuchMethodException e) {
             throw new SagaExecutionException(
@@ -113,15 +108,15 @@ public class SagaExecutor {
 
         if (null == step) {
             throw new SagaExecutionException(
-                String.format("No step defined in the saga '%s' to the specified event : %s", getSagaClass().getSimpleName(), event.getClass().getName())
+                    String.format("No step defined in the saga '%s' to the specified event : %s", getSagaClass().getSimpleName(), event.getClass().getName())
             );
         }
 
         final Optional<Object> optionalSagaIdentifier = step.getSagaIdentifierFrom(event);
 
-        if ( ! optionalSagaIdentifier.isPresent()) {
+        if (!optionalSagaIdentifier.isPresent()) {
             throw new SagaExecutionException(
-                String.format("Failed to retrieve saga identifier, <saga=%s> <event=%s>", getSagaClass().getSimpleName(), event.getClass().getName())
+                    String.format("Failed to retrieve saga identifier, <saga=%s> <event=%s>", getSagaClass().getSimpleName(), event.getClass().getName())
             );
         }
 
@@ -146,9 +141,9 @@ public class SagaExecutor {
 
         if (Steps.StartStep.class.isAssignableFrom(step.getStepClass())) {
             try {
-                if (repository.load(sagaIdentifier).isPresent()){
+                if (repository.load(sagaIdentifier).isPresent()) {
                     throw new SagaExecutionException(
-                        String.format("Error in creating a saga : only one instance can be alive for a given identifier, <identifier=%s> <saga=%s> <step=%s>", sagaIdentifier, step.getSagaClass(), step.name())
+                            String.format("Error in creating a saga : only one instance can be alive for a given identifier, <identifier=%s> <saga=%s> <step=%s>", sagaIdentifier, step.getSagaClass(), step.name())
                     );
                 }
             } catch (SagaPersistenceException e) {
@@ -171,9 +166,9 @@ public class SagaExecutor {
         try {
             final Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
 
-            if ( ! sagaOptional.isPresent()) {
+            if (!sagaOptional.isPresent()) {
                 throw new SagaExecutionException(
-                    String.format("Error in loading saga : no available saga instance, <identifier=%s>", sagaIdentifier)
+                        String.format("Error in loading saga : no available saga instance, <identifier=%s>", sagaIdentifier)
                 );
             }
 
@@ -190,7 +185,11 @@ public class SagaExecutor {
     // ------------------------------------------------------------------------
 
     protected void persistSaga(final Step step, final Object sagaIdentifier, final Saga saga) {
-        if (step instanceof Steps.EndStep) {
+        persistSaga(sagaIdentifier, saga, step instanceof Steps.EndStep);
+    }
+
+    protected void persistSaga(final Object sagaIdentifier, final Saga saga, final boolean endSaga) {
+        if (endSaga) {
             try {
                 repository.delete(sagaIdentifier);
 

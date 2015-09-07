@@ -8,6 +8,7 @@
 
 * [Pull 297](https://github.com/viadeo/kasper-framework/pull/297) avoid to register bundles with the same name
 * [Pull 296](https://github.com/viadeo/kasper-framework/pull/296) [saga] schedule a method invocation thanks to a datetime brought by an event
+* [Pull 315](https://github.com/viadeo/kasper-framework/pull/315) [saga] added possibility to end saga after scheduled method invocation
 
 ### Version 1.0.0 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.0.0~~))
 

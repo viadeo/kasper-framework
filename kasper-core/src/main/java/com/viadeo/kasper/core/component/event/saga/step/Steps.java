@@ -40,6 +40,17 @@ public final class Steps {
                 String.format("Should define at less two step methods (start/end) : %s", sagaClass.getName())
             );
 
+            for (final Step step : steps) {
+                if(step instanceof SchedulingStep) {
+                    SchedulingStep schedulingStep = (SchedulingStep) step;
+                    checkState(
+                            !(schedulingStep.getDelegateStep() instanceof EndStep),
+                            String.format("Should not use scheduling step on an end step : %s", sagaClass.getName())
+                    );
+
+                }
+            }
+
             final Multimap<String,Step> stepsByName = Multimaps.index(steps, new Function<Step, String>() {
                 @Override
                 public String apply(Step input) {

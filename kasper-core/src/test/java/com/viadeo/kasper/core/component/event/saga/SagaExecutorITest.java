@@ -164,6 +164,21 @@ public class SagaExecutorITest {
     }
 
     @Test
+    public void execute_scheduled_method_with_end_on_available_saga_instance_should_terminate_it() throws SagaPersistenceException, InterruptedException {
+        // Given
+        SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));
+        UUID identifier = UUID.randomUUID();
+        sagaExecutor.execute(Contexts.empty(), new TestFixture.StartEvent(identifier));
+
+        // When
+        sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent5(identifier));
+        Thread.sleep(300L);
+
+        // Then
+        assertFalse(sagaRepository.load(identifier).isPresent());
+    }
+
+    @Test
     public void execute_basic_step_on_ended_saga_instance_should_throw_exception() {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestFixture.TestSagaB(commandGateway));

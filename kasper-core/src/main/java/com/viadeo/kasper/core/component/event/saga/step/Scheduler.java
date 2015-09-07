@@ -35,9 +35,10 @@ public interface Scheduler {
      * @param methodName the method name
      * @param identifier the saga identifier
      * @param triggerDuration the delay at which the method will be triggered
+     * @param endAfterExecution is the saga should end after scheduled method execution
      * @return the jobIdentifier of the scheduled operation
      */
-    String schedule(Class<? extends Saga> sagaClass, String methodName, Object identifier, Duration triggerDuration);
+    String schedule(Class<? extends Saga> sagaClass, String methodName, Object identifier, Duration triggerDuration, boolean endAfterExecution);
 
     /**
      * called in order to trigger a particular Saga method invocation
@@ -46,9 +47,10 @@ public interface Scheduler {
      * @param methodName the method name
      * @param identifier the saga identifier
      * @param triggerDateTime the time at which the method will be triggered
+     * @param endAfterExecution is the saga should end after scheduled method execution
      * @return the jobIdentifier of the scheduled operation
      */
-    String schedule(Class<? extends Saga> sagaClass, String methodName, Object identifier, DateTime triggerDateTime);
+    String schedule(Class<? extends Saga> sagaClass, String methodName, Object identifier, DateTime triggerDateTime, boolean endAfterExecution);
 
     /**
      * called to cancel a scheduled operation
