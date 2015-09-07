@@ -53,7 +53,6 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 public class ServerBuilder {
     public static final Logger LOGGER = LoggerFactory.getLogger(ServerBuilder.class);
@@ -116,29 +115,6 @@ public class ServerBuilder {
         server.addConnector(createAdminConnector());
 
         final HandlerCollection handlerCollection = new HandlerCollection();
-
-        /*
-         * /!\ ONLY FOR TEST PURPOSE: WILL BE REMOVED SOON
-         */
-
-        final String kasperEnv = System.getenv("kasper_env");
-
-        if ((null != kasperEnv) && (kasperEnv.equals("preprod") || kasperEnv.equals("local"))) {
-            LOGGER.warn("/!\\ KasperRequestLog is enabled, be sure you are not in production!");
-            org.eclipse.jetty.server.handler.RequestLogHandler logHandler = new org.eclipse.jetty.server.handler.RequestLogHandler();
-
-            final RequestLog requestLog = new RequestLog();
-            requestLog.setFilename("/tmp/jetty_kasper_platform");
-            requestLog.setLogLatency(true);
-            requestLog.setExtended(true);
-            requestLog.setAppend(false);
-
-            logHandler.setRequestLog(requestLog);
-            handlerCollection.addHandler(logHandler);
-
-            final Handler myLogHandler = new RequestLogHandler();
-            handlerCollection.addHandler(myLogHandler);
-        }
 
         handlerCollection.addHandler(createStaticDocHandler("/doc")); // FIXME main application should not expose static content
         handlerCollection.addHandler(createStaticDocHandler("/")); // FIXME main application should not expose static content
