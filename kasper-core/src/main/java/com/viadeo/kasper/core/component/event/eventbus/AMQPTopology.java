@@ -2,7 +2,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import org.axonframework.eventhandling.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

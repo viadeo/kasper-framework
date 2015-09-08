@@ -2,7 +2,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import org.axonframework.eventhandling.EventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +22,7 @@ public class AMQPComponentNameFormatter {
     private Pattern deadLetterqueueNamePattern = Pattern.compile("([^_]+)_([^_]+)_(.+)" + DEAD_LETTER_SUFFIX);
 
     public String getQueueName(String exchangeName, String clusterName, EventListener eventListener) {
-        return this.getQueueName(exchangeName, clusterName, eventListener.getClass().getName());
+        return this.getQueueName(exchangeName, clusterName, eventListener.getName());
     }
 
     @VisibleForTesting
@@ -58,7 +58,7 @@ public class AMQPComponentNameFormatter {
 
     public String getDeadLetterQueueName(String exchangeName, String clusterName, EventListener eventListener) {
         return deadLetterQueueNameFormat
-                .replace("%queue%", getQueueName(exchangeName, clusterName, eventListener.getClass().getName()));
+                .replace("%queue%", getQueueName(exchangeName, clusterName, eventListener.getName()));
     }
 
     public String getFallbackDeadLetterQueueName(String exchangeName, String exchangeVersion, String clusterName) {
