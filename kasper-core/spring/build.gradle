@@ -4,18 +4,23 @@
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-description = 'KASPER CORE'
+description = 'KASPER SPRING'
 
 dependencies {
 
     // Projects
     compile project(':kasper-api')
+    compile project(':kasper-core')
     compile project(':kasper-common')
 
     // Third party dependencies
     compile libraries.REFLECTIONS
+    compile libraries.SPRING_CONTEXT
     compile libraries.JACKSON_CORE
     compile libraries.JACKSON_DATABIND
+    compile libraries.SPRING_TX
+    compile libraries.SPRING_CORE
+    compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
     compile libraries.QUARTZ_SCHEDULER
     compile libraries.QUARTZ_JOBS
@@ -28,8 +33,8 @@ dependencies {
     compile libraries.TYPESAFE_CONFIG
     compile libraries.RABBITMQ_MGMT
     compile libraries.JERSEY_CLIENT
-    compile libraries.HYSTRIX
 
+    testCompile libraries.SPRING_TEST
     testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO

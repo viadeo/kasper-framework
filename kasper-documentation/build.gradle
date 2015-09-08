@@ -13,7 +13,6 @@ dependencies {
     compile project(':kasper-platform')
 
     // Third party dependencies
-    compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
 
     compile libraries.JACKSON_JSON

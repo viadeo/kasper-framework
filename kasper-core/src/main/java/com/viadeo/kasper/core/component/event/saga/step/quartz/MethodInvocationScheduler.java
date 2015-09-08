@@ -69,22 +69,27 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
 
     private final ObjectMapper mapper;
     private final Scheduler scheduler;
-    private final ApplicationContext applicationContext;
     private final String groupIdentifier;
+    private final SagaManager sagaManager;
 
     private boolean initialized;
 
     // ------------------------------------------------------------------------
 
-    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final ApplicationContext applicationContext) {
-        this(mapper, scheduler, applicationContext, DEFAULT_GROUP_NAME);
+    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final SagaManager sagaManager) {
+        this(mapper, scheduler, DEFAULT_GROUP_NAME, sagaManager);
     }
 
-    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final ApplicationContext applicationContext, final String groupIdentifier) {
+    public MethodInvocationScheduler(
+            final ObjectMapper mapper,
+            final Scheduler scheduler,
+            final String groupIdentifier,
+            final SagaManager sagaManager
+    ) {
         this.mapper = mapper;
         this.scheduler = checkNotNull(scheduler);
-        this.applicationContext = checkNotNull(applicationContext);
         this.groupIdentifier = checkNotNull(groupIdentifier);
+        this.sagaManager = checkNotNull(sagaManager);
     }
 
     // ------------------------------------------------------------------------
@@ -93,7 +98,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
     public void initialize() {
         try {
             this.scheduler.getContext().put(OBJECT_MAPPER_KEY, mapper);
-            this.scheduler.getContext().put(SAGA_MANAGER_KEY, applicationContext.getBean(SagaManager.class));
+            this.scheduler.getContext().put(SAGA_MANAGER_KEY, sagaManager);
             this.scheduler.start();
             initialized = true;
         } catch (SchedulerException e) {
