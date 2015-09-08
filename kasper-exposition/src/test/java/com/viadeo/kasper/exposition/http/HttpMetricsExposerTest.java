@@ -7,6 +7,8 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.codahale.metrics.Meter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -78,7 +80,11 @@ public class HttpMetricsExposerTest extends BaseHttpExposerTest {
         String output = writer.toString();
         output = output.replaceAll("\"mean_rate\":[0-9\\.]+,\"", "\"mean_rate\":0,\"");
 
-        assertEquals(expectedOutput, output);
+        final ObjectMapper mapper = new ObjectMapper();
+        final JsonNode expectedOutputJson = mapper.readTree(expectedOutput);
+        final JsonNode outputJson = mapper.readTree(output);
+
+        assertEquals(expectedOutputJson, outputJson);
     }
 
 }
