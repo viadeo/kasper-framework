@@ -4,13 +4,14 @@
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-description = 'KASPER EXPOSITION COMPONENTS'
+description = 'KASPER EXPOSITION JETTY'
 
 dependencies {
 
     // Projects
     compile project(':kasper-platform')
     compile project(':kasper-documentation')
+    compile project(':kasper-exposition')
 
     // Third-party dependencies
     compile libraries.METRICS_JSON
@@ -19,6 +20,8 @@ dependencies {
     compile libraries.JERSEY_CORE
     compile libraries.JERSEY_JSON
     compile libraries.JERSEY_SERVLET
+
+    compile libraries.SPRING_WEB
 
     compile libraries.SERVLET
 
@@ -44,4 +47,5 @@ dependencies {
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.TYPESAFE_CONFIG
+    testCompile libraries.SPRING_TEST
 }
