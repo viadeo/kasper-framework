@@ -32,9 +32,9 @@ import java.util.List;
 public class SagaConfiguration {
 
     @Bean(initMethod = "initialize", destroyMethod = "shutdown")
-    public Scheduler stepScheduler(final ObjectMapper objectMapper, final ApplicationContext applicationContext) throws SchedulerException {
+    public Scheduler stepScheduler(final ObjectMapper objectMapper, final ApplicationContext applicationContext, final SagaManager sagaManager) throws SchedulerException {
         final SchedulerFactory sf = new StdSchedulerFactory();
-        return new MethodInvocationScheduler(objectMapper, sf.getScheduler(), applicationContext);
+        return new MethodInvocationScheduler(objectMapper, sf.getScheduler(), sagaManager);
     }
 
     @Bean

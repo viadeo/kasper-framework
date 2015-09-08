@@ -3,11 +3,16 @@ rootProject.name = 'kasper-framework'
 
 include ':kasper-api', 
         ':kasper-core', 
+        ':kasper-core:spring', 
         ':kasper-platform',
         ':kasper-exposition',
         ':kasper-client',
         ':kasper-common', 
         ':kasper-test', 
         ':kasper-documentation',
+        ':kasper-spring',
+        ':kasper-eventbus-rabbitmq',
+        ':kasper-eventbus-rabbitmq:spring',
+        ':kasper-exposition-jetty',
         ':kasper-domain-sample'
 

@@ -4,13 +4,14 @@
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-description = 'KASPER CORE'
+description = 'KASPER EVENTBUS RABBITMQ'
 
 dependencies {
 
     // Projects
     compile project(':kasper-api')
     compile project(':kasper-common')
+    compile project(':kasper-core')
 
     // Third party dependencies
     compile libraries.REFLECTIONS
@@ -28,7 +29,6 @@ dependencies {
     compile libraries.TYPESAFE_CONFIG
     compile libraries.RABBITMQ_MGMT
     compile libraries.JERSEY_CLIENT
-    compile libraries.HYSTRIX
 
     testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
