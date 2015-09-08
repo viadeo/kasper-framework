@@ -12,7 +12,6 @@ import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.core.context.CurrentContext;

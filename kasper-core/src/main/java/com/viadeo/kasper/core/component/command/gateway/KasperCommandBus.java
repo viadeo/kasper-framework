@@ -4,9 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.component.command;
+package com.viadeo.kasper.core.component.command.gateway;
 
-import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
+import com.codahale.metrics.InstrumentedExecutorService;
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.axonframework.commandhandling.AsynchronousCommandBus;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.CommandMessage;
@@ -14,12 +17,29 @@ import org.axonframework.commandhandling.NoHandlerForCommandException;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
 
 import static java.lang.String.format;
 
 public class KasperCommandBus extends AsynchronousCommandBus {
 
-    private final ConcurrentMap<String, CommandHandler<?>> subscriptions = new ConcurrentHashMap<String, CommandHandler<?>>();
+    private static final String COMMAND_THREAD_NAME = "command-thread";
+
+    private final ConcurrentMap<String, CommandHandler<?>> subscriptions = new ConcurrentHashMap<>();
+
+    // ------------------------------------------------------------------------
+
+    public KasperCommandBus(final MetricRegistry metricRegistry) {
+        super(new InstrumentedExecutorService(
+                Executors.newCachedThreadPool(
+                        new ThreadFactoryBuilder()
+                                .setNameFormat(COMMAND_THREAD_NAME + "-%d")
+                                .build()
+                ),
+                Preconditions.checkNotNull(metricRegistry, "metric registry may not be null")        ,
+                COMMAND_THREAD_NAME
+        ));
+    }
 
     // ------------------------------------------------------------------------
 

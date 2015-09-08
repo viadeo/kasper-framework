@@ -10,7 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
@@ -64,13 +64,13 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
 
     public KasperPlatformConfiguration(MetricRegistry metricRegistry) {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
-        this.queryGateway = new KasperQueryGateway();
+        this.queryGateway = new KasperQueryGateway(metricRegistry);
         this.metricRegistry = metricRegistry;
         this.extraComponents = Lists.newArrayList();
         this.configuration = ConfigFactory.empty();
 
         final UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
-        final KasperCommandBus commandBus = new KasperCommandBus();
+        final KasperCommandBus commandBus = new KasperCommandBus(metricRegistry);
         commandBus.setUnitOfWorkFactory(uowFactory);
 
         this.commandGateway = new KasperCommandGateway(commandBus);
