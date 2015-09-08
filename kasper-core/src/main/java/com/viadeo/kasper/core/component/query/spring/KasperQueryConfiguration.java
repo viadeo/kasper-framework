@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.spring;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +17,11 @@ public class KasperQueryConfiguration {
     /**
      * Query gateway is responsible for dispatching queries to the appropriate query handler
      *
+     * @param metricRegistry the metric registry
      * @return query gateway
      */
     @Bean
-    public KasperQueryGateway queryGateway() {
-        return new KasperQueryGateway();
+    public KasperQueryGateway queryGateway(final MetricRegistry metricRegistry) {
+        return new KasperQueryGateway(metricRegistry);
     }
 }

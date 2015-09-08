@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
@@ -65,7 +66,7 @@ public class KasperQueryGatewayUTest {
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         interceptorChainRegistry = mock(InterceptorChainRegistry.class);
         queryGateway = new KasperQueryGateway(
-                new KasperQueryBus(interceptorChainRegistry),
+                new KasperQueryBus(new MetricRegistry(), interceptorChainRegistry),
                 queryHandlersLocator
         );
     }

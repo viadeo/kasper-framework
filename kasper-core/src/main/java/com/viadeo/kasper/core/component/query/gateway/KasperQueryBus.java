@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.gateway;
 
+import com.codahale.metrics.InstrumentedExecutorService;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.viadeo.kasper.api.component.query.Query;
@@ -36,6 +38,7 @@ import static java.lang.String.format;
 public class KasperQueryBus {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryBus.class);
+    private static final String QUERY_THREAD_NAME = "query-thread";
 
     // ------------------------------------------------------------------------
 
@@ -45,11 +48,19 @@ public class KasperQueryBus {
 
     // ------------------------------------------------------------------------
 
-    public KasperQueryBus(InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry) {
-        this(Executors.newCachedThreadPool(
-                new ThreadFactoryBuilder()
-                        .setNameFormat("query-thread-%d")
-                        .build()),
+    public KasperQueryBus(
+            final MetricRegistry metricRegistry,
+            final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry
+    ) {
+        this(new InstrumentedExecutorService(
+                Executors.newCachedThreadPool(
+                        new ThreadFactoryBuilder()
+                                .setNameFormat(QUERY_THREAD_NAME + "-%d")
+                                .build()
+                ),
+                checkNotNull(metricRegistry, "metric registry may not be null"),
+                QUERY_THREAD_NAME
+            ),
             interceptorChainRegistry
         );
     }
