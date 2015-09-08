@@ -6,8 +6,12 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.rabbitmq.client.Channel;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import org.axonframework.domain.EventMessage;
-import org.axonframework.eventhandling.*;
+import org.axonframework.eventhandling.Cluster;
+import org.axonframework.eventhandling.ClusterMetaData;
+import org.axonframework.eventhandling.DefaultClusterMetaData;
+import org.axonframework.eventhandling.EventProcessingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
@@ -57,6 +61,14 @@ public class AMQPCluster implements Cluster, SmartLifecycle {
         this.queueFinder = queueFinder;
     }
 
+    @Override
+    public void subscribe(final org.axonframework.eventhandling.EventListener eventListener) {
+        checkNotNull(eventListener);
+        if (EventListener.class.isAssignableFrom(eventListener.getClass())) {
+            this.subscribe((EventListener) eventListener);
+        }
+    }
+
     /**
      * Setup and start and associate a spring amqp container to the given listener
      * This method only accept instances of kasper events because we need to get
@@ -64,7 +76,6 @@ public class AMQPCluster implements Cluster, SmartLifecycle {
      *
      * @param eventListener eventListener to subscribe
      */
-    @Override
     public void subscribe(final EventListener eventListener) {
         try {
             LOGGER.debug("subscribing event listener {} to amqp", eventListener.getClass().getName());
@@ -120,15 +131,22 @@ public class AMQPCluster implements Cluster, SmartLifecycle {
         });
     }
 
+    @Override
+    public void unsubscribe(final org.axonframework.eventhandling.EventListener eventListener) {
+        checkNotNull(eventListener);
+        if (EventListener.class.isAssignableFrom(eventListener.getClass())) {
+            this.unsubscribe((EventListener) eventListener);
+        }
+    }
+
     /**
      * Stop the associated container and remove it from the list of containers
      *
      * @param eventListener listener to unsubscribe
      * @see org.axonframework.eventhandling.Cluster#unsubscribe(org.axonframework.eventhandling.EventListener)
      */
-    @Override
     public void unsubscribe(EventListener eventListener) {
-        LOGGER.debug("unsubscribing event listener {} to amqp", eventListener.getClass().getName());
+        LOGGER.debug("unsubscribing event listener {} to amqp", eventListener.getName());
         containerManager.unregister(eventListener);
     }
 
@@ -136,11 +154,11 @@ public class AMQPCluster implements Cluster, SmartLifecycle {
      * @see org.axonframework.eventhandling.Cluster#getMembers()
      */
     @Override
-    public Set<EventListener> getMembers() {
+    public Set<org.axonframework.eventhandling.EventListener> getMembers() {
         return Sets.newHashSet(
-                Iterables.transform(containerManager.containers(), new Function<MessageListenerContainer, EventListener>() {
+                Iterables.transform(containerManager.containers(), new Function<MessageListenerContainer, org.axonframework.eventhandling.EventListener>() {
                     @Override
-                    public EventListener apply(MessageListenerContainer input) {
+                    public org.axonframework.eventhandling.EventListener apply(MessageListenerContainer input) {
                         return input.getEventListener();
                     }
                 })
