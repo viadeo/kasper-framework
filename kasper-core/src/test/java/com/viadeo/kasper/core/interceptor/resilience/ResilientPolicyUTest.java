@@ -21,16 +21,16 @@ import org.junit.rules.ExpectedException;
 
 import javax.validation.ConstraintViolation;
 
-public class ResiliencePolicyUTest {
+public class ResilientPolicyUTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private ResiliencePolicy policy;
+    private ResilientPolicy policy;
 
     @Before
     public void setUp() throws Exception {
-        policy = new ResiliencePolicy();
+        policy = new ResilientPolicy();
     }
 
     @Test

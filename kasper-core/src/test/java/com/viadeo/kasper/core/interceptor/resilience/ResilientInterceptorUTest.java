@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class ResilienceInterceptorUTest {
+public class ResilientInterceptorUTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -46,13 +46,21 @@ public class ResilienceInterceptorUTest {
     private InterceptorChain<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> interceptorChain;
 
     private QueryHandler<com.viadeo.kasper.api.component.query.Query,QueryResult> queryHandler;
+    private ResilientConfigurer configurer;
 
     @Before
     public void setUp() throws Exception {
         queryHandler = mockedQueryHandler();
 
+        configurer = mock(ResilientConfigurer.class);
+        when(configurer.configure(any())).thenReturn(new ResilientConfigurer.InputConfig(true, 40, 40000, 1000));
+
         InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
-        chainRegistry.register(ResilienceInterceptorFactories.forQuery(new MetricRegistry(), new ResiliencePolicy()));
+        chainRegistry.register(ResilienceInterceptorFactories.forQuery(
+                new MetricRegistry(),
+                new ResilientPolicy(),
+                configurer
+        ));
         interceptorChain = chainRegistry.create(QueryHandler.class, new QueryHandlerInterceptorFactory(queryHandler)).get();
 
         KasperMetrics.setMetricRegistry(new MetricRegistry());
@@ -132,7 +140,6 @@ public class ResilienceInterceptorUTest {
     }
 
     @Test
-//    @Ignore
     public void proceed_interception_with_circuit_breaker_open() throws Exception {
         // Given
         doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
@@ -144,7 +151,7 @@ public class ResilienceInterceptorUTest {
             assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
             assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
         }
-        Thread.sleep(1000);
+        Thread.sleep(500);
 
         QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
 
@@ -157,7 +164,7 @@ public class ResilienceInterceptorUTest {
     @Test
     public void register_a_metrics_publisher_on_hystrix_is_ok() throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         // Given
-        ResilienceInterceptor.metricInitialized = false;
+        ResilientInterceptor.metricInitialized = false;
 
         Constructor<?> constructor = HystrixPlugins.class.getDeclaredConstructor();
         constructor.setAccessible(Boolean.TRUE);
@@ -166,7 +173,7 @@ public class ResilienceInterceptorUTest {
         HystrixPlugins hystrixPlugins = spy(hp);
 
         // When
-        ResilienceInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins);
+        ResilientInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins);
 
         // Then
         verify(hystrixPlugins, atMost(1)).registerMetricsPublisher(any(HystrixMetricsPublisher.class));

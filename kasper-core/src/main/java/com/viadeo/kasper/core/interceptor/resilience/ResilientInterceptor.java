@@ -20,14 +20,16 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse> implements Interceptor<INPUT, OUTPUT> {
+public abstract class ResilientInterceptor<INPUT, OUTPUT extends KasperResponse> implements Interceptor<INPUT, OUTPUT> {
 
     private static final String UNKNOWN_GROUP_NAME = "unknown";
 
-    private final ResiliencePolicy policy;
+    private final ResilientPolicy policy;
+    private final ResilientConfigurer configurer;
 
-    public ResilienceInterceptor(final MetricRegistry metricRegistry, final ResiliencePolicy policy) {
+    public ResilientInterceptor(final MetricRegistry metricRegistry, final ResilientPolicy policy, final ResilientConfigurer configurer) {
         this.policy = checkNotNull(policy);
+        this.configurer = checkNotNull(configurer);
         registerMetricsPublisherOnHystrix(checkNotNull(metricRegistry), HystrixPlugins.getInstance());
     }
 
@@ -70,18 +72,20 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
         final String inputName = input.getClass().getName();
         final String groupName = Objects.firstNonNull(getGroupName(), UNKNOWN_GROUP_NAME);
 
+        final ResilientConfigurer.InputConfig config = configurer.configure(input);
+
         return HystrixCommand.Setter
-                // configure command group and command name
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupName))
                 .andCommandKey(HystrixCommandKey.Factory.asKey(inputName))
-                // configure thread pool key
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey(input.getClass().getPackage().getName()))
-                // configure circuit breaker
                 .andCommandPropertiesDefaults(
                         HystrixCommandProperties.Setter()
-                                // TODO retrieve this values from config
-                                .withExecutionIsolationThreadTimeoutInMilliseconds(1000) // default 1000 ms
-                                .withCircuitBreakerSleepWindowInMilliseconds(60000) // default to 500 ms
+                                .withCircuitBreakerEnabled(config.circuitBreakerEnable)
+                                .withCircuitBreakerSleepWindowInMilliseconds(config.circuitBreakerSleepWindowInMillis)
+                                .withCircuitBreakerErrorThresholdPercentage(config.circuitBreakerThresholdInPercent)
+
+                                .withExecutionIsolationThreadTimeoutInMilliseconds(config.executionTimeoutInMillis)
+
                                 .withMetricsRollingStatisticalWindowInMilliseconds(60000) // default to 10000 ms
                                 .withMetricsRollingStatisticalWindowBuckets(60) // default to 10
                 );

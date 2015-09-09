@@ -17,7 +17,7 @@ import java.util.List;
  * This policy rethrow exceptions throws by interceptors for further processing.
  * Avoid calling fallback on validation exception.
  */
-public class ResiliencePolicy {
+public class ResilientPolicy {
 
     /**
      * Manage an exception in order to distinguish an error or failure.
