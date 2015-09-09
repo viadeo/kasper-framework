@@ -4,9 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -20,6 +20,7 @@ import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.*;
@@ -49,34 +50,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class KasperEventBus extends ClusteringEventBus {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
-    private static final String KASPER_CLUSTER_NAME = "kasper";
-
-    /* FIXME: make it configurable */
-    private static final int CORE_POOL_SIZE = 50;
-    private static final int MAXIMUM_POOL_SIZE = 200;
-    private static final long KEEP_ALIVE_TIME = 60L;
-    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
-
     public static enum Policy {
         SYNCHRONOUS, ASYNCHRONOUS, USER
+
     }
-    private static final Policy DEFAULT_POLICY = Policy.SYNCHRONOUS;
-
-    private final Policy currentPolicy;
-    private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
-    private final List<PublicationHandler> publicationHandlers = Lists.newLinkedList();
-
-    private InterceptorChainRegistry<Event, Void> interceptorChainRegistry;
-
-    // ------------------------------------------------------------------------
 
     public interface PublicationHandler {
         void handlePublication(EventMessage eventMessage);
         void shutdown();
     }
-
-    // ------------------------------------------------------------------------
 
     /*
      * Return a default error handler
@@ -89,10 +71,10 @@ public class KasperEventBus extends ClusteringEventBus {
                                            final EventListener eventListener) {
                 /* TODO: store the error, generate error event */
                 LOGGER.error(String.format(
-                    "Error %s occurred during processing of event %s in listener %s ",
-                    exception.getMessage(),
-                    eventMessage.getPayload().getClass().getName(),
-                    eventListener.getClass().getName()
+                        "Error %s occurred during processing of event %s in listener %s ",
+                        exception.getMessage(),
+                        eventMessage.getPayload().getClass().getName(),
+                        eventListener.getClass().getName()
                 ));
                 return super.handleError(exception, eventMessage, eventListener);
             }
@@ -109,36 +91,36 @@ public class KasperEventBus extends ClusteringEventBus {
             final KasperProcessorDownLatch processorDownLatch) {
 
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
-            final BlockingQueue<Runnable> busQueue = new LinkedBlockingQueue<Runnable>();
+            final BlockingQueue<Runnable> busQueue = new LinkedBlockingQueue<>();
 
             return new DefaultClusterSelector(
-                new AsynchronousCluster(
-                    KASPER_CLUSTER_NAME,
-                    new ThreadPoolExecutor(
-                        CORE_POOL_SIZE,
-                        MAXIMUM_POOL_SIZE,
-                        KEEP_ALIVE_TIME,
-                        TIME_UNIT,
-                        busQueue
-                    ),
-                    new DefaultUnitOfWorkFactory(new NoTransactionManager()),
-                    new SequentialPolicy(),
-                    errorHandler
-                ) {
-                    @Override
-                    protected EventProcessor newProcessingScheduler(
-                            final EventProcessor.ShutdownCallback shutDownCallback,
-                            final Set<EventListener> eventListeners,
-                            final MultiplexingEventProcessingMonitor eventProcessingMonitor) {
-                        final EventProcessor eventProcessor = super.newProcessingScheduler(
-                            new KasperShutdownCallback(processorDownLatch, shutDownCallback),
-                            eventListeners,
-                            eventProcessingMonitor
-                        );
-                        processorDownLatch.process(eventProcessor);
-                        return eventProcessor;
+                    new AsynchronousCluster(
+                            KASPER_CLUSTER_NAME,
+                            new ThreadPoolExecutor(
+                                    CORE_POOL_SIZE,
+                                    MAXIMUM_POOL_SIZE,
+                                    KEEP_ALIVE_TIME,
+                                    TIME_UNIT,
+                                    busQueue
+                            ),
+                            new DefaultUnitOfWorkFactory(new NoTransactionManager()),
+                            new SequentialPolicy(),
+                            errorHandler
+                    ) {
+                        @Override
+                        protected EventProcessor newProcessingScheduler(
+                                final EventProcessor.ShutdownCallback shutDownCallback,
+                                final Set<EventListener> eventListeners,
+                                final MultiplexingEventProcessingMonitor eventProcessingMonitor) {
+                            final EventProcessor eventProcessor = super.newProcessingScheduler(
+                                    new KasperShutdownCallback(processorDownLatch, shutDownCallback),
+                                    eventListeners,
+                                    eventProcessingMonitor
+                            );
+                            processorDownLatch.process(eventProcessor);
+                            return eventProcessor;
+                        }
                     }
-                }
             );
         }
 
@@ -151,52 +133,94 @@ public class KasperEventBus extends ClusteringEventBus {
 
     // ------------------------------------------------------------------------
 
-    /*
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
+    private static final String KASPER_CLUSTER_NAME = "kasper";
+    private static final Policy DEFAULT_POLICY = Policy.SYNCHRONOUS;
+
+    /* FIXME: make it configurable */
+    private static final int CORE_POOL_SIZE = 50;
+    private static final int MAXIMUM_POOL_SIZE = 200;
+    private static final long KEEP_ALIVE_TIME = 60L;
+
+    // ------------------------------------------------------------------------
+
+    private final InterceptorChainRegistry<Event, Void> interceptorChainRegistry;
+    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
+    private final Policy currentPolicy;
+    private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
+    private final List<PublicationHandler> publicationHandlers = Lists.newLinkedList();
+    private final MetricRegistry metricRegistry;
+    private final String publishMetricName;
+
+    /**
      * Build a default synchronous event bus
+     *
+     * @param metricRegistry the metric registry
      */
-    public KasperEventBus() {
-        this(DEFAULT_POLICY);
+    public KasperEventBus(final MetricRegistry metricRegistry) {
+        this(metricRegistry, DEFAULT_POLICY);
     }
 
-    /*
+    /**
      * Build a Kasper event bus using the specified policy
+     *
+     * @param busPolicy the bus policy
+     * @param metricRegistry the metric registry
      */
-    public KasperEventBus(final Policy busPolicy) {
-        this(busPolicy, new KasperProcessorDownLatch());
+    public KasperEventBus(final MetricRegistry metricRegistry, final Policy busPolicy) {
+        this(metricRegistry, busPolicy, new KasperProcessorDownLatch());
     }
 
-    /*
+    /**
      * Build a Kasper event bus from the specified axon ClusterSelector
+     *
+     * @param axonClusterSelector the cluster selector
+     * @param metricRegistry the metric registry
      */
-    public KasperEventBus(final ClusterSelector axonClusterSelector) {
+    public KasperEventBus(final MetricRegistry metricRegistry, final ClusterSelector axonClusterSelector) {
         super(checkNotNull(axonClusterSelector));
         this.currentPolicy = Policy.USER;
         this.optionalProcessorDownLatch = Optional.absent();
-        intInterceptorChainRegistry();
+        this.interceptorChainRegistry = new InterceptorChainRegistry<>();
+        this.metricRegistry = checkNotNull(metricRegistry, "the metric registry must be not null");
+        this.publishMetricName = KasperMetrics.name(getClass(), "publish");
     }
 
-    /*
+    /**
      * Build a Kasper event bus from the specified axon Cluster with default cluster selector
+     *
+     * @param cluster the cluster
+     * @param metricRegistry the metric registry
      */
-    public KasperEventBus(final Cluster cluster) {
+    public KasperEventBus(final MetricRegistry metricRegistry, final Cluster cluster) {
         super(new DefaultClusterSelector(checkNotNull(cluster)));
         this.currentPolicy = Policy.USER;
         this.optionalProcessorDownLatch = Optional.absent();
-        intInterceptorChainRegistry();
+        this.interceptorChainRegistry = new InterceptorChainRegistry<>();
+        this.metricRegistry = checkNotNull(metricRegistry, "the metric registry must be not null");
+        this.publishMetricName = KasperMetrics.name(getClass(), "publish");
     }
 
-    /*
+    /**
      * Build an asynchronous Kasper event bus with the specified error handler
+     *
+     * @param errorHandler the error handler
+     * @param metricRegistry the metric registry
      */
-    public KasperEventBus(final ErrorHandler errorHandler) {
-        this(Policy.ASYNCHRONOUS, errorHandler, new KasperProcessorDownLatch());
-    }
-
-    public KasperEventBus(final Policy busPolicy, final KasperProcessorDownLatch processorDownLatch) {
-        this(busPolicy, getDefaultErrorHandler(), processorDownLatch);
+    public KasperEventBus(final MetricRegistry metricRegistry, final ErrorHandler errorHandler) {
+        this(metricRegistry, Policy.ASYNCHRONOUS, errorHandler, new KasperProcessorDownLatch());
     }
 
     public KasperEventBus(
+            final MetricRegistry metricRegistry,
+            final Policy busPolicy,
+            final KasperProcessorDownLatch processorDownLatch
+    ) {
+        this(metricRegistry, busPolicy, getDefaultErrorHandler(), processorDownLatch);
+    }
+
+    public KasperEventBus(
+            final MetricRegistry metricRegistry,
             final Policy busPolicy,
             final ErrorHandler errorHandler,
             final KasperProcessorDownLatch processorDownLatch
@@ -204,7 +228,9 @@ public class KasperEventBus extends ClusteringEventBus {
         super(getCluster(checkNotNull(busPolicy), checkNotNull(errorHandler), checkNotNull(processorDownLatch)));
         this.currentPolicy = busPolicy;
         this.optionalProcessorDownLatch = Optional.of(processorDownLatch);
-        intInterceptorChainRegistry();
+        this.interceptorChainRegistry = new InterceptorChainRegistry<>();
+        this.metricRegistry = checkNotNull(metricRegistry, "the metric registry must be not null");
+        this.publishMetricName = KasperMetrics.name(getClass(), "publish");
     }
 
     // ------------------------------------------------------------------------
@@ -261,7 +287,12 @@ public class KasperEventBus extends ClusteringEventBus {
 
     @VisibleForTesting
     void publishToSuper(final EventMessage... messages) {
-        super.publish(messages);
+        checkNotNull(messages);
+        try {
+            super.publish(messages);
+        } finally {
+            metricRegistry.meter(publishMetricName).mark(messages.length);
+        }
     }
 
     public void publish(final Event event) {
@@ -335,10 +366,6 @@ public class KasperEventBus extends ClusteringEventBus {
             });
         }
         return Optional.absent();
-    }
-
-    private void intInterceptorChainRegistry(){
-        this.interceptorChainRegistry = new InterceptorChainRegistry<Event, Void>();
     }
 
     /**

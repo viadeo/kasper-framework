@@ -218,6 +218,7 @@ public class KasperPlatformFixture implements
         // -----
 
         protected SpyEventBus(RecordingPlatform recordingPlatform){
+            super(KasperMetrics.getMetricRegistry());
             this.recordingPlatform = recordingPlatform;
         }
 

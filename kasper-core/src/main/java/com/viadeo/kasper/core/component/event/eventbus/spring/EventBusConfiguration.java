@@ -45,7 +45,7 @@ public class EventBusConfiguration {
     @Bean
     public KasperEventBus eventBus(List<Cluster> clusters) {
         ClassNamePatternClusterSelector selector = new ClassNamePatternClusterSelector(Pattern.compile(".*"), new CompositeCluster(clusters));
-        KasperEventBus eventBus = new KasperEventBus(selector);
+        KasperEventBus eventBus = new KasperEventBus(new MetricRegistry(), selector);
 
         // interceptors
         eventBus.register(new TagsInterceptor.Factory());
