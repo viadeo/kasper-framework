@@ -1,5 +1,9 @@
 # Kasper Releases #
 
+### Version 1.1.0-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.0-SNAPSHOT~~))
+* [Pull 330](https://github.com/viadeo/kasper-framework/pull/330) Add metric for each published message on the bus
+* [Pull 307](https://github.com/viadeo/kasper-framework/pull/307) Use a query bus in order to retrieve response in future
+
 ### Version 1.0.1-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.0.1-SNAPSHOT~~))
 
 * [Pull 297](https://github.com/viadeo/kasper-framework/pull/297) avoid to register bundles with the same name
