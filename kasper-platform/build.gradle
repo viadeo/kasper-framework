@@ -14,6 +14,9 @@ dependencies {
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
 
+    // Only used for classes scanner
+    compile libraries.SPRING_CONTEXT
+
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
 }

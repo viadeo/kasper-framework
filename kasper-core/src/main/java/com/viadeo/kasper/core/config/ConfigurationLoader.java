@@ -61,7 +61,7 @@ import java.util.Map;
 public class ConfigurationLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationLoader.class);
 
-    private static final String DEFAULT_ENVIRONMENT_NAME = "SPRING_PROFILES_ACTIVE";
+    private static final String DEFAULT_ENVIRONMENT_NAME = "KASPER_ENV";
 
     private static final String DEFAULT_SYSTEM_FILENAME = "infrastructure.conf";
 
