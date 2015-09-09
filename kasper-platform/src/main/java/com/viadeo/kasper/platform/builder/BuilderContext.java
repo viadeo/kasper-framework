@@ -16,7 +16,6 @@ import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
-import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 
 import java.util.List;
 import java.util.Map;
@@ -33,19 +32,6 @@ public class BuilderContext {
     private final Map<ExtraComponent.Key, ExtraComponent> extraComponents;
 
     // --------------------------------------------------------------------
-
-    public BuilderContext(final KasperPlatformConfiguration platformConfiguration,
-                          final List<ExtraComponent> extraComponents
-    ) {
-        this(
-                platformConfiguration.configuration(),
-                platformConfiguration.eventBus(),
-                platformConfiguration.commandGateway(),
-                platformConfiguration.queryGateway(),
-                platformConfiguration.metricRegistry(),
-                extraComponents
-        );
-    }
 
     public BuilderContext(final Config configuration,
                           final KasperEventBus eventBus,

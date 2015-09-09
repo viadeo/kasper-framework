@@ -39,6 +39,7 @@ ext.libraries = [
         SPRING_WEB               : 'org.springframework:spring-web:4.0.6.RELEASE',
         SPRING_TEST              : 'org.springframework:spring-test:4.0.6.RELEASE',
         SPRING_CORE              : 'org.springframework:spring-core:4.0.6.RELEASE',
+        SPRING_BEANS             : 'org.springframework:spring-beans:4.0.6.RELEASE',
         SPRING_CONTEXT           : 'org.springframework:spring-context:4.0.6.RELEASE',
         SPRING_JDBC              : 'org.springframework:spring-jdbc:4.0.6.RELEASE',
         SPRING_TX                : 'org.springframework:spring-tx:4.0.6.RELEASE',
