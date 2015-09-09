@@ -35,6 +35,8 @@ import static org.mockito.Mockito.spy;
 public class KasperEventBusTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
 
+    MetricRegistry metricRegistry;
+
     @Captor
     ArgumentCaptor<GenericEventMessage<Event>> captor;
 
@@ -45,7 +47,8 @@ public class KasperEventBusTest {
 
 
     public KasperEventBusTest() {
-        KasperMetrics.setMetricRegistry(new MetricRegistry());
+        metricRegistry = new MetricRegistry();
+        KasperMetrics.setMetricRegistry(metricRegistry);
     }
 
     // ------------------------------------------------------------------------
@@ -60,7 +63,7 @@ public class KasperEventBusTest {
     @Test
     public void nominal() throws Exception {
         // Given
-        final KasperEventBus eventBus = spy(new KasperEventBus());
+        final KasperEventBus eventBus = spy(new KasperEventBus(metricRegistry));
         final TestEvent dummyEvent = new TestEvent();
         CurrentContext.set(Contexts.empty());
 
@@ -113,7 +116,7 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        final KasperEventBus eventBus = new KasperEventBus(metricRegistry, Policy.ASYNCHRONOUS);
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
 
@@ -145,7 +148,7 @@ public class KasperEventBusTest {
     @Test
     public void listeningSyncError() {
         // Given
-        final KasperEventBus syncEventBus = new KasperEventBus(Policy.SYNCHRONOUS);
+        final KasperEventBus syncEventBus = new KasperEventBus(metricRegistry, Policy.SYNCHRONOUS);
         final Event event = new TestEvent();
 
         // When
