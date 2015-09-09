@@ -28,16 +28,13 @@ import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
 import static com.viadeo.kasper.core.component.annotation.XKasperAuthz.RequiresPermissions;
 import static com.viadeo.kasper.core.component.annotation.XKasperAuthz.RequiresRoles;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.doReturn;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorizationInterceptorUTest {
@@ -54,8 +51,6 @@ public class AuthorizationInterceptorUTest {
         }
     };
 
-    @Mock
-    private ApplicationContext applicationContext;
 
     private Context context;
     private CompositeInterceptorFactory<Command, CommandResponse> factory;
@@ -66,15 +61,17 @@ public class AuthorizationInterceptorUTest {
                 .withUserID(new ID("viadeo", "member", TestFormats.ID, 42))
                 .build();
 
-        doReturn(new OnlyForTestsAuthorizationManagerReturningTrue()).when(applicationContext).getBean(OnlyForTestsAuthorizationManagerReturningTrue.class);
-        doReturn(new OnlyForTestsAuthorizationManagerReturningFalse()).when(applicationContext).getBean(OnlyForTestsAuthorizationManagerReturningFalse.class);
-        doReturn(NO_AUTHORIZATION).when(applicationContext).getBean(NO_AUTHORIZATION.getClass());
+        final List<AuthorizationManager> authorizationManagers = Lists.newArrayList(
+                NO_AUTHORIZATION,
+                new OnlyForTestsAuthorizationManagerReturningTrue(),
+                new OnlyForTestsAuthorizationManagerReturningFalse()
+        );
 
         @SuppressWarnings("unchecked")
         List<InterceptorFactory<Command, CommandResponse>> interceptorFactories = Lists.newArrayList(
                 new AuthorizationInterceptor.Factory<Command,CommandResponse>(
                         NO_AUTHORIZATION.getClass(),
-                        applicationContext
+                        authorizationManagers
                 )
                 ,
                 new InterceptorFactory<Command, CommandResponse>() {
