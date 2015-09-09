@@ -53,7 +53,7 @@ public abstract class BaseSagaRepository implements SagaRepository {
         }
 
         if (properties == null || properties.isEmpty()) {
-            LOGGER.info("Failed to load a saga instance with '{}' as identifier : no related data", identifier);
+            LOGGER.debug("Failed to load a saga instance with '{}' as identifier : no related data", identifier);
             return Optional.absent();
         }
 
