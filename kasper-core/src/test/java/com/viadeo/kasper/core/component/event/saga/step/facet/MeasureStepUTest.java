@@ -7,20 +7,16 @@
 package com.viadeo.kasper.core.component.event.saga.step.facet;
 
 import com.codahale.metrics.MetricRegistry;
+import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.step.facet.MeasureStep;
+import com.viadeo.kasper.core.component.event.saga.step.Steps;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.core.resolvers.SagaResolver;
-import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
-import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.step.Steps;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.viadeo.kasper.core.component.event.saga.TestFixture.getMethod;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;

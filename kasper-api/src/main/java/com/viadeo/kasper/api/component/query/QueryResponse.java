@@ -34,6 +34,7 @@ public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
      * system will be reduced following a failure.
      *
      * @param reason a reason
+     * @param <R> the type of result
      * @return a failure response
      */
     public static <R extends QueryResult> QueryResponse<R> failure(final KasperReason reason) {

@@ -8,12 +8,9 @@ package com.viadeo.kasper.core.component.event.saga;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
-import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
@@ -25,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.viadeo.kasper.core.component.event.saga.TestFixture.*;
 import static org.mockito.Mockito.*;
 
 public class SagaExecutorUTest {

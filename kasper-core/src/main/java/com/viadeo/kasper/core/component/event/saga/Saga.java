@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.component.event.saga;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 
 /**
  * Interface describing an implementation of a Saga. Sagas are instances that handle events and may possibly produce

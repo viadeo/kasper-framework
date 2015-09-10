@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga;
 
-import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
@@ -17,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.viadeo.kasper.core.component.event.saga.TestFixture.TestSagaA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;

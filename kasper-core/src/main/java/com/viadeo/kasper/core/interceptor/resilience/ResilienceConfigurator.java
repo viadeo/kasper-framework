@@ -14,13 +14,15 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ResilientConfigurer {
+public class ResilienceConfigurator {
 
     private final Config config;
     private final InputConfig defaultInputConfig;
     private final Map<String,InputConfig> configByInputName;
 
-    public ResilientConfigurer(final Config config) {
+    // ------------------------------------------------------------------------
+
+    public ResilienceConfigurator(final Config config) {
         this.config = checkNotNull(config);
         this.configByInputName = Maps.newHashMap();
         this.defaultInputConfig = new InputConfig(
@@ -31,6 +33,8 @@ public class ResilientConfigurer {
         );
     }
 
+    // ------------------------------------------------------------------------
+
     public InputConfig configure(final Object input) {
         checkNotNull(input);
 
@@ -38,7 +42,9 @@ public class ResilientConfigurer {
 
         if (inputConfig == null) {
             try {
-                final Config config = this.config.getConfig("runtime.hystrix.input." + input.getClass().getSimpleName());
+                final Config config = this.config.getConfig(
+                        "runtime.hystrix.input." + input.getClass().getSimpleName()
+                );
 
                 inputConfig = new InputConfig(
                         getBooleanOr(config, "circuitBreaker.enable", defaultInputConfig.circuitBreakerEnable),
@@ -47,7 +53,7 @@ public class ResilientConfigurer {
                         getIntOr(config, "execution.timeoutInMillis", defaultInputConfig.executionTimeoutInMillis)
                 );
 
-            } catch (ConfigException e) {
+            } catch (final ConfigException e) {
                 inputConfig = defaultInputConfig;
             }
             configByInputName.put(input.getClass().getName(), inputConfig);
@@ -59,7 +65,7 @@ public class ResilientConfigurer {
     protected Boolean getBooleanOr(final Config config, final String path, final Boolean defaultValue) {
         try {
             return config.getBoolean(path);
-        } catch (ConfigException e) {
+        } catch (final ConfigException e) {
             return defaultValue;
         }
     }
@@ -67,7 +73,7 @@ public class ResilientConfigurer {
     protected Integer getIntOr(Config config, String path, Integer defaultValue) {
         try {
             return config.getInt(path);
-        } catch (ConfigException e) {
+        } catch (final ConfigException e) {
             return defaultValue;
         }
     }
@@ -80,10 +86,10 @@ public class ResilientConfigurer {
         public final Integer executionTimeoutInMillis;
 
         public InputConfig(
-                Boolean circuitBreakerEnable,
-                Integer circuitBreakerThresholdInPercent,
-                Integer circuitBreakerSleepWindowInMillis,
-                Integer executionTimeoutInMillis
+                final Boolean circuitBreakerEnable,
+                final Integer circuitBreakerThresholdInPercent,
+                final Integer circuitBreakerSleepWindowInMillis,
+                final Integer executionTimeoutInMillis
         ) {
             this.circuitBreakerEnable = circuitBreakerEnable;
             this.circuitBreakerThresholdInPercent = circuitBreakerThresholdInPercent;
@@ -91,4 +97,5 @@ public class ResilientConfigurer {
             this.executionTimeoutInMillis = executionTimeoutInMillis;
         }
     }
+
 }

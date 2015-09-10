@@ -1,8 +1,6 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.event.eventbus.AMQPComponentNameFormatter;
-import com.viadeo.kasper.core.component.event.eventbus.QueueInfo;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

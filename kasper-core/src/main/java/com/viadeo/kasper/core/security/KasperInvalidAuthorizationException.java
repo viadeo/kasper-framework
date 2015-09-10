@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.security;
 
-import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.exception.KasperSecurityException;
+import com.viadeo.kasper.api.response.CoreReasonCode;
 
 public class KasperInvalidAuthorizationException extends KasperSecurityException {
 

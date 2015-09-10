@@ -7,15 +7,15 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.api.component.query.QueryResult;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;

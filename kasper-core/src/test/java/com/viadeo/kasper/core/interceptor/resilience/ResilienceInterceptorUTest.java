@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class ResilientInterceptorUTest {
+public class ResilienceInterceptorUTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -46,26 +46,68 @@ public class ResilientInterceptorUTest {
     private InterceptorChain<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> interceptorChain;
 
     private QueryHandler<com.viadeo.kasper.api.component.query.Query,QueryResult> queryHandler;
-    private ResilientConfigurer configurer;
+    private ResilienceConfigurator configurer;
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    private static QueryMessage<com.viadeo.kasper.api.component.query.Query> anyQueryMessage() {
+        return any(QueryMessage.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static QueryHandler<com.viadeo.kasper.api.component.query.Query,QueryResult> mockedQueryHandler() {
+        return mock(QueryHandler.class);
+    }
+
+    private static class Query implements com.viadeo.kasper.api.component.query.Query { }
+
+    private static class SlowAnswer implements Answer<Void> {
+
+        private int sleepInMs = 10000; // default
+
+        public SlowAnswer(final int sleepInMs) {
+            this.sleepInMs = sleepInMs;
+        }
+
+        @Override
+        public Void answer(final InvocationOnMock invocation) {
+            if (sleepInMs > 0) {
+                try {
+                    Thread.sleep(sleepInMs);
+                } catch (final InterruptedException e) {
+                    // interrupted
+                }
+            }
+            return null;
+        }
+    }
+
+    // ------------------------------------------------------------------------
 
     @Before
     public void setUp() throws Exception {
         queryHandler = mockedQueryHandler();
 
-        configurer = mock(ResilientConfigurer.class);
-        when(configurer.configure(any())).thenReturn(new ResilientConfigurer.InputConfig(true, 40, 40000, 1000));
+        configurer = mock(ResilienceConfigurator.class);
+        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 40, 40000, 1000));
 
-        InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
+        final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
         chainRegistry.register(ResilienceInterceptorFactories.forQuery(
                 new MetricRegistry(),
-                new ResilientPolicy(),
+                new ResiliencePolicy(),
                 configurer
         ));
-        interceptorChain = chainRegistry.create(QueryHandler.class, new QueryHandlerInterceptorFactory(queryHandler)).get();
+        interceptorChain = chainRegistry.create(
+                QueryHandler.class,
+                new QueryHandlerInterceptorFactory(queryHandler)
+        ).get();
 
         KasperMetrics.setMetricRegistry(new MetricRegistry());
 
-        HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(HystrixCommandKey.Factory.asKey(Query.class.getName()));
+        final HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(
+                HystrixCommandKey.Factory.asKey(Query.class.getName())
+        );
 
         if (circuitBreaker != null) {
             circuitBreaker.markSuccess();
@@ -75,10 +117,12 @@ public class ResilientInterceptorUTest {
     @Test
     public void proceed_interception_with_an_handler_returning_an_ok_as_response() throws Exception {
         // Given
-        when(queryHandler.handle(anyQueryMessage())).thenReturn(QueryResponse.<QueryResult>of(new TestDomain.TestQueryResult()));
+        when(queryHandler.handle(anyQueryMessage())).thenReturn(QueryResponse.<QueryResult>of(
+                new TestDomain.TestQueryResult())
+        );
 
         // When
-        QueryResponse response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse response = interceptorChain.next(new Query(), Contexts.empty());
 
         // Then
         assertNotNull(response);
@@ -91,7 +135,7 @@ public class ResilientInterceptorUTest {
         when(queryHandler.handle(anyQueryMessage())).thenReturn(QueryResponse.error(CoreReasonCode.UNKNOWN_REASON));
 
         // When
-        QueryResponse response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse response = interceptorChain.next(new Query(), Contexts.empty());
 
         // Then
         assertNotNull(response);
@@ -104,7 +148,7 @@ public class ResilientInterceptorUTest {
         doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
 
         // When
-        QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
 
         // Then
         assertNotNull(response);
@@ -131,7 +175,7 @@ public class ResilientInterceptorUTest {
         doAnswer(new SlowAnswer(1500)).when(queryHandler).handle(anyQueryMessage());
 
         // When
-        QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
 
         // Then
         assertNotNull(response);
@@ -146,14 +190,14 @@ public class ResilientInterceptorUTest {
 
         // When
         for (int i = 0; i <20; i++) {
-            QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+            final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
             assertNotNull(response);
             assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
             assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
         }
         Thread.sleep(500);
 
-        QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
 
         // Then
         assertNotNull(response);
@@ -164,51 +208,18 @@ public class ResilientInterceptorUTest {
     @Test
     public void register_a_metrics_publisher_on_hystrix_is_ok() throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         // Given
-        ResilientInterceptor.metricInitialized = false;
+        ResilienceInterceptor.metricInitialized = false;
 
-        Constructor<?> constructor = HystrixPlugins.class.getDeclaredConstructor();
+        final Constructor<?> constructor = HystrixPlugins.class.getDeclaredConstructor();
         constructor.setAccessible(Boolean.TRUE);
-        HystrixPlugins hp = (HystrixPlugins) constructor.newInstance();
-
-        HystrixPlugins hystrixPlugins = spy(hp);
+        final HystrixPlugins hp = (HystrixPlugins) constructor.newInstance();
+        final HystrixPlugins hystrixPlugins = spy(hp);
 
         // When
-        ResilientInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins);
+        ResilienceInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins);
 
         // Then
         verify(hystrixPlugins, atMost(1)).registerMetricsPublisher(any(HystrixMetricsPublisher.class));
     }
 
-    @SuppressWarnings("unchecked")
-    private static QueryMessage<com.viadeo.kasper.api.component.query.Query> anyQueryMessage() {
-        return any(QueryMessage.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static QueryHandler<com.viadeo.kasper.api.component.query.Query,QueryResult> mockedQueryHandler() {
-        return mock(QueryHandler.class);
-    }
-
-    private static class Query implements com.viadeo.kasper.api.component.query.Query { }
-
-    private static class SlowAnswer implements Answer<Void> {
-
-        private int sleepInMs = 10000; // default
-
-        public SlowAnswer(int sleepInMs) {
-            this.sleepInMs = sleepInMs;
-        }
-
-        @Override
-        public Void answer(InvocationOnMock invocation) {
-            if (sleepInMs > 0) {
-                try {
-                    Thread.sleep(sleepInMs);
-                } catch (InterruptedException e) {
-                    // interrupted
-                }
-            }
-            return null;
-        }
-    }
 }

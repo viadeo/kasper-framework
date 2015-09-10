@@ -7,9 +7,8 @@
 package com.viadeo.kasper.core.component.event.saga.step;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.saga.Saga;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 
 import java.util.List;

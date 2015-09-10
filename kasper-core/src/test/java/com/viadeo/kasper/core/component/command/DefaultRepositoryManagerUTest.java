@@ -7,12 +7,11 @@
 package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.repository.ClientRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.component.command.aggregate.Concept;
-import com.viadeo.kasper.api.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -12,9 +12,9 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 

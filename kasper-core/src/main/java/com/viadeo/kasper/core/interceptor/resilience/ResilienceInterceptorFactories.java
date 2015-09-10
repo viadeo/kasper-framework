@@ -32,17 +32,20 @@ public class ResilienceInterceptorFactories {
 
     public static InterceptorFactory<Command, CommandResponse> forCommand(
             final MetricRegistry metricRegistry,
-            final ResilientPolicy policy,
-            final ResilientConfigurer configurer
+            final ResiliencePolicy policy,
+            final ResilienceConfigurator configurer
     ) {
         return new InterceptorFactory<Command,CommandResponse>() {
             @Override
             public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
                 checkNotNull(type);
                 return Optional.of(InterceptorChain.makeChain(
-                        new ResilientInterceptor<Command,CommandResponse>(metricRegistry, policy, configurer) {
+                        new ResilienceInterceptor<Command,CommandResponse>(metricRegistry, policy, configurer) {
                             @Override
-                            public CommandResponse fallback(final HystrixCommand<CommandResponse> command, final Exception exception) {
+                            public CommandResponse fallback(
+                                    final HystrixCommand<CommandResponse> command,
+                                    final Exception exception
+                            ) {
                                 return CommandResponse.failure(createReason(type, command, exception));
                             }
 
@@ -58,17 +61,20 @@ public class ResilienceInterceptorFactories {
 
     public static InterceptorFactory<Query,QueryResponse<QueryResult>> forQuery(
             final MetricRegistry metricRegistry,
-            final ResilientPolicy policy,
-            final ResilientConfigurer configurer
+            final ResiliencePolicy policy,
+            final ResilienceConfigurator configurer
     ) {
         return new InterceptorFactory<Query,QueryResponse<QueryResult>>() {
             @Override
             public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
                 checkNotNull(type);
                 return Optional.of(InterceptorChain.makeChain(
-                    new ResilientInterceptor<Query,QueryResponse<QueryResult>>(metricRegistry, policy, configurer) {
+                    new ResilienceInterceptor<Query,QueryResponse<QueryResult>>(metricRegistry, policy, configurer) {
                         @Override
-                        public QueryResponse<QueryResult> fallback(final HystrixCommand<QueryResponse<QueryResult>> command, final Exception exception) {
+                        public QueryResponse<QueryResult> fallback(
+                                final HystrixCommand<QueryResponse<QueryResult>> command,
+                                final Exception exception
+                        ) {
                             return QueryResponse.failure(createReason(type, command, exception));
                         }
 
@@ -82,7 +88,11 @@ public class ResilienceInterceptorFactories {
         };
     }
 
-    private static KasperReason createReason(final TypeToken<?> type, final HystrixCommand<?> command, final Exception exception) {
+    private static KasperReason createReason(
+            final TypeToken<?> type,
+            final HystrixCommand<?> command,
+            final Exception exception
+    ) {
         final String message;
 
         if (command.isCircuitBreakerOpen()) {

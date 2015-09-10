@@ -3,8 +3,6 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.core.component.event.eventbus.MessageHandler;
-import com.viadeo.kasper.core.component.event.eventbus.MessageHandlerException;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventListener;

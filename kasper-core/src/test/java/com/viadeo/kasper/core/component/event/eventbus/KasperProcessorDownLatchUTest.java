@@ -8,8 +8,6 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch;
-import com.viadeo.kasper.core.component.event.eventbus.KasperShutdownCallback;
 import org.axonframework.eventhandling.EventListener;
 import org.axonframework.eventhandling.MultiplexingEventProcessingMonitor;
 import org.axonframework.eventhandling.async.ErrorHandler;

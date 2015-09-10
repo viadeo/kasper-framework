@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.doc.element;
 
-import com.viadeo.kasper.platform.bundle.descriptor.CommandHandlerDescriptor;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
+import com.viadeo.kasper.platform.bundle.descriptor.CommandHandlerDescriptor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -21,16 +21,16 @@ import org.junit.rules.ExpectedException;
 
 import javax.validation.ConstraintViolation;
 
-public class ResilientPolicyUTest {
+public class ResiliencePolicyUTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private ResilientPolicy policy;
+    private ResiliencePolicy policy;
 
     @Before
     public void setUp() throws Exception {
-        policy = new ResilientPolicy();
+        policy = new ResiliencePolicy();
     }
 
     @Test
@@ -59,4 +59,5 @@ public class ResilientPolicyUTest {
         exception.expect(HystrixBadRequestException.class);
         policy.manage(new JSR303ViolationException("fake", Sets.<ConstraintViolation<Object>>newHashSet()));
     }
+
 }

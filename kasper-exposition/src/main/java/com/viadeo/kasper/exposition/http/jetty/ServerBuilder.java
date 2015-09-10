@@ -53,7 +53,6 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 public class ServerBuilder {
     public static final Logger LOGGER = LoggerFactory.getLogger(ServerBuilder.class);

@@ -8,11 +8,11 @@ package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
 import com.viadeo.kasper.core.component.command.repository.ClientRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.api.exception.KasperException;
 
 import java.util.Map;
 

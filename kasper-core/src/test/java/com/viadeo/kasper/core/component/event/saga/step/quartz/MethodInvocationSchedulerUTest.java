@@ -7,9 +7,9 @@
 package com.viadeo.kasper.core.component.event.saga.step.quartz;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;

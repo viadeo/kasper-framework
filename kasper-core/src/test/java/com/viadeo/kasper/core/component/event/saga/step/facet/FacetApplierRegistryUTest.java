@@ -7,13 +7,12 @@
 package com.viadeo.kasper.core.component.event.saga.step.facet;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
 import com.viadeo.kasper.core.component.event.saga.step.StepInvocationException;
-import com.viadeo.kasper.core.component.event.saga.step.facet.*;
 import org.junit.Test;
 
 import java.lang.reflect.Method;

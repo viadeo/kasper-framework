@@ -17,7 +17,7 @@ import java.util.List;
  * This policy rethrow exceptions throws by interceptors for further processing.
  * Avoid calling fallback on validation exception.
  */
-public class ResilientPolicy {
+public class ResiliencePolicy {
 
     /**
      * Manage an exception in order to distinguish an error or failure.
@@ -25,8 +25,8 @@ public class ResilientPolicy {
      * @param exception a caught exception
      * @throws HystrixBadRequestException only it the specified exception represents an error
      */
-    public void manage(Throwable exception) throws RuntimeException {
-        for (Class<?> interceptorsException : getExceptionRepresentingAnError()) {
+    public void manage(final Throwable exception) throws RuntimeException {
+        for (final Class<?> interceptorsException : getExceptionRepresentingAnError()) {
             if (interceptorsException.isAssignableFrom(exception.getClass())) {
                 throw new HystrixBadRequestException(exception.getMessage(), exception);
             }

@@ -20,21 +20,33 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class ResilientInterceptor<INPUT, OUTPUT extends KasperResponse> implements Interceptor<INPUT, OUTPUT> {
+public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse> implements Interceptor<INPUT, OUTPUT> {
 
     private static final String UNKNOWN_GROUP_NAME = "unknown";
 
-    private final ResilientPolicy policy;
-    private final ResilientConfigurer configurer;
+    private final ResiliencePolicy policy;
+    private final ResilienceConfigurator configurer;
 
-    public ResilientInterceptor(final MetricRegistry metricRegistry, final ResilientPolicy policy, final ResilientConfigurer configurer) {
+    // ------------------------------------------------------------------------
+
+    public ResilienceInterceptor(
+            final MetricRegistry metricRegistry,
+            final ResiliencePolicy policy,
+            final ResilienceConfigurator configurer
+    ) {
         this.policy = checkNotNull(policy);
         this.configurer = checkNotNull(configurer);
         registerMetricsPublisherOnHystrix(checkNotNull(metricRegistry), HystrixPlugins.getInstance());
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public OUTPUT process(final INPUT input, final Context context, final InterceptorChain<INPUT, OUTPUT> chain) throws Exception {
+    public OUTPUT process(
+            final INPUT input,
+            final Context context,
+            final InterceptorChain<INPUT, OUTPUT> chain
+    ) throws Exception {
         try {
             return new HystrixCommand<OUTPUT>(from(input)) {
 
@@ -44,7 +56,7 @@ public abstract class ResilientInterceptor<INPUT, OUTPUT extends KasperResponse>
                 protected OUTPUT run() throws Exception {
                     try {
                         return chain.next(input, context);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         policy.manage(e);
                         exception = e;
                         throw e;
@@ -58,13 +70,17 @@ public abstract class ResilientInterceptor<INPUT, OUTPUT extends KasperResponse>
 
             }.execute();
 
-        } catch (HystrixBadRequestException e) {
+        } catch (final HystrixBadRequestException e) {
             throw (Exception) e.getCause();
         }
     }
 
+    // ------------------------------------------------------------------------
+
     public abstract OUTPUT fallback(final HystrixCommand<OUTPUT> command, final Exception exception);
     public abstract String getGroupName();
+
+    // ------------------------------------------------------------------------
 
     protected HystrixCommand.Setter from(final INPUT input) {
         checkNotNull(input);
@@ -72,7 +88,7 @@ public abstract class ResilientInterceptor<INPUT, OUTPUT extends KasperResponse>
         final String inputName = input.getClass().getName();
         final String groupName = Objects.firstNonNull(getGroupName(), UNKNOWN_GROUP_NAME);
 
-        final ResilientConfigurer.InputConfig config = configurer.configure(input);
+        final ResilienceConfigurator.InputConfig config = configurer.configure(input);
 
         return HystrixCommand.Setter
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupName))
@@ -99,9 +115,10 @@ public abstract class ResilientInterceptor<INPUT, OUTPUT extends KasperResponse>
             final MetricRegistry metricRegistry,
             final HystrixPlugins hystrixPlugins
     ) {
-        if ( ! metricInitialized && metricRegistry != null) {
+        if ( ( ! metricInitialized) && (null != metricRegistry)) {
             hystrixPlugins.registerMetricsPublisher(new HystrixCodaHaleMetricsPublisher(metricRegistry));
             metricInitialized = true;
         }
     }
+
 }

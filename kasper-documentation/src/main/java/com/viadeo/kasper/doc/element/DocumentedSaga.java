@@ -7,8 +7,8 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.platform.bundle.descriptor.SagaDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import com.viadeo.kasper.platform.bundle.descriptor.SagaDescriptor;
 
 import java.io.Serializable;
 import java.util.List;

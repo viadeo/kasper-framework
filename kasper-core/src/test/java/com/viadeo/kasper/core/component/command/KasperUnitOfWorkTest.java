@@ -6,11 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command;
 
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.command.KasperUnitOfWork;
-import com.viadeo.kasper.core.component.command.UnitOfWorkEvent;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.EventBus;

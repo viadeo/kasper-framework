@@ -14,32 +14,33 @@ import com.viadeo.kasper.core.config.spring.KasperConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.viadeo.kasper.core.TestDomain.TestQuery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class ResilientConfigurerUTest {
+public class ResilienceConfiguratorUTest {
 
     private final Config config = KasperConfiguration.configuration("test", true)
             .withFallback(ConfigFactory.parseMap(
                     ImmutableMap.<String, Object>builder()
-                            .put("runtime.hystrix.input." + TestDomain.TestQuery.class.getSimpleName() + ".circuitBreaker.enable", false)
-                            .put("runtime.hystrix.input." + TestDomain.TestQuery.class.getSimpleName() + ".circuitBreaker.thresholdInPercent", 20)
-                            .put("runtime.hystrix.input." + TestDomain.TestQuery.class.getSimpleName() + ".circuitBreaker.sleepWindowInMillis", 1800000)
-                            .put("runtime.hystrix.input." + TestDomain.TestQuery.class.getSimpleName() + ".execution.timeoutInMillis", 3000)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.enable", false)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.thresholdInPercent", 20)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.sleepWindowInMillis", 1800000)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".execution.timeoutInMillis", 3000)
                             .build()
             ));
 
-    private ResilientConfigurer configurer;
+    private ResilienceConfigurator configurer;
 
     @Before
     public void setUp() throws Exception {
-        configurer = new ResilientConfigurer(config);
+        configurer = new ResilienceConfigurator(config);
     }
 
     @Test
     public void configure_from_an_any_input() {
         // When
-        ResilientConfigurer.InputConfig inputConfig = configurer.configure(new TestDomain.TestCommand());
+        final ResilienceConfigurator.InputConfig inputConfig = configurer.configure(new TestDomain.TestCommand());
 
         // Then
         assertNotNull(inputConfig);
@@ -52,7 +53,7 @@ public class ResilientConfigurerUTest {
     @Test
     public void configure_from_an_input_identified_as_custom() {
         // When
-        ResilientConfigurer.InputConfig inputConfig = configurer.configure(new TestDomain.TestQuery());
+        final ResilienceConfigurator.InputConfig inputConfig = configurer.configure(new TestQuery());
 
         // Then
         assertNotNull(inputConfig);
@@ -61,4 +62,5 @@ public class ResilientConfigurerUTest {
         assertEquals(1800000, (int) inputConfig.circuitBreakerSleepWindowInMillis);
         assertEquals(3000, (int) inputConfig.executionTimeoutInMillis);
     }
+
 }

@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.response.KasperReason;
 
 import javax.ws.rs.core.Response;
 

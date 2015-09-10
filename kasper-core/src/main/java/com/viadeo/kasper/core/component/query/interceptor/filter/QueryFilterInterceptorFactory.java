@@ -9,13 +9,13 @@ package com.viadeo.kasper.core.component.query.interceptor.filter;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptor;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryFilter;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptor;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

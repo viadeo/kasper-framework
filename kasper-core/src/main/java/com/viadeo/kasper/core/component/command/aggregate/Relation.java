@@ -8,9 +8,9 @@ package com.viadeo.kasper.core.component.command.aggregate;
 
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.id.KasperRelationID;
+import com.viadeo.kasper.core.component.command.aggregate.annotation.XBidirectional;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.Entity;
-import com.viadeo.kasper.core.component.command.aggregate.annotation.XBidirectional;
 
 /**
  *

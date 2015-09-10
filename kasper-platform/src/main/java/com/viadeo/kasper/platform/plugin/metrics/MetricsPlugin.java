@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.plugin.Plugin;
-import com.viadeo.kasper.platform.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.List;
