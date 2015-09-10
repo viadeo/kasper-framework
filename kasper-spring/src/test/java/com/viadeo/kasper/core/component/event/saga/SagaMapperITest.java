@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactory;
+import com.viadeo.kasper.core.component.event.saga.factory.DefaultSpringSagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 import org.junit.Before;
@@ -37,7 +38,7 @@ public class SagaMapperITest {
         ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("commandGateway", mock(KasperCommandGateway.class));
 
-        sagaFactory = new DefaultSagaFactory(applicationContext);
+        sagaFactory = new DefaultSpringSagaFactory(applicationContext);
 
         SagaFactoryProvider sagaFactoryProvider = mock(SagaFactoryProvider.class);
         when(sagaFactoryProvider.get(any(Class.class))).thenReturn(Optional.<SagaFactory>of(sagaFactory));

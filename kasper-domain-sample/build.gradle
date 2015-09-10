@@ -11,6 +11,7 @@ dependencies {
     // Projects
     compile project(':kasper-core')
     compile project(':kasper-platform')
+    compile project(':kasper-spring')
 
     // Third party dependencies
     compile libraries.HIBERNATE_VALIDATOR

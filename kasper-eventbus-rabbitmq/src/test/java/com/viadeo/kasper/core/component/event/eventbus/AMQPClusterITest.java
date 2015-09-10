@@ -37,7 +37,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static com.viadeo.kasper.core.component.event.eventbus.spring.EventBusConfiguration.AmqpClusterConfiguration;
+import static com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration.AmqpClusterConfiguration;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 

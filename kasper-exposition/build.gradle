@@ -29,10 +29,13 @@ dependencies {
     compile libraries.METRICS_SERVLET
 
     compile libraries.HYSTRIX_STREAM
+    compile libraries.SPRING_WEB
+    compile libraries.SPRING_TEST
 
     // Test projects
     testCompile project(':kasper-client')
     testCompile project(':kasper-domain-sample')
+    testCompile project(':kasper-test')
 
     // Test dependencies
     testCompile libraries.DIFFUTILS

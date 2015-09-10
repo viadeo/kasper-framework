@@ -25,8 +25,8 @@ import com.viadeo.kasper.api.context.ContextHelper;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
-import com.viadeo.kasper.core.component.event.eventbus.spring.EventBusConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
+import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.config.spring.KasperConfiguration;
@@ -404,7 +404,7 @@ public class EventMessageHandlerITest {
     }
 
     @Configuration
-    public static class OverrideAmqpClusterConfiguration extends EventBusConfiguration.AmqpClusterConfiguration {
+    public static class OverrideAmqpClusterConfiguration extends RabbitMQEventBusConfiguration.AmqpClusterConfiguration {
         @Bean
         public MessageListenerContainerManager messageListenerContainerManager(
                 final Config config,

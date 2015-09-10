@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationContext;
 import javax.inject.Inject;
 
 
-public class DummyBundle extends SpringBundle {
+public class DummySpringBundle extends SpringBundle {
 
     @Inject
-    public DummyBundle(ApplicationContext applicationContext) {
+    public DummySpringBundle(ApplicationContext applicationContext) {
         super(new DummyDomain(), applicationContext);
     }
 }

@@ -12,6 +12,7 @@ import com.viadeo.kasper.core.component.annotation.XKasperSaga;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
 import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactory;
+import com.viadeo.kasper.core.component.event.saga.factory.DefaultSpringSagaFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class DefaultSpringSagaFactoryUTest {
     @Before
     public void setUp() throws Exception {
         applicationContext = new GenericApplicationContext();
-        factory = new DefaultSagaFactory(applicationContext);
+        factory = new DefaultSpringSagaFactory(applicationContext);
     }
 
     @Test
@@ -73,7 +74,10 @@ public class DefaultSpringSagaFactoryUTest {
     public void create_withParametersInConstructor_withNoCandidates_isOk() {
         // Then
         expectedException.expect(SagaInstantiationException.class);
-        expectedException.expectMessage("Error instantiating saga of 'com.viadeo.kasper.core.component.event.saga.DefaultSagaFactoryUTest$SagaWithParameterInConstructor'");
+        expectedException.expectMessage(String.format(
+                "Error instantiating saga of '%s'",
+                SagaWithParameterInConstructor.class.getName()
+        ));
 
         // When
         factory.create(UUID.randomUUID().toString(), SagaWithParameterInConstructor.class);

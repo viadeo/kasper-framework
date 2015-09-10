@@ -16,18 +16,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public class DefaultSagaFactoryProviderITest {
+public class DefaultSpringSagaFactoryProviderITest {
 
-    private DefaultSagaFactoryProvider sagaFactoryProvider;
+    private DefaultSpringSagaFactoryProvider sagaFactoryProvider;
 
     @Before
     public void setUp() throws Exception {
-        DefaultSagaFactoryProvider.clearCache();
+        DefaultSpringSagaFactoryProvider.clearCache();
 
         GenericApplicationContext applicationContext = new GenericApplicationContext();
         applicationContext.refresh();
 
-        sagaFactoryProvider = new DefaultSagaFactoryProvider(applicationContext);
+        sagaFactoryProvider = new DefaultSpringSagaFactoryProvider(applicationContext);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DefaultSagaFactoryProviderITest {
         applicationContext.getBeanFactory().registerSingleton("commandGateway", commandGateway);
         applicationContext.refresh();
 
-        sagaFactoryProvider = new DefaultSagaFactoryProvider(applicationContext);
+        sagaFactoryProvider = new DefaultSpringSagaFactoryProvider(applicationContext);
 
         // When
         SagaFactory sagaFactory = sagaFactoryProvider.getOrCreate(new TestFixture.TestSagaB(commandGateway));

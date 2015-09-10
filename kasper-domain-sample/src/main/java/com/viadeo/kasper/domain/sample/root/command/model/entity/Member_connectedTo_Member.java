@@ -12,7 +12,6 @@ import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperRela
 import com.viadeo.kasper.domain.sample.root.api.Facebook;
 
 @XKasperRelation(domain = Facebook.class, label = Member_connectedTo_Member.NAME)
-@Deprecated
 public class Member_connectedTo_Member extends Relation<Member, Member> {
 	
 	private static final long serialVersionUID = 2799008865289493137L;

@@ -17,9 +17,12 @@ public class DefaultSagaFactory implements SagaFactory {
     @Override
     public <SAGA extends Saga> SAGA create(final Object identifier, final Class<SAGA> sagaClass) {
         try {
-            return (SAGA) sagaClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new SagaInstantiationException(String.format("Error instantiating saga of '%s'", sagaClass.getName()), e);
+        return sagaClass.newInstance();
+    } catch (final InstantiationException | IllegalAccessException e) {
+            throw new SagaInstantiationException(String.format(
+                        "Error instantiating saga of '%s'",
+                        sagaClass.getName()
+                    ), e);
         }
     }
 

@@ -7,7 +7,7 @@
 package com.viadeo.kasper.platform;
 
 import com.viadeo.kasper.core.component.command.spring.KasperCommandConfiguration;
-import com.viadeo.kasper.core.component.event.spring.KasperEventConfiguration;
+import com.viadeo.kasper.core.component.event.eventbus.spring.KasperEventBusConfiguration;
 import com.viadeo.kasper.core.component.query.spring.KasperQueryConfiguration;
 import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
 import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
@@ -16,7 +16,9 @@ import com.viadeo.kasper.core.metrics.spring.KasperMetricsConfiguration;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.builder.SpringPlatform;
 import com.viadeo.kasper.platform.spring.KasperObjectMapperConfiguration;
-import com.viadeo.kasper.platform.spring.KasperPlatformConfiguration;
+import com.viadeo.kasper.platform.spring.KasperPlatformSpringConfiguration;
+
+// TOSO SPRING import com.viadeo.kasper.core.component.event.spring.KasperRabbitMQEventConfiguration;
 
 public final class Platforms {
 
@@ -31,9 +33,9 @@ public final class Platforms {
                         , KasperMetricsConfiguration.class
                         , KasperCommandConfiguration.class
                         , KasperQueryConfiguration.class
-                        , KasperEventConfiguration.class
-                        , KasperPlatformConfiguration.class
                         , AuthenticationConfiguration.class
+                        , KasperEventBusConfiguration.class
+                        , KasperPlatformSpringConfiguration.class
                 );
     }
 

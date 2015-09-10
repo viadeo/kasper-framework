@@ -15,7 +15,7 @@ import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
-import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
+import com.viadeo.kasper.core.component.event.saga.factory.DefaultSpringSagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
