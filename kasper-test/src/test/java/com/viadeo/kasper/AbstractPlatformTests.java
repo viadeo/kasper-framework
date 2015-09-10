@@ -10,7 +10,6 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.Platforms;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
@@ -23,7 +22,7 @@ public abstract class AbstractPlatformTests {
 
     protected Platform getPlatform() {
         if(platform == null){
-            final DefaultPlatform.Builder platformBuilder = Platforms.newDefaultBuilder(new KasperPlatformConfiguration());
+            final DefaultPlatform.Builder platformBuilder = DefaultPlatform.builder(new KasperPlatformConfiguration());
 
             for (final DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())) {
                 platformBuilder.addDomainBundle(domainBundle);

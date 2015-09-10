@@ -7,9 +7,9 @@
 package com.viadeo.kasper.core.component.event.saga.step.quartz;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -19,19 +19,14 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.context.ApplicationContext;
 
 import java.util.UUID;
 
 import static com.viadeo.kasper.core.component.event.saga.step.quartz.MethodInvocationScheduler.*;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MethodInvocationSchedulerUTest {
-
-    @Mock
-    private ApplicationContext applicationContext;
 
     @Mock
     private SagaManager sagaManager;
@@ -43,9 +38,11 @@ public class MethodInvocationSchedulerUTest {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         Scheduler scheduler = schedulerFactory.getScheduler();
 
-        when(applicationContext.getBean(SagaManager.class)).thenReturn(sagaManager);
-
-        stepScheduler = new MethodInvocationScheduler(ObjectMapperProvider.INSTANCE.mapper(), scheduler, applicationContext);
+        stepScheduler = new MethodInvocationScheduler(
+                ObjectMapperProvider.INSTANCE.mapper(),
+                scheduler,
+                sagaManager
+        );
         stepScheduler.initialize();
     }
 

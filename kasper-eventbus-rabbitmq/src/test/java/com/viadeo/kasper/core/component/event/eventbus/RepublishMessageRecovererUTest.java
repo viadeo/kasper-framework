@@ -1,7 +1,5 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
-import com.viadeo.kasper.core.component.event.eventbus.MessageHandlerException;
-import com.viadeo.kasper.core.component.event.eventbus.RepublishMessageRecoverer;
 import org.axonframework.eventhandling.EventListener;
 import org.junit.Before;
 import org.junit.Test;

@@ -10,8 +10,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.common.exposition.FeatureConfiguration;
-import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.adapters.DefaultTypeAdapters;
 import com.viadeo.kasper.common.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.common.exposition.adapters.TypeAdapterFactory;

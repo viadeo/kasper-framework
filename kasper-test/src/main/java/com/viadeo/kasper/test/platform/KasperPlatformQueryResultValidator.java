@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureQueryResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
 import org.axonframework.test.AxonAssertionError;

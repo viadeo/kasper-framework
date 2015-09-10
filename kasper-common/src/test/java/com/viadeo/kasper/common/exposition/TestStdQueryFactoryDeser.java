@@ -9,8 +9,6 @@ package com.viadeo.kasper.common.exposition;
 import com.google.common.collect.*;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.common.exposition.FeatureConfiguration;
-import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.adapters.DefaultTypeAdapters;
 import com.viadeo.kasper.common.exposition.query.*;
 import org.joda.time.DateTime;

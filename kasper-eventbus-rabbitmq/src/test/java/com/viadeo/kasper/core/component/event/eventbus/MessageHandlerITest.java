@@ -3,8 +3,8 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.MetricRegistry;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.event.EventResponse;
-import com.viadeo.kasper.core.component.event.eventbus.spring.EventBusConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
+import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.*;
 @ContextConfiguration(classes = {
         AMQPClusterITest.TestConfiguration.class,
         RabbitMQConfiguration.class,
-        EventBusConfiguration.AmqpClusterConfiguration.class
+        RabbitMQEventBusConfiguration.AmqpClusterConfiguration.class
 })
 @ActiveProfiles(profiles = "rabbitmq")
 public class MessageHandlerITest {

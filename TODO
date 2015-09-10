@@ -1,6 +1,7 @@
 
 spring refacto :
 - add test AuthroizationInterceptorUTest for Spring (get the original one and put it into kasper-spring)
+- add Sagas tests without Spring
 
 
 

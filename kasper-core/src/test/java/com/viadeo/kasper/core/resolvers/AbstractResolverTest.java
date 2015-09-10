@@ -7,8 +7,8 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

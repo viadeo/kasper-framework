@@ -8,7 +8,6 @@ package com.viadeo.kasper.api.context;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.context.Context;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

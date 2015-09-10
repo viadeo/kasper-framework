@@ -13,7 +13,6 @@ import com.google.common.base.Optional;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.common.exposition.FeatureConfiguration;
 import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.adapters.TypeAdapterFactory;
@@ -21,6 +20,7 @@ import com.viadeo.kasper.common.exposition.query.BeanAdapter;
 import com.viadeo.kasper.common.exposition.query.QueryFactory;
 import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;
 import com.viadeo.kasper.common.exposition.query.VisibilityFilter;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 
 import java.net.MalformedURLException;
 import java.net.URL;

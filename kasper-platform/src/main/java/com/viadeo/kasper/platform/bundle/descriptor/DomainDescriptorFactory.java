@@ -83,7 +83,7 @@ public class DomainDescriptorFactory {
         this(null);
     }
 
-    public DomainDescriptorFactory(StepProcessor stepProcessor) {
+    public DomainDescriptorFactory(final StepProcessor stepProcessor) {
         this.stepProcessor = Optional.fromNullable(stepProcessor);
     }
 

@@ -7,12 +7,12 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperRelation;
-import com.viadeo.kasper.api.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

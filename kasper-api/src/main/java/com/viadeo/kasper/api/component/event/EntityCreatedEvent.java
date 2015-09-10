@@ -7,8 +7,8 @@
 package com.viadeo.kasper.api.component.event;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.id.KasperID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

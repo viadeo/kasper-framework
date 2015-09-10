@@ -3,7 +3,6 @@ package com.viadeo.kasper.core.component.event.eventbus.spring;
 import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -7,11 +7,11 @@
 package com.viadeo.kasper.doc;
 
 import com.codahale.metrics.MetricRegistry;
+import com.viadeo.kasper.doc.element.DocumentedPlatform;
+import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.plugin.Plugin;
-import com.viadeo.kasper.doc.element.DocumentedPlatform;
-import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;

@@ -8,10 +8,6 @@ package com.viadeo.kasper.core.component.event.saga.factory;
 
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
 
 /**
  * Interface describing a mechanism that creates implementations of a Saga.

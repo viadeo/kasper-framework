@@ -8,18 +8,18 @@ package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.common.exposition.HttpContextHeaders;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;

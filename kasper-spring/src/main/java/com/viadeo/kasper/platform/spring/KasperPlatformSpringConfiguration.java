@@ -14,8 +14,8 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
-import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.resolvers.DomainHelper;
 import com.viadeo.kasper.platform.Build;
 import com.viadeo.kasper.platform.ExtraComponent;
@@ -37,9 +37,9 @@ import org.springframework.context.support.DefaultLifecycleProcessor;
 import java.util.List;
 
 @Configuration
-public class KasperPlatformConfiguration {
+public class KasperPlatformSpringConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperPlatformConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperPlatformSpringConfiguration.class);
 
     @Autowired(required = false)
     List<ExtraComponent> extraComponents;

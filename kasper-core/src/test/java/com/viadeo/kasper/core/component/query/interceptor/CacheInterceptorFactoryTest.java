@@ -8,19 +8,19 @@ package com.viadeo.kasper.core.component.query.interceptor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptor;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
-import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.junit.Before;
 import org.junit.Test;
 

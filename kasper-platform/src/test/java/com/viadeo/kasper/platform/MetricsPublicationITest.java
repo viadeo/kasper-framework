@@ -16,6 +16,7 @@ import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.metrics.MetricNames;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class MetricsPublicationITest {
     public void init() {
         metricRegistry = spy(new MetricRegistry());
 
-        platform = Platforms.newDefaultBuilder(new KasperPlatformConfiguration(metricRegistry))
+        platform = DefaultPlatform.builder(new KasperPlatformConfiguration(metricRegistry))
                 .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();
 

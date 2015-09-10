@@ -8,9 +8,6 @@ package com.viadeo.kasper.core.component.event.saga.step.facet;
 
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.step.facet.SchedulingFacetApplier;
-import com.viadeo.kasper.core.component.event.saga.step.facet.SchedulingStep;
-import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
 import com.viadeo.kasper.core.component.event.saga.step.Steps;

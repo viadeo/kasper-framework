@@ -7,14 +7,14 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;
@@ -42,6 +42,7 @@ public class HttpCommandExposerUTest {
     @Test(expected = HttpExposerError.class)
     public void init_withTwoHandlers_handlingTheSameCommand_throwException() throws Exception {
         // Given
+        @SuppressWarnings("unchecked")
         final List<ExposureDescriptor<Command, CommandHandler>> descriptors = Lists.newArrayList(
                 new ExposureDescriptor<Command, CommandHandler>(ACommand.class, CommandHandlerA.class),
                 new ExposureDescriptor<Command, CommandHandler>(ACommand.class, CommandHandlerB.class)

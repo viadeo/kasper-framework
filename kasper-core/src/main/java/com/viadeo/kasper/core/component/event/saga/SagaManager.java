@@ -9,8 +9,6 @@ package com.viadeo.kasper.core.component.event.saga;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.core.component.event.saga.step.Step;
-import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
@@ -68,6 +66,10 @@ public class SagaManager {
     public Optional<SagaExecutor> get(final Class<? extends Saga> sagaClass) {
         checkNotNull(sagaClass);
         return Optional.fromNullable(descriptors.get(sagaClass));
+    }
+
+    public StepProcessor getStepProcessor() {
+        return this.operationProcessor;
     }
 
     @VisibleForTesting

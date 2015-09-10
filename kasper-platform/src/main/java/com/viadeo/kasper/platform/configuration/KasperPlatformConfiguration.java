@@ -10,24 +10,23 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
+import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
+import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
+import com.viadeo.kasper.core.component.event.saga.DefaultSagaManager;
+import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
+import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.validation.QueryValidationInterceptorFactory;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
-import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -38,7 +37,7 @@ import java.util.List;
 import static com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.Policy;
 
 /**
- * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.platform.Platform}.
+ * The KasperPlatformSpringConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.platform.Platform}.
  *
  * @see com.viadeo.kasper.platform.Platform.Builder
  */
@@ -62,7 +61,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this(new MetricRegistry());
     }
 
-    public KasperPlatformConfiguration(MetricRegistry metricRegistry) {
+    public KasperPlatformConfiguration(final MetricRegistry metricRegistry) {
         this.eventBus = new KasperEventBus(new MetricRegistry(), Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway(metricRegistry);
         this.metricRegistry = metricRegistry;
@@ -90,7 +89,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         );
 
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(SagaConfiguration.class);
+
+        this.sagaManager = DefaultSagaManager.build();
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("eventBus", eventBus);
@@ -101,8 +101,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         beanFactory.registerSingleton("objectMapper", ObjectMapperProvider.INSTANCE.mapper());
         applicationContext.refresh();
 
-        this.sagaManager = applicationContext.getBean(SagaManager.class);
-        this.domainDescriptorFactory = new DomainDescriptorFactory(applicationContext.getBean(StepProcessor.class));
+        this.domainDescriptorFactory = new DomainDescriptorFactory(this.sagaManager.getStepProcessor());
     }
 
     // ------------------------------------------------------------------------

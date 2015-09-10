@@ -14,6 +14,9 @@ dependencies {
     compile project(':kasper-platform')
     compile project(':kasper-common')
 
+    testCompile project(':kasper-test')
+    testCompile project(':kasper-domain-sample')
+
     // Third party dependencies
     compile libraries.REFLECTIONS
     compile libraries.SPRING_CONTEXT

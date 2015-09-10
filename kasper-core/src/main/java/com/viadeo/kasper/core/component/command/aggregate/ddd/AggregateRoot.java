@@ -7,11 +7,11 @@
 package com.viadeo.kasper.core.component.command.aggregate.ddd;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.exception.KasperCommandException;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;

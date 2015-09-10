@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.core.config.ConfigPropertySource;
 import com.viadeo.kasper.platform.builder.BuilderContext;
-import com.viadeo.kasper.platform.bundle.fixture.DummyBundle;
+import com.viadeo.kasper.platform.bundle.fixture.DummySpringBundle;
 import com.viadeo.kasper.platform.bundle.fixture.command.handler.DummyCommandHandler;
 import com.viadeo.kasper.platform.bundle.fixture.command.listener.DummyCommandListener;
 import com.viadeo.kasper.platform.bundle.fixture.infra.DummyBackend;
@@ -40,7 +40,7 @@ public class SpringBundleUTest {
         context.refresh();
         context.register(DummyBackend.class);
 
-        SpringBundle springBundle = new DummyBundle(context);
+        SpringBundle springBundle = new DummySpringBundle(context);
         springBundle.configure(builderContext);
 
         // command

@@ -8,9 +8,9 @@ package com.viadeo.kasper.platform.bundle.descriptor;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 
 import java.util.Collection;
 import java.util.List;

@@ -17,6 +17,7 @@ import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.builder.SpringBuilderContext;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.BeforeClass;
@@ -154,7 +155,7 @@ public class SpringDomainBundleUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final BuilderContext builderContext = new BuilderContext(
+        final BuilderContext builderContext = new SpringBuilderContext(
             platformConfiguration,
             extraComponents
         );

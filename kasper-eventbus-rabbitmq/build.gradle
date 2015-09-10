@@ -12,6 +12,7 @@ dependencies {
     compile project(':kasper-api')
     compile project(':kasper-common')
     compile project(':kasper-core')
+    compile project(':kasper-spring')
 
     // Third party dependencies
     compile libraries.REFLECTIONS
@@ -29,6 +30,9 @@ dependencies {
     compile libraries.TYPESAFE_CONFIG
     compile libraries.RABBITMQ_MGMT
     compile libraries.JERSEY_CLIENT
+    compile libraries.SPRING_AMQP
+    compile libraries.AOP_ALLIANCE
+    compile libraries.SPRING_CONTEXT
 
     testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
@@ -36,4 +40,5 @@ dependencies {
     testCompile libraries.JCACHE_EHCACHE
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.AWAITILITY
+    testCompile libraries.SPRING_TEST
 }

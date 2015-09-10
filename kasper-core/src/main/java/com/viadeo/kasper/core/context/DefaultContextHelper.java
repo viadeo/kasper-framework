@@ -7,10 +7,10 @@
 package com.viadeo.kasper.core.context;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.id.IDBuilder;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.ContextHelper;
 import com.viadeo.kasper.api.context.Version;
+import com.viadeo.kasper.api.id.IDBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

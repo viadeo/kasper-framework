@@ -9,7 +9,6 @@ package com.viadeo.kasper.core.component.query.interceptor.cache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.interceptor.cache.QueryAttributesKeyGenerator;
 import org.junit.Before;
 import org.junit.Test;
 

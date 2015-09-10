@@ -9,8 +9,8 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.core.component.event.eventbus.spring.EventBusConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
+import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
@@ -64,7 +64,7 @@ public class KasperEventBusITest {
     public void setup() throws Throwable {
         KasperMetrics.setMetricRegistry(new MetricRegistry());
 
-        formatter = new EventBusConfiguration.AmqpClusterConfiguration().amqpComponentNameFormatter();
+        formatter = new RabbitMQEventBusConfiguration.AmqpClusterConfiguration().amqpComponentNameFormatter();
 
         ExchangeDescriptor exchangeDescriptor = new ExchangeDescriptor(
                 config.getString("runtime.eventbus.amqp.exchange.name"),
@@ -255,8 +255,8 @@ public class KasperEventBusITest {
         context.getEnvironment().setActiveProfiles(KasperEventBusITest.class.getAnnotation(ActiveProfiles.class).profiles());
         context.setParent(this.context);
         context.register(
-                EventBusConfiguration.class,
-                EventBusConfiguration.AmqpClusterConfiguration.class
+                RabbitMQEventBusConfiguration.class,
+                RabbitMQEventBusConfiguration.AmqpClusterConfiguration.class
         );
         context.refresh();
 
