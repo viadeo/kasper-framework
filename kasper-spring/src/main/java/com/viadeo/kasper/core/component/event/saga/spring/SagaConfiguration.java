@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.component.event.saga.spring;
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
+import com.viadeo.kasper.core.component.event.saga.factory.DefaultSpringSagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.InMemorySagaRepository;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
@@ -83,7 +83,7 @@ public class SagaConfiguration {
 
     @Bean
     public SagaFactoryProvider sagaFactoryProvider(final ApplicationContext applicationContext) {
-        return new DefaultSagaFactoryProvider(applicationContext);
+        return new DefaultSpringSagaFactoryProvider(applicationContext);
     }
 
     @Bean

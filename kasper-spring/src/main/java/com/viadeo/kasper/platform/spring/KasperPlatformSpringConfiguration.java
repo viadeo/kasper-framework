@@ -37,9 +37,9 @@ import org.springframework.context.support.DefaultLifecycleProcessor;
 import java.util.List;
 
 @Configuration
-public class KasperPlatformConfiguration {
+public class KasperPlatformSpringConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperPlatformConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperPlatformSpringConfiguration.class);
 
     @Autowired(required = false)
     List<ExtraComponent> extraComponents;

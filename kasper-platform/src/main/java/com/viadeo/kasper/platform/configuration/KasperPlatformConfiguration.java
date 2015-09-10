@@ -18,9 +18,10 @@ import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInt
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
+import com.viadeo.kasper.core.component.event.saga.DefaultSagaManager;
+import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
@@ -38,7 +39,7 @@ import java.util.List;
 import static com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.Policy;
 
 /**
- * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.platform.Platform}.
+ * The KasperPlatformSpringConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.platform.Platform}.
  *
  * @see com.viadeo.kasper.platform.Platform.Builder
  */
@@ -62,7 +63,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this(new MetricRegistry());
     }
 
-    public KasperPlatformConfiguration(MetricRegistry metricRegistry) {
+    public KasperPlatformConfiguration(final MetricRegistry metricRegistry) {
         this.eventBus = new KasperEventBus(new MetricRegistry(), Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway(metricRegistry);
         this.metricRegistry = metricRegistry;
@@ -90,7 +91,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         );
 
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(SagaConfiguration.class);
+
+        this.sagaManager = DefaultSagaManager.build();
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("eventBus", eventBus);
@@ -101,8 +103,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         beanFactory.registerSingleton("objectMapper", ObjectMapperProvider.INSTANCE.mapper());
         applicationContext.refresh();
 
-        this.sagaManager = applicationContext.getBean(SagaManager.class);
-        this.domainDescriptorFactory = new DomainDescriptorFactory(applicationContext.getBean(StepProcessor.class));
+        this.domainDescriptorFactory = new DomainDescriptorFactory(this.sagaManager.getStepProcessor());
     }
 
     // ------------------------------------------------------------------------

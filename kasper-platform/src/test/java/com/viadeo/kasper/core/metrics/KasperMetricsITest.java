@@ -11,7 +11,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.platform.Platforms;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 public class KasperMetricsITest {
 
     private static void buildPlatformWith(final MetricRegistry metricRegistry) {
-        Platforms.newDefaultBuilder(new KasperPlatformConfiguration())
+        DefaultPlatform.builder(new KasperPlatformConfiguration())
                 .withMetricRegistry(metricRegistry)
                 .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();

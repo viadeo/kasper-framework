@@ -68,6 +68,10 @@ public class SagaManager {
         return Optional.fromNullable(descriptors.get(sagaClass));
     }
 
+    public StepProcessor getStepProcessor() {
+        return this.operationProcessor;
+    }
+
     @VisibleForTesting
     public void clear() {
         descriptors.clear();

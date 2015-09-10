@@ -45,6 +45,8 @@ public class SpringPlatform implements Platform {
     private final KasperEventBus eventBus;
     private final ApplicationContext applicationContext;
 
+    // ------------------------------------------------------------------------
+
     private SpringPlatform(final ApplicationContext applicationContext) {
         this.applicationContext = checkNotNull(applicationContext);
         this.commandGateway = applicationContext.getBean(CommandGateway.class);
@@ -52,6 +54,8 @@ public class SpringPlatform implements Platform {
         this.eventBus = applicationContext.getBean(KasperEventBus.class);
         this.meta = applicationContext.getBean(Meta.class);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public CommandGateway getCommandGateway() {
@@ -168,8 +172,10 @@ public class SpringPlatform implements Platform {
             environment.getPropertySources().addLast(new ConfigPropertySource(config, "config"));
 
             try {
-                for (final String activeProfile : config.getStringList("runtime.spring.profiles.actives")) {
-                    environment.addActiveProfile(activeProfile);
+                if (config.hasPath("runtime.spring.profiles.actives")) {
+                    for (final String activeProfile : config.getStringList("runtime.spring.profiles.actives")) {
+                        environment.addActiveProfile(activeProfile);
+                    }
                 }
             } catch (final ConfigException.Missing | ConfigException.WrongType e ) {
                 LOGGER.error("Failed to load property 'runtime.spring.profiles.actives'", e);

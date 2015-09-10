@@ -25,9 +25,9 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DefaultSagaFactoryProvider implements SagaFactoryProvider {
+public class DefaultSpringSagaFactoryProvider implements SagaFactoryProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSagaFactoryProvider.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSpringSagaFactoryProvider.class);
 
     private static final Map<Class<? extends Saga>, SagaFactory> CACHE = Maps.newHashMap();
 
@@ -38,7 +38,7 @@ public class DefaultSagaFactoryProvider implements SagaFactoryProvider {
 
     private final ApplicationContext applicationContext;
 
-    public DefaultSagaFactoryProvider(final ApplicationContext applicationContext) {
+    public DefaultSpringSagaFactoryProvider(final ApplicationContext applicationContext) {
         this.applicationContext = checkNotNull(applicationContext);
     }
 
@@ -71,7 +71,7 @@ public class DefaultSagaFactoryProvider implements SagaFactoryProvider {
                 field.setAccessible(Boolean.TRUE);
                 try {
                     beanFactory.registerSingleton(field.getName(), field.get(saga));
-                } catch (IllegalAccessException e) {
+                } catch (final IllegalAccessException e) {
                     LOGGER.warn("Failed to enrich the context with '{}'", field.getName(), e);
                 }
             }

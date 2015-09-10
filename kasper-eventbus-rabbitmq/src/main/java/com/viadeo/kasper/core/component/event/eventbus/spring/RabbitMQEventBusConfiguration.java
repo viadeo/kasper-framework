@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Configuration
-public class EventBusConfiguration {
+public class RabbitMQEventBusConfiguration {
 
     /**
      * The event bus, used to relay events between command and queries

@@ -52,7 +52,7 @@ public class DefaultSagaFactoryUTest {
         assertNotNull(instance);
     }
 
-    @Test
+    @Test(expected = SagaInstantiationException.class)
     public void create_withParametersInConstructor_isOk() {
         // Given
         CommandGateway commandGateway = mock(CommandGateway.class);

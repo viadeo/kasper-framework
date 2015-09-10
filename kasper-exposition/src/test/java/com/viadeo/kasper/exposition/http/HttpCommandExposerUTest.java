@@ -42,6 +42,7 @@ public class HttpCommandExposerUTest {
     @Test(expected = HttpExposerError.class)
     public void init_withTwoHandlers_handlingTheSameCommand_throwException() throws Exception {
         // Given
+        @SuppressWarnings("unchecked")
         final List<ExposureDescriptor<Command, CommandHandler>> descriptors = Lists.newArrayList(
                 new ExposureDescriptor<Command, CommandHandler>(ACommand.class, CommandHandlerA.class),
                 new ExposureDescriptor<Command, CommandHandler>(ACommand.class, CommandHandlerB.class)

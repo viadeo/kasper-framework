@@ -15,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Default implementation of a SagaFactory using @link org.springframework.context.ApplicationContext
  */
-public class DefaultSpringSagaFactory implements SagaFactory {
+public class DefaultSpringSagaFactory extends DefaultSagaFactory implements SagaFactory {
 
     private final AutowireCapableBeanFactory beanFactory;
 
@@ -26,7 +26,11 @@ public class DefaultSpringSagaFactory implements SagaFactory {
     @Override
     public <SAGA extends Saga> SAGA create(final Object identifier, final Class<SAGA> sagaClass) {
         try {
-            return (SAGA) beanFactory.autowire(sagaClass, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, Boolean.TRUE);
+            return (SAGA) beanFactory.autowire(
+                    sagaClass,
+                    AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR,
+                    Boolean.TRUE
+            );
         } catch (final UnsatisfiedDependencyException e) {
             throw new SagaInstantiationException(String.format("Error instantiating saga of '%s'", sagaClass.getName()), e);
         }

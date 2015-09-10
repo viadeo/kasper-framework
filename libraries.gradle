@@ -127,4 +127,6 @@ ext.libraries = [
                 },
                 'com.netflix.hystrix:hystrix-codahale-metrics-publisher:1.3.16'
         ],
+
+        AOP_ALLIANCE             : 'aopalliance:aopalliance:1.0'
 ]

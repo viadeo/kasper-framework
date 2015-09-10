@@ -87,6 +87,25 @@ public class DefaultPlatform implements Platform {
 
     // ========================================================================
 
+    public static Builder builder () {
+        return new Builder();
+    }
+
+    public static Builder builder(final DomainDescriptorFactory domainDescriptorFactory) {
+        return new Builder(domainDescriptorFactory);
+    }
+
+    public static Builder builder(
+            final DomainDescriptorFactory domainDescriptorFactory,
+            final RepositoryManager repositoryManager
+    ) {
+        return new Builder(domainDescriptorFactory, repositoryManager);
+    }
+
+    public static Builder builder(final PlatformConfiguration platformConfiguration) {
+        return new Builder(platformConfiguration);
+    }
+
     public static class Builder implements Platform.Builder {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Builder.class);
