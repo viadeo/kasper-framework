@@ -203,7 +203,15 @@ public class ResilienceInterceptorUTest {
         when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 0, 0, 100, 1000));
 
         // When
-        final QueryResponse<QueryResult> response = interceptorChain.next(new Query2(), Contexts.empty());
+        for (int i = 0; i <20; i++) {
+            final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+            assertNotNull(response);
+            assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+            assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
+        }
+        Thread.sleep(500);
+
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
 
         // Then
         assertNotNull(response);
