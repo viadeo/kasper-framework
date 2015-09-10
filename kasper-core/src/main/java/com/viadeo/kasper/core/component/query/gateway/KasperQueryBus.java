@@ -120,10 +120,7 @@ public class KasperQueryBus {
         subscriptions.put(handler.getInputClass().getName(), handler);
 
         // create immediately the interceptor chain instead of lazy mode
-        interceptorChainRegistry.create(
-                handler.getHandlerClass(),
-                new QueryHandlerInterceptorFactory(handler)
-        );
+        getInterceptorChain(handler);
     }
 
     private QueryHandler<Query, QueryResult> findQueryHandlerFor(final QueryMessage<?> message) {
@@ -149,14 +146,14 @@ public class KasperQueryBus {
         }
 
         final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> chainOptional =
-                interceptorChainRegistry.get(queryHandler.getClass());
+                interceptorChainRegistry.get(queryHandler.getHandlerClass());
 
         if (chainOptional.isPresent()) {
             return chainOptional;
         }
 
         return interceptorChainRegistry.create(
-                queryHandler.getClass(),
+                queryHandler.getHandlerClass(),
                 new QueryHandlerInterceptorFactory(queryHandler)
         );
     }
