@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.eventbus.spring;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +18,8 @@ import org.springframework.context.annotation.Import;
 public class KasperEventBusConfiguration {
 
     @Bean
-    public KasperEventBus kasperEventBus() {
-        return new KasperEventBus();
+    public KasperEventBus kasperEventBus(final MetricRegistry metricRegistry) {
+        return new KasperEventBus(metricRegistry);
     }
 
 }
