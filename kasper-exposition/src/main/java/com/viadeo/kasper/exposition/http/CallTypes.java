@@ -1,10 +1,8 @@
 package com.viadeo.kasper.exposition.http;
 
-import com.codahale.metrics.InstrumentedExecutorService;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
