@@ -38,17 +38,35 @@ public abstract class BaseCommandHandler<COMMAND extends Command> implements Com
 
     @Override
     public CommandResponse handle(final CommandMessage<COMMAND> message) {
-        return this.handle(message.getContext(), message.getInput());
+        try {
+            return handle(message.getCommand());
+        } catch (final UnsupportedOperationException e) {
+            try {
+                return handle(message.getContext(), message.getCommand());
+            } catch (final UnsupportedOperationException e1) {
+                throw new UnsupportedOperationException();
+            }
+        }
     }
 
     /**
      * Handle the <code>Command</code> with his <code>Context</code>.
      *
      * @param context the context related to the request
-     * @param query the command requested
+     * @param command the command requested
      * @return a response
      */
-    public CommandResponse handle(final Context context, final COMMAND query) {
+    public CommandResponse handle(final Context context, final COMMAND command) {
+        throw new UnsupportedOperationException("not yet implemented!");
+    }
+
+    /**
+     * Handle the <code>Command</code> with his <code>Context</code>.
+     *
+     * @param command the command requested
+     * @return a response
+     */
+    public CommandResponse handle(final COMMAND command) {
         throw new UnsupportedOperationException("not yet implemented!");
     }
 
