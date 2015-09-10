@@ -214,7 +214,7 @@ public class SagaExecutor {
 
     // ------------------------------------------------------------------------
 
-    public Class<? extends Saga> getSagaClass() {
+    public Class getSagaClass() {
         return sagaClass;
     }
 

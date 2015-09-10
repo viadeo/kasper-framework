@@ -3,6 +3,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.component.event.saga.SagaWrapper;
 import org.axonframework.eventhandling.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +55,17 @@ public class DefaultMessageListenerContainerManager implements MessageListenerCo
                 )
         );
 
-        String classname = eventListener.getClass().getName();
+        final String classname;
+
+        if (SagaWrapper.class.isAssignableFrom(eventListener.getClass())) {
+            SagaWrapper sagaWrapper = (SagaWrapper) eventListener;
+            classname = sagaWrapper.getHandlerClass().getName();
+        } else {
+            classname = eventListener.getClass().getName();
+        }
+
         containerByClassName.put(classname, messageListenerContainer);
         eventListenerByClassName.put(classname, eventListener);
-
 
         return messageListenerContainer;
     }

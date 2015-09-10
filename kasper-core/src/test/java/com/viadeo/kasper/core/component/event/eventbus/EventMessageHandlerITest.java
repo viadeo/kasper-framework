@@ -28,6 +28,7 @@ import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.eventbus.spring.EventBusConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.config.spring.KasperConfiguration;
 import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
 import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
@@ -423,7 +424,7 @@ public class EventMessageHandlerITest {
                 protected Object createDelegateMessageListener(MessageConverter messageConverter, org.axonframework.eventhandling.EventListener eventListener, MetricRegistry metricRegistry, boolean enabledMessageHandling) {
                     return new EventMessageHandler(
                             messageConverter,
-                            (AutowiredEventListener) eventListener,
+                            (EventListener) eventListener,
                             metricRegistry,
                             messageRecoverer
                     );
