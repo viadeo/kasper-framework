@@ -47,7 +47,7 @@ public abstract class AutowiredCommandHandler<C extends Command>
             return handle(command);
         } catch (final UnsupportedOperationException e) {
             try {
-                return super.handle(new CommandMessage<>(context, command));
+                return handle(new CommandMessage<>(context, command));
             } catch (final UnsupportedOperationException e1) {
                 throw new UnsupportedOperationException();
             }
@@ -59,6 +59,14 @@ public abstract class AutowiredCommandHandler<C extends Command>
      * @return the command response
      */
     public CommandResponse handle(final C command) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param message The command message to handle
+     * @return the command response
+     */
+    public CommandResponse handle(final CommandMessage<C> message) {
         throw new UnsupportedOperationException();
     }
 
