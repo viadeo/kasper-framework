@@ -24,6 +24,7 @@ public class ResilienceConfiguratorUTest {
             .withFallback(ConfigFactory.parseMap(
                     ImmutableMap.<String, Object>builder()
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.enable", false)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.requestVolumeThreshold", 10)
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.thresholdInPercent", 20)
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.sleepWindowInMillis", 1800000)
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".execution.timeoutInMillis", 3000)
@@ -45,6 +46,7 @@ public class ResilienceConfiguratorUTest {
         // Then
         assertNotNull(inputConfig);
         assertEquals(true, inputConfig.circuitBreakerEnable);
+        assertEquals(20, (int) inputConfig.circuitBreakerRequestVolumeThreshold);
         assertEquals(40, (int) inputConfig.circuitBreakerThresholdInPercent);
         assertEquals(3600000, (int) inputConfig.circuitBreakerSleepWindowInMillis);
         assertEquals(2000, (int) inputConfig.executionTimeoutInMillis);
@@ -58,6 +60,7 @@ public class ResilienceConfiguratorUTest {
         // Then
         assertNotNull(inputConfig);
         assertEquals(false, inputConfig.circuitBreakerEnable);
+        assertEquals(10, (int) inputConfig.circuitBreakerRequestVolumeThreshold);
         assertEquals(20, (int) inputConfig.circuitBreakerThresholdInPercent);
         assertEquals(1800000, (int) inputConfig.circuitBreakerSleepWindowInMillis);
         assertEquals(3000, (int) inputConfig.executionTimeoutInMillis);

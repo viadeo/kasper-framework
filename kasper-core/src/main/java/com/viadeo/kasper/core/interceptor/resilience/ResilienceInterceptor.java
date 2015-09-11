@@ -99,6 +99,7 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
                                 .withCircuitBreakerEnabled(config.circuitBreakerEnable)
                                 .withCircuitBreakerSleepWindowInMilliseconds(config.circuitBreakerSleepWindowInMillis)
                                 .withCircuitBreakerErrorThresholdPercentage(config.circuitBreakerThresholdInPercent)
+                                .withCircuitBreakerRequestVolumeThreshold(config.circuitBreakerRequestVolumeThreshold)
 
                                 .withExecutionIsolationThreadTimeoutInMilliseconds(config.executionTimeoutInMillis)
 

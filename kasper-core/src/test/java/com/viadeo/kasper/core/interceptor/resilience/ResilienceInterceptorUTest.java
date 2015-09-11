@@ -24,9 +24,7 @@ import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerIntercepto
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -61,6 +59,7 @@ public class ResilienceInterceptorUTest {
     }
 
     private static class Query implements com.viadeo.kasper.api.component.query.Query { }
+    private static class Query2 implements com.viadeo.kasper.api.component.query.Query { }
 
     private static class SlowAnswer implements Answer<Void> {
 
@@ -90,11 +89,14 @@ public class ResilienceInterceptorUTest {
         queryHandler = mockedQueryHandler();
 
         configurer = mock(ResilienceConfigurator.class);
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 40, 40000, 1000));
+        when(configurer.configure(any(Query.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
+        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
 
+        final MetricRegistry metricRegistry = new MetricRegistry();
         final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
+
         chainRegistry.register(ResilienceInterceptorFactories.forQuery(
-                new MetricRegistry(),
+                metricRegistry,
                 new ResiliencePolicy(),
                 configurer
         ));
@@ -103,14 +105,19 @@ public class ResilienceInterceptorUTest {
                 new QueryHandlerInterceptorFactory(queryHandler)
         ).get();
 
-        KasperMetrics.setMetricRegistry(new MetricRegistry());
+        KasperMetrics.setMetricRegistry(metricRegistry);
+    }
 
-        final HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(
-                HystrixCommandKey.Factory.asKey(Query.class.getName())
-        );
+    @After
+    public void tearDown() throws Exception {
+        for (Class aClass : new Class[] {Query.class, Query2.class}) {
+            final HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(
+                    HystrixCommandKey.Factory.asKey(aClass.getName())
+            );
 
-        if (circuitBreaker != null) {
-            circuitBreaker.markSuccess();
+            if (circuitBreaker != null) {
+                circuitBreaker.markSuccess();
+            }
         }
     }
 
@@ -187,17 +194,11 @@ public class ResilienceInterceptorUTest {
     public void proceed_interception_with_circuit_breaker_open() throws Exception {
         // Given
         doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
+        // we tweak the configuration in order to open the circuit breaker fo a specific input
+        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 0, 0, 100, 1000));
 
         // When
-        for (int i = 0; i <20; i++) {
-            final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
-            assertNotNull(response);
-            assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
-            assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
-        }
-        Thread.sleep(500);
-
-        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query2(), Contexts.empty());
 
         // Then
         assertNotNull(response);
