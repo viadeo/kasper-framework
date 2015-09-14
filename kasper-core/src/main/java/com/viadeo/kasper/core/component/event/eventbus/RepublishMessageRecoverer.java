@@ -48,14 +48,14 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
 
         final Object event = headers.get(EventBusMessageConverter.PAYLOAD_TYPE_KEY);
         LOGGER.error(
-                "{} failed to handle {}. Republishing message to exchange '{}' with routing key '{}', <source={}> <event={}>, ",
+                "{} failed to handle {}. Republishing message to exchange '{}' with routing key '{}', <source={}> <event={}>, <stacktrace={}>",
                 getClassNameFromCanonicalName(descriptor.getRoutingKey()),
                 getClassNameFromCanonicalName(event),
                 exchangeName,
                 descriptor.getRoutingKey(),
                 descriptor.getSourceName(),
                 event,
-                descriptor.getCause()
+                getStackTraceAsString(descriptor.getCause())
         );
     }
 
