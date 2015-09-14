@@ -146,7 +146,7 @@ public class SagaExecutor {
 
         if (Steps.StartStep.class.isAssignableFrom(step.getStepClass())) {
             try {
-                if (repository.load(sagaIdentifier).isPresent()) {
+                if (repository.load(step.getSagaClass(), sagaIdentifier).isPresent()) {
                     throw new SagaExecutionException(
                             String.format("Error in creating a saga : only one instance can be alive for a given identifier, <identifier=%s> <saga=%s> <step=%s>", sagaIdentifier, step.getSagaClass(), step.name())
                     );
@@ -169,7 +169,7 @@ public class SagaExecutor {
 
     public Optional<Saga> getSaga(final Object sagaIdentifier) {
         try {
-            return repository.load(sagaIdentifier);
+            return repository.load(this.sagaClass, sagaIdentifier);
 
         } catch (SagaPersistenceException e) {
             throw new SagaExecutionException(
@@ -188,7 +188,7 @@ public class SagaExecutor {
     protected void persistSaga(final Object sagaIdentifier, final Saga saga, final boolean endSaga) {
         if (endSaga) {
             try {
-                repository.delete(sagaIdentifier);
+                repository.delete(saga.getClass(), sagaIdentifier);
 
                 for (final Step aStep : steps.values()) {
                     aStep.clean(sagaIdentifier);

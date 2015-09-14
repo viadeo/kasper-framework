@@ -41,13 +41,14 @@ public abstract class BaseSagaRepository implements SagaRepository {
     // ------------------------------------------------------------------------
 
     @Override
-    public final Optional<Saga> load(final Object identifier) throws SagaPersistenceException {
+    public Optional<Saga> load(Class<? extends Saga> sagaClass, Object identifier) throws SagaPersistenceException {
         checkNotNull(identifier);
+        checkNotNull(sagaClass);
 
         final Map<String,String> properties;
 
         try {
-            properties = doLoad(identifier);
+            properties = doLoad(sagaClass, identifier);
         } catch (SagaPersistenceException e) {
             throw Throwables.propagate(e);
         }
@@ -58,7 +59,7 @@ public abstract class BaseSagaRepository implements SagaRepository {
         }
 
         final Object sagaClassAsString = properties.get(SagaMapper.X_KASPER_SAGA_CLASS);
-        final Class sagaClass;
+        final Class sagaClazz;
 
         if (sagaClassAsString == null) {
             throw new SagaPersistenceException(
@@ -66,8 +67,14 @@ public abstract class BaseSagaRepository implements SagaRepository {
             );
         }
 
+        if(!sagaClass.getName().equals(sagaClassAsString)) {
+            throw new SagaPersistenceException(
+                    String.format("Failed to load a saga instance with '%s' as identifier : mismatch saga type between %s and %s, <saga=%s> <properties=%s>", identifier, sagaClass.getName(), sagaClassAsString, sagaClassAsString, properties)
+            );
+        }
+
         try {
-            sagaClass = Class.forName(sagaClassAsString.toString());
+            sagaClazz = Class.forName(sagaClassAsString.toString());
         } catch (ClassNotFoundException e) {
             throw new SagaPersistenceException(
                     String.format("Failed to load a saga instance with '%s' as identifier : unknown saga type, <saga=%s> <properties=%s>", identifier, sagaClassAsString, properties),
@@ -75,23 +82,25 @@ public abstract class BaseSagaRepository implements SagaRepository {
             );
         }
 
-        return Optional.fromNullable(sagaMapper.to(sagaClass, identifier, properties));
+
+
+        return Optional.fromNullable(sagaMapper.to(sagaClazz, identifier, properties));
     }
 
     @Override
-    public final void save(final Object identifier, final Saga saga) throws SagaPersistenceException {
+    public final void save(Object identifier, Saga saga) throws SagaPersistenceException {
         checkNotNull(identifier);
         checkNotNull(saga);
 
         final Map<String, String> properties = sagaMapper.from(identifier, saga);
 
-        doSave(identifier, properties);
+        doSave(saga.getClass(), identifier, properties);
     }
 
     // ------------------------------------------------------------------------
 
-    public abstract Map<String, String> doLoad(Object identifier) throws SagaPersistenceException;
+    public abstract Map<String, String> doLoad(Class<? extends Saga> sagaClass, Object identifier) throws SagaPersistenceException;
 
-    public abstract void doSave(Object identifier, Map<String, String> sagaProperties) throws SagaPersistenceException;
+    public abstract void doSave(Class<? extends Saga> sagaClass, Object identifier, Map<String, String> sagaProperties) throws SagaPersistenceException;
 
 }

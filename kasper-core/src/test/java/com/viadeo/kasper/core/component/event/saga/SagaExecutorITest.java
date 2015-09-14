@@ -75,7 +75,7 @@ public class SagaExecutorITest {
     @After
     public void tearDown() throws Exception {
         sagaManager.clear();
-        sagaRepository.delete(identifier);
+        sagaRepository.delete(TestFixture.TestSagaB.class, identifier);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
 
         // Then
-        assertFalse(sagaRepository.load(identifier).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(identifier));
 
         // Then
-        assertFalse(sagaRepository.load(identifier).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StartEvent(identifier));
 
         // Then
-        assertTrue(sagaRepository.load(identifier).isPresent());
+        assertTrue(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(identifier));
 
         // Then
-        TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaRepository.load(identifier).get();
+        TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaRepository.load(TestFixture.TestSagaB.class, identifier).get();
         assertEquals(3, saga.getCount());
     }
 
@@ -160,7 +160,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
 
         // Then
-        assertFalse(sagaRepository.load(identifier).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class SagaExecutorITest {
         Thread.sleep(300L);
 
         // Then
-        assertFalse(sagaRepository.load(identifier).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(identifier));
 
         // Then
-        assertFalse(sagaRepository.load(identifier).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -205,7 +205,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifier));
 
         // Then
-        assertFalse(sagaRepository.load(identifier).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifier).isPresent());
     }
 
     @Test
@@ -222,8 +222,8 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifierSaga2));
 
         // Then
-        assertFalse(sagaRepository.load(identifierSaga1).isPresent());
-        assertFalse(sagaRepository.load(identifierSaga2).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga1).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga2).isPresent());
     }
 
     @Test
@@ -255,7 +255,7 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
+                Optional<Saga> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
                 if (sagaOptional.isPresent()) {
                     TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
                     return 1 == saga.getInvokedMethodCount();
@@ -279,7 +279,7 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
+                Optional<Saga> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
                 if (sagaOptional.isPresent()) {
                     TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
                     return 1 == saga.getInvokedMethodCount();
@@ -304,7 +304,7 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
+                Optional<Saga> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
                 if (sagaOptional.isPresent()) {
                     TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
                     return 0 == saga.getInvokedMethodCount();
@@ -326,7 +326,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.EndEvent(identifierSaga));
 
         //Then
-        assertFalse(sagaRepository.load(identifierSaga).isPresent());
+        assertFalse(sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga).isPresent());
         assertFalse(scheduler.isScheduled(TestFixture.TestSagaB.class, "invokedMethod", identifierSaga));
     }
 

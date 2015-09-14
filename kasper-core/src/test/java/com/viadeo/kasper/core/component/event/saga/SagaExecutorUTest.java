@@ -71,7 +71,7 @@ public class SagaExecutorUTest {
         TestFixture.TestSagaA saga = new TestFixture.TestSagaA();
         Context context = Contexts.empty();
         when(factory.create("2015", TestFixture.TestSagaA.class)).thenReturn(saga);
-        when(repository.load("2015")).thenReturn(Optional.<Saga>absent());
+        when(repository.load(TestSagaA.class, "2015")).thenReturn(Optional.<Saga>absent());
 
         // When
         executor.execute(context, event);
@@ -87,14 +87,14 @@ public class SagaExecutorUTest {
         TestFixture.TestEvent2 event = new TestFixture.TestEvent2("2015");
         TestFixture.TestSagaA saga = new TestFixture.TestSagaA();
         Context context = Contexts.empty();
-        when(repository.load("2015")).thenReturn(Optional.<Saga>of(saga));
+        when(repository.load(TestSagaA.class, "2015")).thenReturn(Optional.<Saga>of(saga));
 
         // When
         executor.execute(context, event);
 
         // Then
         verify(factory, never()).create("2015", TestFixture.TestSagaA.class);
-        verify(repository).load("2015");
+        verify(repository).load(TestSagaA.class, "2015");
         verify(basicStep).invoke(saga, context, event);
     }
 }

@@ -7,6 +7,7 @@
 package com.viadeo.kasper.core.component.event.saga.repository;
 
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaMapper;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 
@@ -29,18 +30,23 @@ public class InMemorySagaRepository extends BaseSagaRepository {
     // ------------------------------------------------------------------------
 
     @Override
-    public Map<String, String> doLoad(final Object identifier) {
+    public Map<String, String> doLoad(final Class<? extends Saga> sagaClass, final Object identifier) {
         return sagas.get(identifier);
     }
 
     @Override
-    public void doSave(final Object identifier, final Map<String, String> sagaProperties) {
+    public void doSave(final Class<? extends Saga> sagaClass, final Object identifier, final Map<String, String> sagaProperties) {
         sagas.put(identifier, sagaProperties);
     }
 
     @Override
-    public void delete(final Object identifier) {
+    public void delete(final Class<? extends Saga> sagaClass, final Object identifier) {
         sagas.remove(identifier);
+    }
+
+    @Override
+    public void initStoreFor(Class<? extends Saga> sagaClass) {
+
     }
 
 }
