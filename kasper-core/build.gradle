@@ -12,6 +12,8 @@ dependencies {
     compile project(':kasper-api')
     compile project(':kasper-common')
 
+    testCompile project(':kasper-test')
+
     // Third party dependencies
     compile libraries.REFLECTIONS
     compile libraries.JACKSON_CORE
