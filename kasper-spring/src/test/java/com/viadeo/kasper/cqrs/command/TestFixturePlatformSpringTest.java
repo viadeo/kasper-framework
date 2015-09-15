@@ -22,10 +22,13 @@ import org.junit.Before;
 import java.util.Collection;
 import java.util.List;
 
-public class TestFixturePlatformSpringTest extends TestFixturePlatformTest {
+public class TestFixturePlatformSpringTest {
+
+    protected KasperPlatformFixture fixture;
+
+    // ========================================================================
 
     @Before
-    @Override
     public void resetFixture() {
         EventStore eventStore = new EventStore() {
             private final Multimap<String, DomainEventMessage> messageByIdentifiers = Multimaps.newListMultimap(
