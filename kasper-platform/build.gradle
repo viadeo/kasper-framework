@@ -11,6 +11,8 @@ dependencies {
     // Projects
     compile project(':kasper-core')
 
+    testCompile project(':kasper-test')
+
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
 
