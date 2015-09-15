@@ -7,11 +7,6 @@
 package com.viadeo.kasper.core.component.event.saga.step;
 
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplier;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplier;

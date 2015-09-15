@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.annotation;
 
-import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

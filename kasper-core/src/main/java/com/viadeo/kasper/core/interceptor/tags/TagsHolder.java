@@ -11,8 +11,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
+import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 
 import java.util.Map;
 import java.util.Set;

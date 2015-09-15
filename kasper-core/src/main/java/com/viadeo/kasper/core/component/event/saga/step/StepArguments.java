@@ -7,8 +7,8 @@
 package com.viadeo.kasper.core.component.event.saga.step;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 

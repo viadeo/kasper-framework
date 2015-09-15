@@ -7,11 +7,9 @@
 package com.viadeo.kasper.core.component.command.repository;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.core.component.command.repository.MetricsRepositoryFacade;
-import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;

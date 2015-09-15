@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.component.event.saga.step.facet;
 
 import com.viadeo.kasper.core.component.event.saga.step.Step;
-import com.viadeo.kasper.core.component.event.saga.step.Step;
 
 import java.lang.reflect.Method;
 

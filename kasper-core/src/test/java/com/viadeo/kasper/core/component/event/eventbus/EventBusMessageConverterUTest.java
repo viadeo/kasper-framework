@@ -7,7 +7,6 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
-import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
 import org.axonframework.domain.GenericDomainEventMessage;
 import org.axonframework.domain.GenericEventMessage;

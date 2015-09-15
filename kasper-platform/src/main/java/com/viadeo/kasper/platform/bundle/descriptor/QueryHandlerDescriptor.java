@@ -8,8 +8,8 @@ package com.viadeo.kasper.platform.bundle.descriptor;
 
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

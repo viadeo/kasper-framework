@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.platform.bundle.sample2;
 
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
-import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 
 public class SampleDomainBox2 {
 

@@ -21,7 +21,7 @@ public class EventResponse extends KasperResponse {
      * during input validation that will be communicated to the client as part of normal processing.
      *
      * @param reason a reason
-     * @return an event response
+     * @return an error response
      */
     public static EventResponse error(final KasperReason reason) {
         return new EventResponse(Status.ERROR, reason);

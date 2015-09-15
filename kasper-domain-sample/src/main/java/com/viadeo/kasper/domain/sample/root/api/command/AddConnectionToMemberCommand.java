@@ -7,8 +7,8 @@
 package com.viadeo.kasper.domain.sample.root.api.command;
 
 import com.viadeo.kasper.api.annotation.XKasperAlias;
-import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.annotation.XKasperCommand;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 
 import javax.validation.constraints.NotNull;

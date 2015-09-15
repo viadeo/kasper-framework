@@ -7,16 +7,16 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;

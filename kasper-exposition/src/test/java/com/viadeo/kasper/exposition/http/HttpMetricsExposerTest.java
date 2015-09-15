@@ -10,9 +10,8 @@ import com.codahale.metrics.Meter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.exposition.http.HttpMetricsExposerPlugin;
+import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

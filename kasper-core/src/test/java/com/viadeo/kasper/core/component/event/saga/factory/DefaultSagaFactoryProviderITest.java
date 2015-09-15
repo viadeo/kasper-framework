@@ -8,9 +8,6 @@ package com.viadeo.kasper.core.component.event.saga.factory;
 
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
-import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
-import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.support.GenericApplicationContext;

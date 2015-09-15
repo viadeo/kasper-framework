@@ -11,8 +11,6 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.step.Step;
 
 import java.util.List;
 

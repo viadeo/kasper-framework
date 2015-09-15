@@ -17,9 +17,7 @@ import com.viadeo.kasper.platform.Platforms;
 import com.viadeo.kasper.platform.builder.SpringPlatform;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class HelloITest {
 

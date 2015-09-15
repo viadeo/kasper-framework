@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;

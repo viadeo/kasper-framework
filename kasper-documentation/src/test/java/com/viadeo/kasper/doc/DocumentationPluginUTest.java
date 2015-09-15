@@ -7,10 +7,10 @@
 package com.viadeo.kasper.doc;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

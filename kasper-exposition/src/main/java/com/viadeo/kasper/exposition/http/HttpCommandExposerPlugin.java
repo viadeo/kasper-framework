@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.descriptor.CommandHandlerDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
-import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 
 import java.util.List;
 

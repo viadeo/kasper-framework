@@ -19,8 +19,8 @@ import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.platform.builder.BuilderContext;
-import com.viadeo.kasper.platform.configuration.TypeSafeConfigPropertyPlaceholder;
 import com.viadeo.kasper.platform.builder.BuilderContextHelper;
+import com.viadeo.kasper.platform.configuration.TypeSafeConfigPropertyPlaceholder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

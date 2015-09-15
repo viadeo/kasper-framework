@@ -27,11 +27,11 @@ import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
-import com.viadeo.kasper.common.exposition.exception.KasperQueryAdapterException;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.common.exposition.TypeAdapter;
+import com.viadeo.kasper.common.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.common.exposition.query.QueryBuilder;
 import com.viadeo.kasper.common.exposition.query.QueryFactory;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;

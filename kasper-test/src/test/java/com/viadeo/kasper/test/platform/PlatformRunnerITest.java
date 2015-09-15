@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 import org.junit.runner.RunWith;

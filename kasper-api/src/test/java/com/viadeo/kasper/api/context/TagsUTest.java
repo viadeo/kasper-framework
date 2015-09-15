@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.api.context;
 
-import com.viadeo.kasper.api.context.Tags;
 import org.junit.Test;
 
 import java.util.Set;
