@@ -70,6 +70,9 @@ public class SagaExecutorITest {
     @Before
     public void setUp() throws Exception {
         DefaultSagaFactoryProvider.clearCache();
+        if(!scheduler.isInitialized()) {
+            scheduler.initialize();
+        }
     }
 
     @After

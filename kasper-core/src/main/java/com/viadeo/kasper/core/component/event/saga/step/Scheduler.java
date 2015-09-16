@@ -29,6 +29,12 @@ public interface Scheduler {
     void shutdown() throws SchedulerException;
 
     /**
+     * indicates if the scheduler is initialized
+     * @return
+     */
+    boolean isInitialized();
+
+    /**
      * called in order to trigger a particular Saga method invocation
      *
      * @param sagaClass the saga class

@@ -26,6 +26,7 @@ import org.quartz.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.SmartLifecycle;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -34,7 +35,7 @@ import static org.quartz.JobKey.jobKey;
 /**
  * MethodInvocationScheduler implementation that delegates scheduling and triggering to a Quartz Scheduler.
  */
-public class MethodInvocationScheduler implements com.viadeo.kasper.core.component.event.saga.step.Scheduler {
+public class MethodInvocationScheduler implements com.viadeo.kasper.core.component.event.saga.step.Scheduler, SmartLifecycle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodInvocationScheduler.class);
 
@@ -108,6 +109,11 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
     @Override
     public void shutdown() throws SchedulerException {
         this.scheduler.shutdown(true);
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return this.initialized;
     }
 
     // ------------------------------------------------------------------------
@@ -220,6 +226,40 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
         checkNotNull(methodName);
         checkNotNull(identifier);
         return JOB_NAME_PREFIX + "_" + sagaClass.getName() + "_" + methodName + "_" + identifier.toString();
+    }
+
+    @Override
+    public void start() {
+        this.initialize();
+    }
+
+    @Override
+    public void stop() {
+        try {
+            this.shutdown();
+        } catch (SchedulerException e) {
+            LOGGER.error("Failed to shutdown the scheduler", e);
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return isInitialized();
+    }
+
+    @Override
+    public boolean isAutoStartup() {
+        return false;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        stop();
+    }
+
+    @Override
+    public int getPhase() {
+        return Integer.MAX_VALUE - 1;
     }
 
     // ------------------------------------------------------------------------

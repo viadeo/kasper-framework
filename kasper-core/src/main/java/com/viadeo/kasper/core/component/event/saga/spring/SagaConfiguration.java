@@ -10,26 +10,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
+import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.InMemorySagaRepository;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.step.*;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplier;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
-import com.viadeo.kasper.core.component.event.saga.step.facet.MeasuringFacetApplier;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
-import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
-import com.viadeo.kasper.core.component.event.saga.repository.InMemorySagaRepository;
-import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplier;
-import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
-import com.viadeo.kasper.core.component.event.saga.step.facet.MeasuringFacetApplier;
-import com.viadeo.kasper.core.component.event.saga.step.quartz.MethodInvocationScheduler;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
-import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
-import com.viadeo.kasper.core.component.event.saga.repository.InMemorySagaRepository;
-import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplier;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
 import com.viadeo.kasper.core.component.event.saga.step.facet.MeasuringFacetApplier;
@@ -47,7 +31,7 @@ import java.util.List;
 @Configuration
 public class SagaConfiguration {
 
-    @Bean(initMethod = "initialize", destroyMethod = "shutdown")
+    @Bean
     public Scheduler stepScheduler(final ObjectMapper objectMapper, final ApplicationContext applicationContext) throws SchedulerException {
         final SchedulerFactory sf = new StdSchedulerFactory();
         return new MethodInvocationScheduler(objectMapper, sf.getScheduler(), applicationContext);
