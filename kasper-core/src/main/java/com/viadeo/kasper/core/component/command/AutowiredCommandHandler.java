@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.component.command;
 
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperCommandException;
@@ -33,34 +32,6 @@ public abstract class AutowiredCommandHandler<C extends Command>
     private transient EventBus eventBus;
     private transient CommandGateway commandGateway;
     protected transient RepositoryManager repositoryManager;
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * @param context The context
-     * @param command The command to handle
-     * @return the command response
-     */
-    @Override
-    public CommandResponse handle(Context context, C command) {
-        try {
-            return handle(command);
-        } catch (final UnsupportedOperationException e) {
-            try {
-                return handle(new CommandMessage<>(context, command));
-            } catch (final UnsupportedOperationException e1) {
-                throw new UnsupportedOperationException();
-            }
-        }
-    }
-
-    /**
-     * @param command The command to handle
-     * @return the command response
-     */
-    public CommandResponse handle(final C command) {
-        throw new UnsupportedOperationException();
-    }
 
     // ------------------------------------------------------------------------
 
