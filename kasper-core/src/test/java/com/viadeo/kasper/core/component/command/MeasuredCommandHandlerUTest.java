@@ -26,7 +26,9 @@ import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -37,6 +39,9 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MeasuredCommandHandlerUTest {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Mock
     private MetricRegistry metricRegistry;
@@ -156,18 +161,23 @@ public class MeasuredCommandHandlerUTest {
                 }
         );
 
-        // When
-        CommandResponse response = handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
-
         // Then
-        assertNotNull(response);
-        verify(metricRegistry).meter("unknown.command.testcommand.requests");
-        verify(metricRegistry).meter("unknown.command.requests");
-        verify(metricRegistry).meter("client.unknown.command.requests");
-        verify(metricRegistry).timer("unknown.command.testcommand.requests-time");
-        verify(metricRegistry).meter("unknown.command.testcommand.errors");
-        verify(metricRegistry).meter("unknown.command.errors");
-        verify(metricRegistry).meter("client.unknown.command.errors");
+        exception.expect(RuntimeException.class);
+        exception.expectMessage("Fake exception");
+
+        // When
+        try {
+            handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
+        } finally {
+            // Then
+            verify(metricRegistry).meter("unknown.command.testcommand.requests");
+            verify(metricRegistry).meter("unknown.command.requests");
+            verify(metricRegistry).meter("client.unknown.command.requests");
+            verify(metricRegistry).timer("unknown.command.testcommand.requests-time");
+            verify(metricRegistry).meter("unknown.command.testcommand.errors");
+            verify(metricRegistry).meter("unknown.command.errors");
+            verify(metricRegistry).meter("client.unknown.command.errors");
+        }
     }
 
     @XKasperUnregistered
