@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.component;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.base.Optional;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
@@ -91,6 +92,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
         final Timer.Context globalTimer = metricRegistry.timer(globalMetricNames.requestsTime).time();
 
         RESPONSE response;
+        Optional<RuntimeException> exception = Optional.absent();
 
         try {
             response = handler.handle(message);
@@ -98,6 +100,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
             response = error(new KasperReason(CoreReasonCode.CONFLICT, e.getMessage()));
         } catch (final RuntimeException e) {
             response = error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
+            exception = Optional.of(e);
         } finally {
             inputTimer.stop();
             domainTimer.stop();
@@ -109,6 +112,10 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
             metricRegistry.meter(domainMetricNames.errors).mark();
             metricRegistry.meter(KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "errors")).mark();
             metricRegistry.meter(globalMetricNames.errors).mark();
+        }
+
+        if (exception.isPresent()) {
+            throw exception.get();
         }
 
         return response;
