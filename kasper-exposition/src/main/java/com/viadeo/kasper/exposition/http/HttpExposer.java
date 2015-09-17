@@ -109,15 +109,12 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         RESPONSE response = null;
         ErrorHandlingDescriptor errorHandlingDescriptor = null;
 
-        Timer.Context timerHandleRequestWithoutResponse =  getMetricRegistry().timer(
-                name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "http-exposer", "requests-time")
-        ).time();
+        Timer.Context timerPostHandleRequest = null;
 
-        Timer.Context timerHandlerRequestWithResponse = getMetricRegistry().timer(
-                name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "http-exposer", "requests-time-with-response")
-        ).time();
+        final Timer.Context timerRequest = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
 
-        final Timer.Context timerHandleRequest = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+        final Timer.Context timerPreHandleRequest =  getMetricRegistry().timer(metricNames.getRequestsPreHandleTimeName()
+        ).time();
 
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
@@ -139,8 +136,13 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
 
+            timerPreHandleRequest.stop();
+
             /* 4) Handle the request */
             response = handle(input, context);
+
+            timerPostHandleRequest =  getMetricRegistry().timer(metricNames.getRequestsPostHandleTimeName()
+            ).time();
 
         } catch (HttpExposerException exposerException) {
             errorHandlingDescriptor = new ErrorHandlingDescriptor(
@@ -177,10 +179,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     Lists.newArrayList((null == th.getMessage()) ? "Unknown" : th.getMessage()),
                     th
             );
-        } finally {
-            if (null != timerHandleRequestWithoutResponse) {
-                timerHandleRequestWithoutResponse.stop();
-            }
         }
 
         if (null == response && null == errorHandlingDescriptor) {
@@ -250,16 +248,17 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             }
 
         } finally {
-            String durationInMillis = "";
-            if(null != timerHandlerRequestWithResponse)
+
+            if(null != timerPostHandleRequest)
             {
-                long duration = timerHandlerRequestWithResponse.stop();
-                durationInMillis = String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS));
+                timerPostHandleRequest.stop();
             }
 
-            if(null != timerHandleRequest)
+            String durationInMillis = "";
+            if(null != timerRequest)
             {
-                 timerHandleRequest.stop();
+                long duration = timerRequest.stop();
+                durationInMillis = String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS));
             }
 
             MDC.put("duration", durationInMillis);
@@ -572,11 +571,16 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         private final String errorsName;
         private final String requestsTimeName;
         private final String requestsHandleTimeName;
+        private final String requestsPreHandleTime;
+        private final String requestsPostHandleTime;
+
 
         public MetricNames(final Class clazz) {
             this.errorsName = name(clazz, "errors");
             this.requestsTimeName = name(clazz, "requests-time");
             this.requestsHandleTimeName = name(clazz, "requests-handle-time");
+            this.requestsPreHandleTime = name(clazz, "requests-pre-handle-time");
+            this.requestsPostHandleTime = name(clazz, "requests-post-handle-time");
         }
 
         public String getErrorsName() {
@@ -589,6 +593,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         public String getRequestsHandleTimeName() {
             return requestsHandleTimeName;
+        }
+
+        public String getRequestsPreHandleTimeName() {
+            return requestsPreHandleTime;
+        }
+
+        public String getRequestsPostHandleTimeName() {
+            return requestsPostHandleTime;
         }
     }
 
