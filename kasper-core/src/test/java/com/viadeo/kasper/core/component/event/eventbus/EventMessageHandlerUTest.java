@@ -42,14 +42,22 @@ public class EventMessageHandlerUTest {
     private static class TestEventListener extends AutowiredEventListener<TestEvent> {
 
         private EventResponse eventResponse = EventResponse.success();
+        private RuntimeException exception = null;
 
         @Override
         public EventResponse handle(EventMessage message) {
+            if (exception != null) {
+                throw exception;
+            }
             return eventResponse;
         }
 
         public void setResponse(EventResponse eventResponse) {
             this.eventResponse = eventResponse;
+        }
+
+        private void setException(RuntimeException exception) {
+            this.exception = exception;
         }
     }
 
@@ -241,5 +249,18 @@ public class EventMessageHandlerUTest {
         // Then
         verify(channel).basicNack(deliveryTag, false, false);
         verify(messageRecoverer).recover(eq(message), any(Throwable.class));
+    }
+
+    @Test
+    public void onMessage_withUnexpectedExceptionDuringHandle_shouldNackAndRecover() throws Exception {
+        // Given
+        eventListener.setException(new RuntimeException("bazinga!"));
+
+        // Then
+        thrown.expect(MessageHandlerException.class);
+        thrown.expectMessage("bazinga!");
+
+        // When
+        handler.onMessage(message, channel);
     }
 }

@@ -12,6 +12,7 @@ import com.google.common.collect.Maps;
 import com.rabbitmq.client.Channel;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.exception.KasperEventException;
+import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.listener.MeasuredEventListener;
@@ -97,7 +98,14 @@ public class EventMessageHandler implements ChannelAwareMessageListener {
                 )
         );
 
-        final EventResponse response = eventListener.handle(new com.viadeo.kasper.core.component.event.listener.EventMessage(eventMessage));
+        EventResponse response = null;
+
+        try {
+            response = eventListener.handle(new com.viadeo.kasper.core.component.event.listener.EventMessage(eventMessage));
+        } catch (Exception e) {
+            response = EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
+        }
+
         final KasperReason reason = response.getReason();
 
         switch (response.getStatus()) {
