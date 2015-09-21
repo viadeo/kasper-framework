@@ -142,7 +142,7 @@ public class MeasuredCommandHandlerUTest {
         verify(metricRegistry).meter("unknown.command.testcommand.requests");
         verify(metricRegistry).meter("unknown.command.requests");
         verify(metricRegistry).meter("client.unknown.command.requests");
-        verify(metricRegistry).timer("unknown.command.testcommand.requests-time");
+        verify(metricRegistry).timer("unknown.command.testcommand.requests-handle-time");
         verify(metricRegistry).meter("unknown.command.testcommand.errors");
         verify(metricRegistry).meter("unknown.command.errors");
         verify(metricRegistry).meter("client.unknown.command.errors");
