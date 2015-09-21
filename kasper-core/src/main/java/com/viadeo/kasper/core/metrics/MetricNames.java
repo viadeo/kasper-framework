@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.metrics;
 public class MetricNames {
 
     public static MetricNames of(Class<?> componentClass) {
-        return of(componentClass, "errors", "requests", "requests-time");
+        return of(componentClass, "errors", "requests", "requests-handle-time");
     }
 
     public static MetricNames of(Class<?> componentClass, String errors, String requests, String requestsTime) {
@@ -21,7 +21,7 @@ public class MetricNames {
     }
 
     public static MetricNames byDomainOf(Class<?> componentClass) {
-        return byDomainOf(componentClass, "errors", "requests", "requests-time");
+        return byDomainOf(componentClass, "errors", "requests", "requests-handle-time");
     }
 
     public static MetricNames byDomainOf(Class<?> componentClass, String errors, String requests, String requestsTime) {
