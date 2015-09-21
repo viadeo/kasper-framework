@@ -41,30 +41,14 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
 
         final Class<? extends CommandHandler> commandHandlerClassFor = commandBus.findCommandHandlerClassFor(commandMessage);
 
-        final InterceptorChain<Command, CommandResponse> chain;
         final Optional<InterceptorChain<Command, CommandResponse>> optionalInterceptorChain = interceptorChainRegistry.get(commandHandlerClassFor);
-
-        if (optionalInterceptorChain.isPresent()) {
-            chain = optionalInterceptorChain.get();
-        } else {
-            chain = interceptorChainRegistry.create(
-                    commandHandlerClassFor,
-                    new CommandHandlerInterceptorFactory()
-            ).get();
-        }
-
+        final InterceptorChain<Command, CommandResponse> chain = optionalInterceptorChain.get();
         final Context context = (Context) commandMessage.getMetaData().get(Context.METANAME);
-        final CommandHandlerInterceptor tail = (CommandHandlerInterceptor) chain.last().get();
 
-        try {
-            tail.set(axonInterceptorChain);
-            return chain.next(
+        return chain.next(
                 (Command) commandMessage.getPayload(),
                 context
-            );
-        } finally {
-            tail.remove();
-        }
+        );
     }
 
 }

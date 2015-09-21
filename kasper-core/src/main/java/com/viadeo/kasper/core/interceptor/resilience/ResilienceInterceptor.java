@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.interceptor.resilience;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.netflix.hystrix.*;
 import com.netflix.hystrix.contrib.codahalemetricspublisher.HystrixCodaHaleMetricsPublisher;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
@@ -17,6 +18,8 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.KasperResponse;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import org.axonframework.unitofwork.CurrentUnitOfWork;
+import org.axonframework.unitofwork.UnitOfWork;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -48,12 +51,23 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
             final InterceptorChain<INPUT, OUTPUT> chain
     ) throws Exception {
         try {
+            final Optional<UnitOfWork> currentUnitOfWork;
+
+            if (!CurrentUnitOfWork.isStarted()) {
+                currentUnitOfWork = Optional.absent();
+            } else {
+                currentUnitOfWork = Optional.of(CurrentUnitOfWork.get());
+            }
+
             return new HystrixCommand<OUTPUT>(from(input)) {
 
                 private Exception exception;
 
                 @Override
                 protected OUTPUT run() throws Exception {
+                    if (currentUnitOfWork.isPresent()) {
+                        CurrentUnitOfWork.set(currentUnitOfWork.get());
+                    }
                     try {
                         return chain.next(input, context);
                     } catch (final Exception e) {
