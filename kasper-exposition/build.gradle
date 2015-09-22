@@ -30,6 +30,8 @@ dependencies {
     compile libraries.METRICS_JETTY
     compile libraries.METRICS_SERVLET
 
+    compile libraries.HYSTRIX_STREAM
+
     // Test projects
     testCompile project(':kasper-client')
     testCompile project(':kasper-domain-sample')
