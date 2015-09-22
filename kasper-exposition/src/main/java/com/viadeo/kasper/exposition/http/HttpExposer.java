@@ -109,16 +109,17 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         RESPONSE response = null;
         ErrorHandlingDescriptor errorHandlingDescriptor = null;
 
-        Timer.Context timerPostHandleRequest = null;
+        // HTTP command/query exposer global requests time
+        final Timer.Context timerGlobalRequest = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
 
-        final Timer.Context timerRequest = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+        // This request time
+        Timer.Context timerRequest = null;
 
-        final Timer.Context timerPreHandleRequest =  getMetricRegistry().timer(metricNames.getRequestsPreHandleTimeName()
-        ).time();
+        // This request serialization time
+        Timer.Context timerRequestSerialization = null;
 
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
-        final String payload = getPayloadAsString(httpRequest);
         try {
             MDC.clear();
             MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
@@ -128,20 +129,23 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             /* 1) Check that we support the requested media type*/
             checkMediaType(httpRequest);
 
-            /* 2) Extract the context from request */
+            /* 2) Extract the input and payload from request */
+            input = extractInput(httpRequest, requestToObject);
+
+            timerRequest = getMetricRegistry().timer(
+                    name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "requests-time")
+            ).time();
+
+            /* 3) Extract the context from request */
             final Context context = extractContext(httpRequest, kasperCorrelationUUID);
 
-            /* 3) Extract the input from request */
-            input = extractInput(httpRequest, payload, requestToObject);
-
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
-
-            timerPreHandleRequest.stop();
 
             /* 4) Handle the request */
             response = handle(input, context);
 
-            timerPostHandleRequest =  getMetricRegistry().timer(metricNames.getRequestsPostHandleTimeName()
+            timerRequestSerialization =  getMetricRegistry().timer(
+                    name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "requests-serialization-time")
             ).time();
 
         } catch (HttpExposerException exposerException) {
@@ -232,6 +236,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
                 sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
+                String payload = getPayloadAsString(httpRequest);
                 final String truncatedPayload = payload.substring(0, Math.min(payload.length(), PAYLOAD_DEBUG_MAX_SIZE));
 
                 if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
@@ -249,9 +254,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         } finally {
 
-            if(null != timerPostHandleRequest)
+            if(null != timerGlobalRequest)
             {
-                timerPostHandleRequest.stop();
+                timerGlobalRequest.stop();
+            }
+
+            if(null != timerRequestSerialization)
+            {
+                timerRequestSerialization.stop();
             }
 
             String durationInMillis = "";
@@ -342,7 +352,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected INPUT extractInput(
             final HttpServletRequest httpRequest,
-            final String payload,
             final HttpServletRequestToObject httpRequestToObject
     ) throws HttpExposerException, IOException {
         long startMillis = System.currentTimeMillis();
@@ -362,6 +371,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             /* 3) Resolve the input class*/
             final Class<INPUT> inputClass = getInputClass(requestName);
+
+            /* 4) Extract payload*/
+            final String payload = getPayloadAsString(httpRequest);
 
             /* 4) Extract to a known input */
             try {
@@ -571,16 +583,12 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         private final String errorsName;
         private final String requestsTimeName;
         private final String requestsHandleTimeName;
-        private final String requestsPreHandleTime;
-        private final String requestsPostHandleTime;
 
 
         public MetricNames(final Class clazz) {
             this.errorsName = name(clazz, "errors");
             this.requestsTimeName = name(clazz, "requests-time");
             this.requestsHandleTimeName = name(clazz, "requests-handle-time");
-            this.requestsPreHandleTime = name(clazz, "requests-pre-handle-time");
-            this.requestsPostHandleTime = name(clazz, "requests-post-handle-time");
         }
 
         public String getErrorsName() {
@@ -593,14 +601,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         public String getRequestsHandleTimeName() {
             return requestsHandleTimeName;
-        }
-
-        public String getRequestsPreHandleTimeName() {
-            return requestsPreHandleTime;
-        }
-
-        public String getRequestsPostHandleTimeName() {
-            return requestsPostHandleTime;
         }
     }
 
