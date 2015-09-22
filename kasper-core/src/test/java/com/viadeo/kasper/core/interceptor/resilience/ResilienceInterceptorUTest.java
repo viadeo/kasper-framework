@@ -160,6 +160,7 @@ public class ResilienceInterceptorUTest {
         // Then
         assertNotNull(response);
         assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+        assertEquals(CoreReasonCode.INTERNAL_COMPONENT_ERROR, response.getReason().getCoreReasonCode());
         assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
     }
 
@@ -187,6 +188,7 @@ public class ResilienceInterceptorUTest {
         // Then
         assertNotNull(response);
         assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+        assertEquals(CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT, response.getReason().getCoreReasonCode());
         assertTrue(response.getReason().hasMessage(String.format("Error executing request due to a timed out, <handler=%s>", QueryHandler.class.getName())));
     }
 
@@ -203,6 +205,7 @@ public class ResilienceInterceptorUTest {
         // Then
         assertNotNull(response);
         assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+        assertEquals(CoreReasonCode.SERVICE_UNAVAILABLE, response.getReason().getCoreReasonCode());
         assertTrue(response.getReason().hasMessage(String.format("Circuit-breaker is open, <handler=%s>", QueryHandler.class.getName())));
     }
 

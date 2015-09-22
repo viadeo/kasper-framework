@@ -12,6 +12,7 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperResponse;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
@@ -83,7 +84,6 @@ public class ResilienceInterceptorITest {
         }
     }
 
-
     @Test
     public void proceed_interception_with_circuit_breaker_open() throws Exception {
         // Given
@@ -95,6 +95,7 @@ public class ResilienceInterceptorITest {
             final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
             assertNotNull(response);
             assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+            assertEquals(CoreReasonCode.INTERNAL_COMPONENT_ERROR, response.getReason().getCoreReasonCode());
             assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
         }
         Thread.sleep(500);
@@ -104,6 +105,7 @@ public class ResilienceInterceptorITest {
         // Then
         assertNotNull(response);
         assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+        assertEquals(CoreReasonCode.SERVICE_UNAVAILABLE, response.getReason().getCoreReasonCode());
         assertTrue(response.getReason().hasMessage(String.format("Circuit-breaker is open, <handler=%s>", QueryHandler.class.getName())));
     }
 
@@ -121,6 +123,7 @@ public class ResilienceInterceptorITest {
             final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
             assertNotNull(response);
             assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+            assertEquals(CoreReasonCode.INTERNAL_COMPONENT_ERROR, response.getReason().getCoreReasonCode());
             assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
         }
         Thread.sleep(500);
@@ -130,6 +133,7 @@ public class ResilienceInterceptorITest {
         // Then
         assertNotNull(response);
         assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+        assertEquals(CoreReasonCode.SERVICE_UNAVAILABLE, response.getReason().getCoreReasonCode());
         assertTrue(response.getReason().hasMessage(String.format("Circuit-breaker is open, <handler=%s>", QueryHandler.class.getName())));
 
         Thread.sleep(500);
