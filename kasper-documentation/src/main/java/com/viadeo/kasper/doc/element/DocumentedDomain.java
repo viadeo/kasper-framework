@@ -157,17 +157,25 @@ public class DocumentedDomain extends AbstractElement {
             final DocumentedEventListener documentedEventListener = new DocumentedEventListener(this, descriptor);
             documentedEventListeners.add(documentedEventListener);
 
-            final DocumentedEvent documentedEvent = documentedEventListener.getEvent().getFullDocumentedElement();
+            for (final LightDocumentedElement<DocumentedEvent> documentedEventLightDocumentedElement : documentedEventListener.getEvents()) {
+                final DocumentedEvent documentedEvent = documentedEventLightDocumentedElement.getFullDocumentedElement();
 
-            if ( ! declaredEvents.containsKey(documentedEvent.getReferenceClass())) {
-                referencedEvents.put(documentedEvent.getReferenceClass(), documentedEvent);
+                if ( ! declaredEvents.containsKey(documentedEvent.getReferenceClass())) {
+                    referencedEvents.put(documentedEvent.getReferenceClass(), documentedEvent);
+                }
             }
         }
 
         // SAGA
         for (final SagaDescriptor descriptor : domainDescriptor.getSagaDescriptors()) {
-            documentedSagas.add(new DocumentedSaga(this, descriptor));
-             // TODO
+            DocumentedSaga documentedSaga = new DocumentedSaga(this, descriptor);
+            documentedSagas.add(documentedSaga);
+
+            for (final SagaDescriptor.StepDescriptor stepDescriptor : descriptor.getStepDescriptors()) {
+                if ( ! declaredEvents.containsKey(stepDescriptor.getEventClass())) {
+                    referencedEvents.put(descriptor.getReferenceClass(), new DocumentedEvent(documentedSaga, stepDescriptor.getEventClass()));
+                }
+            }
         }
 
         final Map<Class, DocumentedEvent> events = Maps.newHashMap();

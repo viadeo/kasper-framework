@@ -9,6 +9,7 @@ package com.viadeo.kasper.platform;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
@@ -146,6 +147,8 @@ public class PlatformWirerUTest {
         verify(commandHandler).setEventBus(refEq(eventBus));
         verify(commandHandler).setRepositoryManager(refEq(repositoryManager));
         verify(commandHandler).setCommandGateway(refEq(commandGateway));
+        verify(commandHandler).getHandlerClass();
+        verify(commandHandler).getInputClass();
         verifyNoMoreInteractions(commandHandler);
     }
 
@@ -164,13 +167,17 @@ public class PlatformWirerUTest {
         verify(queryGateway).register(isA(MeasuredQueryHandler.class));
         verify(queryHandler).setEventBus(refEq(eventBus));
         verify(queryHandler).setQueryGateway(refEq(queryGateway));
+        verify(queryHandler).getHandlerClass();
+        verify(queryHandler).getInputClass();
+        verify(queryHandler).getResultClass();
         verifyNoMoreInteractions(queryHandler);
     }
 
     @Test
     public void wire_a_bundle_containing_an_event_listener() {
         // Given
-        final AutowiredEventListener eventListener = mock(AutowiredEventListener.class);
+        final AutowiredEventListener eventListener = spy(new MyCustomDomainBox.MyCustomEventListener());
+
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
                 .build();
@@ -181,6 +188,8 @@ public class PlatformWirerUTest {
         // Then
         verify(eventBus).subscribe(refEq(eventListener));
         verify(eventListener).setEventBus(refEq(eventBus));
+        verify(eventListener).getHandlerClass();
+        verify(eventListener).getEventClasses();
         verifyNoMoreInteractions(eventListener);
     }
 
@@ -188,6 +197,9 @@ public class PlatformWirerUTest {
     public void wire_a_bundle_containing_a_command_event_listener() {
         // Given
         final CommandEventListener eventListener = mock(CommandEventListener.class);
+        when(eventListener.getHandlerClass()).thenReturn(CommandEventListener.class);
+        when(eventListener.getEventClasses()).thenReturn(Sets.<Class>newHashSet(Event.class));
+
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
                 .build();
@@ -199,6 +211,8 @@ public class PlatformWirerUTest {
         verify(eventBus).subscribe(refEq(eventListener));
         verify(eventListener).setEventBus(refEq(eventBus));
         verify(eventListener).setCommandGateway(refEq(commandGateway));
+        verify(eventListener).getHandlerClass();
+        verify(eventListener).getEventClasses();
         verifyNoMoreInteractions(eventListener);
     }
 
@@ -206,6 +220,9 @@ public class PlatformWirerUTest {
     public void wire_a_bundle_containing_a_query_event_listener() {
         // Given
         final QueryEventListener eventListener = mock(QueryEventListener.class);
+        when(eventListener.getHandlerClass()).thenReturn(QueryEventListener.class);
+        when(eventListener.getEventClasses()).thenReturn(Sets.<Class>newHashSet(Event.class));
+
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
                 .build();
@@ -216,6 +233,8 @@ public class PlatformWirerUTest {
         // Then
         verify(eventBus).subscribe(refEq(eventListener));
         verify(eventListener).setEventBus(refEq(eventBus));
+        verify(eventListener).getHandlerClass();
+        verify(eventListener).getEventClasses();
         verifyNoMoreInteractions(eventListener);
     }
 
@@ -296,8 +315,6 @@ public class PlatformWirerUTest {
     @Test
     public void wire_two_bundles_with_the_same_name_is_not_permitted() {
         // Given
-
-
         final DomainBundle bundleA = new DomainBundle.Builder(new MyCustomDomainBox.MyCustomDomain())
                 .with(new MyCustomDomainBox.MyCustomCommandHandler())
                 .with(new MyCustomDomainBox.MyCustomRepository())

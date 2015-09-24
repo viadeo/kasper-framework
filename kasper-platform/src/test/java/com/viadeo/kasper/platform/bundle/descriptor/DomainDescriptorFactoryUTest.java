@@ -133,7 +133,7 @@ public class DomainDescriptorFactoryUTest {
         // Then
         assertNotNull(descriptor);
         assertEquals(TestEventListener.class, descriptor.getReferenceClass());
-        assertEquals(TestEvent.class, descriptor.getEventClass());
+        assertTrue(descriptor.getEventClasses().contains(TestEvent.class));
     }
 
     @Test
