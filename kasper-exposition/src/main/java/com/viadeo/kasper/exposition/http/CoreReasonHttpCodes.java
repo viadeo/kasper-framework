@@ -39,7 +39,9 @@ public final class CoreReasonHttpCodes {
         INVALID_SECURITY_TOKEN(CoreReasonCode.INVALID_SECURITY_TOKEN, Status.BAD_REQUEST),
 
         INTERNAL_COMPONENT_TIMEOUT(CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT, Status.INTERNAL_SERVER_ERROR),
-        INTERNAL_COMPONENT_ERROR(CoreReasonCode.INTERNAL_COMPONENT_ERROR, Status.INTERNAL_SERVER_ERROR);
+        INTERNAL_COMPONENT_ERROR(CoreReasonCode.INTERNAL_COMPONENT_ERROR, Status.INTERNAL_SERVER_ERROR),
+        SERVICE_UNAVAILABLE(CoreReasonCode.SERVICE_UNAVAILABLE, Status.SERVICE_UNAVAILABLE)
+        ;
 
         //---------------------------------------------------------------------
 

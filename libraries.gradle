@@ -126,4 +126,8 @@ ext.libraries = [
                 },
                 'com.netflix.hystrix:hystrix-codahale-metrics-publisher:1.3.16'
         ],
+
+        HYSTRIX_STREAM: [
+                dependencies.create('com.netflix.hystrix:hystrix-metrics-event-stream:1.3.16')
+        ]
 ]

@@ -94,15 +94,20 @@ public class ResilienceInterceptorFactories {
             final Exception exception
     ) {
         final String message;
+        final CoreReasonCode coreReasonCode;
 
         if (command.isCircuitBreakerOpen()) {
             message = String.format("Circuit-breaker is open, <handler=%s>", type.getRawType().getName());
+            coreReasonCode = CoreReasonCode.SERVICE_UNAVAILABLE;
         } else if (command.isFailedExecution()) {
             message = String.format("Failed to execute request, <handler=%s>", type.getRawType().getName());
+            coreReasonCode = CoreReasonCode.INTERNAL_COMPONENT_ERROR;
         } else if (command.isResponseTimedOut()) {
             message = String.format("Error executing request due to a timed out, <handler=%s>", type.getRawType().getName());
+            coreReasonCode = CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT;
         } else {
-            message = "Bazinga!!";
+            message = String.format("Unexpected error, <handler=%s>", type.getRawType().getName());
+            coreReasonCode = CoreReasonCode.UNKNOWN_REASON;
         }
 
         final KasperException kasperException;
@@ -113,7 +118,7 @@ public class ResilienceInterceptorFactories {
             kasperException = new KasperException(message, exception);
         }
 
-        return new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, kasperException);
+        return new KasperReason(coreReasonCode, kasperException);
     }
 
 }

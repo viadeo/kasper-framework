@@ -26,11 +26,13 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class KasperQueryGatewayITest {
 

@@ -14,12 +14,13 @@ import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
-import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptor;
 import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.unitofwork.CurrentUnitOfWork;
+import org.axonframework.unitofwork.DefaultUnitOfWork;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,26 +43,30 @@ public class MeasuredInterceptorUTest {
         when(metricRegistry.meter(anyString())).thenReturn(mock(Meter.class));
         when(metricRegistry.timer(anyString())).thenReturn(timer);
 
+        CurrentUnitOfWork.set(new DefaultUnitOfWork());
+
         InterceptorChainRegistry<Command, CommandResponse> chainRegistry = new InterceptorChainRegistry<>();
         chainRegistry.register(new MeasuredInterceptor.Factory(CommandGateway.class, metricRegistry));
         interceptorChain = chainRegistry.create(
                 CommandHandler.class,
-                new CommandHandlerInterceptorFactory()
+                new CommandHandlerInterceptorFactory(new AxonCommandHandler<>(new CommandHandler<Command>() {
+
+                    @Override
+                    public CommandResponse handle(com.viadeo.kasper.core.component.command.CommandMessage message) {
+                        return response;
+                    }
+
+                    @Override
+                    public Class<Command> getInputClass() {
+                        return Command.class;
+                    }
+
+                    @Override
+                    public Class<? extends CommandHandler> getHandlerClass() {
+                        return CommandHandler.class;
+                    }
+                }))
         ).get();
-
-        ((CommandHandlerInterceptor)interceptorChain.last().get()).set(new org.axonframework.commandhandling.InterceptorChain() {
-            @Override
-            public Object proceed() throws Throwable {
-
-                return response;
-            }
-
-            @Override
-            public Object proceed(CommandMessage<?> command) throws Throwable {
-                return proceed();
-            }
-        });
-
     }
 
     @Test
