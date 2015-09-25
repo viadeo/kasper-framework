@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class BaseStep implements Step {
     private final Method sagaMethod;
     private final StepArguments sagaMethodArguments;
     private final Method identifierMethod;
-    private final Class<? extends Event> eventClass;
+    private final EventDescriptor eventDescriptor;
     private final ArrayList<String> actions;
     private final SagaIdReconciler reconciler;
 
@@ -43,10 +44,11 @@ public class BaseStep implements Step {
         this.reconciler = checkNotNull(reconciler);
         this.sagaMethod = checkNotNull(method);
         this.sagaMethodArguments = new StepArguments(sagaMethod);
-        this.eventClass = this.sagaMethodArguments.getEventClass();
+        final Class<? extends Event> eventClass = this.sagaMethodArguments.getEventClass();
+        this.eventDescriptor = new EventDescriptor<>(eventClass, method.isAnnotationPresent(Deprecated.class));
 
         try {
-            this.identifierMethod = this.eventClass.getMethod(getterName);
+            this.identifierMethod = eventClass.getMethod(getterName);
             checkArgument(identifierMethod.getParameterTypes().length == 0, "Should specify a method without parameter");
         } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(
@@ -96,8 +98,8 @@ public class BaseStep implements Step {
     public void clean(Object identifier) { }
 
     @Override
-    public Class<? extends Event> getSupportedEvent() {
-        return eventClass;
+    public EventDescriptor getSupportedEvent() {
+        return eventDescriptor;
     }
 
     @Override
@@ -139,12 +141,12 @@ public class BaseStep implements Step {
         final BaseStep that = (BaseStep) o;
 
         return Objects.equal(this.name(), that.name()) &&
-               Objects.equal(this.eventClass, that.eventClass);
+               Objects.equal(this.eventDescriptor, that.eventDescriptor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name(), eventClass);
+        return Objects.hashCode(name(), eventDescriptor);
     }
 
     @Override
@@ -152,7 +154,7 @@ public class BaseStep implements Step {
         return Objects.toStringHelper(this)
                 .add("saga", sagaMethod.getDeclaringClass())
                 .add("method", sagaMethod.getName())
-                .add("event", eventClass)
+                .add("eventDescriptor", eventDescriptor)
                 .toString();
     }
 

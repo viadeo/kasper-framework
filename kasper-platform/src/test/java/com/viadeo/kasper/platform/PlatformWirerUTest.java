@@ -24,6 +24,7 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.listener.QueryEventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
@@ -189,7 +190,7 @@ public class PlatformWirerUTest {
         verify(eventBus).subscribe(refEq(eventListener));
         verify(eventListener).setEventBus(refEq(eventBus));
         verify(eventListener).getHandlerClass();
-        verify(eventListener).getEventClasses();
+        verify(eventListener).getEventDescriptors();
         verifyNoMoreInteractions(eventListener);
     }
 
@@ -198,7 +199,7 @@ public class PlatformWirerUTest {
         // Given
         final CommandEventListener eventListener = mock(CommandEventListener.class);
         when(eventListener.getHandlerClass()).thenReturn(CommandEventListener.class);
-        when(eventListener.getEventClasses()).thenReturn(Sets.<Class>newHashSet(Event.class));
+        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor(Event.class)));
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -212,7 +213,7 @@ public class PlatformWirerUTest {
         verify(eventListener).setEventBus(refEq(eventBus));
         verify(eventListener).setCommandGateway(refEq(commandGateway));
         verify(eventListener).getHandlerClass();
-        verify(eventListener).getEventClasses();
+        verify(eventListener).getEventDescriptors();
         verifyNoMoreInteractions(eventListener);
     }
 
@@ -221,7 +222,7 @@ public class PlatformWirerUTest {
         // Given
         final QueryEventListener eventListener = mock(QueryEventListener.class);
         when(eventListener.getHandlerClass()).thenReturn(QueryEventListener.class);
-        when(eventListener.getEventClasses()).thenReturn(Sets.<Class>newHashSet(Event.class));
+        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor(Event.class)));
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -234,7 +235,7 @@ public class PlatformWirerUTest {
         verify(eventBus).subscribe(refEq(eventListener));
         verify(eventListener).setEventBus(refEq(eventBus));
         verify(eventListener).getHandlerClass();
-        verify(eventListener).getEventClasses();
+        verify(eventListener).getEventDescriptors();
         verifyNoMoreInteractions(eventListener);
     }
 

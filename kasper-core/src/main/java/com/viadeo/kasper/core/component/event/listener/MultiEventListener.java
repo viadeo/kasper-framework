@@ -45,13 +45,16 @@ public class MultiEventListener extends BaseEventListener<Event> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiEventListener.class);
 
-    private final Map<Class<?>,Handler> handlerByEventClasses;
+    private final Map<EventDescriptor,Handler> handlerByEventClasses;
 
     public MultiEventListener() {
         this.handlerByEventClasses = Maps.newHashMap();
 
         for (final Handler handler : discoverHandlers()) {
-            this.handlerByEventClasses.put(handler.getEventClass(), handler);
+            this.handlerByEventClasses.put(
+                    handler.getEventDescriptor(),
+                    handler
+            );
         }
 
         // TODO what's happen if we have no discovered handlers here?
@@ -112,9 +115,12 @@ public class MultiEventListener extends BaseEventListener<Event> {
     }
 
     public final EventResponse handle(final Context context, final Event event) {
-        for (Class<?> eventClass : handlerByEventClasses.keySet()) {
-            if (eventClass.isAssignableFrom(event.getClass())) {
-                return handlerByEventClasses.get(event.getClass()).handle(context, event);
+        for (final EventDescriptor eventDescriptor : handlerByEventClasses.keySet()) {
+            if (eventDescriptor.isDeprecated()) {
+                return EventResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "Unexpected event : the handler is deprecated"));
+
+            } else if (eventDescriptor.getEventClass().isAssignableFrom(event.getClass())) {
+                return handlerByEventClasses.get(eventDescriptor).handle(context, event);
             }
         }
         return EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "Unexpected event "));
@@ -127,12 +133,12 @@ public class MultiEventListener extends BaseEventListener<Event> {
     }
 
     @Override
-    public Set<Class<?>> getEventClasses() {
+    public Set<EventDescriptor> getEventDescriptors() {
         return handlerByEventClasses.keySet();
     }
 
     @VisibleForTesting
-    protected Map<Class<?>, Handler> getHandlerByEventClasses() {
+    protected Map<EventDescriptor, Handler> getHandlerByEventClasses() {
         return handlerByEventClasses;
     }
 
@@ -148,7 +154,7 @@ public class MultiEventListener extends BaseEventListener<Event> {
 
         private final Method method;
         private final Object instance;
-        private Class<?> eventClass;
+        private EventDescriptor eventDescriptor;
 
         public Handler(final Method method, final Object instance) {
             this.method = checkNotNull(method);
@@ -185,16 +191,16 @@ public class MultiEventListener extends BaseEventListener<Event> {
             return objects;
         }
 
-        public Class<?> getEventClass() {
-            if (eventClass == null) {
+        public EventDescriptor getEventDescriptor() {
+            if (eventDescriptor == null) {
                 for (final Class<?> parameterClass : method.getParameterTypes()) {
                     if (Event.class.isAssignableFrom(parameterClass)) {
-                        eventClass = parameterClass;
+                        eventDescriptor = new EventDescriptor(parameterClass, method.isAnnotationPresent(Deprecated.class));
                         break;
                     }
                 }
             }
-            return eventClass;
+            return eventDescriptor;
         }
     }
 }

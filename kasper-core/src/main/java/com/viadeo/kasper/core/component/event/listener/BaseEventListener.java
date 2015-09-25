@@ -80,8 +80,8 @@ public class BaseEventListener<EVENT extends Event>
     }
 
     @Override
-    public Set<Class<?>> getEventClasses() {
-        return Sets.<Class<?>>newHashSet(this.eventClass);
+    public Set<EventDescriptor> getEventDescriptors() {
+        return Sets.newHashSet(new EventDescriptor(this.eventClass));
     }
 
     @Override

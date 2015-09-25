@@ -181,8 +181,10 @@ public class AMQPTopology {
         admin.declareQueue(queue);
         fireCreatedQueue(queue);
 
-        for (final String routingKey : routingKeysResolver.resolve(eventListener)) {
-            final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, fullExchangeName, routingKey, new HashMap<String, Object>());
+        final RoutingKeys routingKeys = routingKeysResolver.resolve(eventListener);
+
+        for (final RoutingKeys.RoutingKey routingKey : routingKeys.get()) {
+            final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, fullExchangeName, routingKey.getRoute(), new HashMap<String, Object>());
 
             if (deprecatedEventListener) {
                 LOGGER.info("Unbinding queue due to deprecated event listener, <binding={}>", binding);
@@ -264,8 +266,8 @@ public class AMQPTopology {
         admin.deleteQueue(queueName);
         fireDeletedQueue(queueName);
 
-        for (final String routingKey : routingKeysResolver.resolve(eventListener)) {
-            final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, exchangeName, routingKey, new HashMap<String, Object>());
+        for (final RoutingKeys.RoutingKey routingKey : routingKeysResolver.resolve(eventListener).all()) {
+            final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, exchangeName, routingKey.getRoute(), new HashMap<String, Object>());
             admin.removeBinding(binding);
             fireDeletedBinding(binding);
         }

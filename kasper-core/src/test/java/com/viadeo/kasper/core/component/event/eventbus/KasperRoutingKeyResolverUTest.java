@@ -1,6 +1,6 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,20 +56,20 @@ public class KasperRoutingKeyResolverUTest {
     public void subscribe_WithCatchAllHandler_CreatesOneBinding() throws Exception {
 
         // When
-        List<String> routingKeys = routingKeyResolver.resolve(new CatchAllEventListener());
+        RoutingKeys routingKeys = routingKeyResolver.resolve(new CatchAllEventListener());
 
-        assertEquals(Lists.newArrayList("#"), routingKeys);
+        assertEquals(Sets.newHashSet(new RoutingKeys.RoutingKey("#")), routingKeys.get());
     }
 
     @Test
     public void subscribe_WithParentListener_CreatesOneBindingForEachClassInInheritenceTree() throws Exception {
 
         // When
-        List<String> routingKeys = routingKeyResolver.resolve(new EventListenerB());
+        RoutingKeys routingKeys = routingKeyResolver.resolve(new EventListenerB());
 
-        assertEquals(Lists.newArrayList(
-                "com.viadeo.kasper.core.component.event.eventbus.KasperRoutingKeyResolverUTest$EventB",
-                "com.viadeo.kasper.core.component.event.eventbus.KasperRoutingKeyResolverUTest$EventA"
-        ), routingKeys);
+        assertEquals(Sets.<RoutingKeys.RoutingKey>newHashSet(
+                new RoutingKeys.RoutingKey("com.viadeo.kasper.core.component.event.eventbus.KasperRoutingKeyResolverUTest$EventB"),
+                new RoutingKeys.RoutingKey("com.viadeo.kasper.core.component.event.eventbus.KasperRoutingKeyResolverUTest$EventA")
+        ), routingKeys.get());
     }
 }

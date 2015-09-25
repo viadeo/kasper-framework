@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
@@ -18,6 +19,7 @@ import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
@@ -134,7 +136,7 @@ public class DomainDescriptorFactory {
                     stepDescriptors.add(
                             new SagaDescriptor.StepDescriptor(
                                     step.name(),
-                                    step.getSupportedEvent(),
+                                    step.getSupportedEvent().getEventClass(),
                                     step.getActions()
                             )
                     );
@@ -190,7 +192,14 @@ public class DomainDescriptorFactory {
     public static EventListenerDescriptor toEventListenerDescriptor(final EventListener eventListener) {
         return new EventListenerDescriptor(
                 eventListener.getHandlerClass(),
-                eventListener.getEventClasses()
+                Sets.newHashSet(
+                        Collections2.transform(eventListener.getEventDescriptors(), new Function<EventDescriptor, Class<? extends Event>>() {
+                            @Override
+                            public Class<? extends Event> apply(EventDescriptor input) {
+                                return input.getEventClass();
+                            }
+                        })
+                )
         );
     }
 

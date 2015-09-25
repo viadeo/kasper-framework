@@ -1,5 +1,6 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
@@ -16,7 +17,6 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
@@ -39,7 +39,9 @@ public class AMQPTopologyUTest {
     @Before
     public void setUp() throws Exception {
         topology = new AMQPTopology(rabbitAdmin, reflectionRoutingKeysResolver, new AMQPComponentNameFormatter());
-        when(reflectionRoutingKeysResolver.resolve(any(AutowiredEventListener.class))).thenReturn(Arrays.asList(FakeEvent.class.getName()));
+        when(reflectionRoutingKeysResolver.resolve(any(AutowiredEventListener.class))).thenReturn(
+                new RoutingKeys(Sets.newHashSet(new RoutingKeys.RoutingKey(FakeEvent.class.getName())))
+        );
     }
 
     @Test
