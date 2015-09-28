@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.component.event.saga.step.facet;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
 
@@ -34,7 +35,7 @@ public abstract class DecorateStep implements Step {
     }
 
     @Override
-    public Class<? extends Event> getSupportedEvent() {
+    public EventDescriptor getSupportedEvent() {
         return delegateStep.getSupportedEvent();
     }
 

@@ -117,7 +117,7 @@ public class AMQPTopologyITest {
         RabbitAdmin rabbitAdmin = new RabbitAdmin(getValidConnectionFactory());
         rabbitAdmin.getRabbitTemplate().setRetryTemplate(retryTemplate);
 
-        AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver());
+        AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver(), mock(QueueFinder.class));
         topology.setQueueExpires(TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS));
 
         TestEventListener eventListener = new TestEventListener(mock(AutowiredEventListener.class));
@@ -168,7 +168,8 @@ public class AMQPTopologyITest {
     static AMQPTopology createTopology(ConnectionFactory connectionFactory) {
         AMQPTopology topology = new AMQPTopology(
                 new RabbitAdmin(connectionFactory),
-                new ReflectionRoutingKeysResolver()
+                new ReflectionRoutingKeysResolver(),
+                mock(QueueFinder.class)
         );
         topology.setQueueExpires(TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS));
         return topology;

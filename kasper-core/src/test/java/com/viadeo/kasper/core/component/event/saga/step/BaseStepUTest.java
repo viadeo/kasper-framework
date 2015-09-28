@@ -64,7 +64,7 @@ public class BaseStepUTest {
         Step step = new BaseStep(TestFixture.TestSagaA.class.getMethod("handle", TestFixture.TestEvent.class), "step", "getId", idReconciler);
 
         // When
-        Class<? extends Event> supportedEvent = step.getSupportedEvent();
+        Class<? extends Event> supportedEvent = step.getSupportedEvent().getEventClass();
 
         // Then
         assertNotNull(supportedEvent);

@@ -328,7 +328,7 @@ public class TestFixture {
         }
     }
 
-    private static class AbstractEvent implements Event {
+    public static class AbstractEvent implements Event {
 
         private final UUID id;
 

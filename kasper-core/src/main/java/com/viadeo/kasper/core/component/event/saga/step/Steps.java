@@ -11,9 +11,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.SchedulableSagaMethod;
 import com.viadeo.kasper.core.component.annotation.XKasperSaga;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
@@ -65,16 +65,16 @@ public final class Steps {
                 );
             }
 
-            final Multimap<Class<? extends Event>,Step> stepsBySupportedEvent = Multimaps.index(steps, new Function<Step, Class<? extends Event>>() {
+            final Multimap<EventDescriptor,Step> stepsBySupportedEvent = Multimaps.index(steps, new Function<Step, EventDescriptor>() {
                 @Override
-                public Class<? extends Event> apply(Step input) {
-                return input.getSupportedEvent();
+                public EventDescriptor apply(Step input) {
+                    return input.getSupportedEvent();
                 }
             });
 
             // TODO check inheritance of events
 
-            for (final Class<? extends Event> eventClass : stepsBySupportedEvent.keySet()) {
+            for (final EventDescriptor eventClass : stepsBySupportedEvent.keySet()) {
                 Collection<Step> stepCollection = stepsBySupportedEvent.get(eventClass);
                 checkState(
                     stepCollection.size() == 1,
@@ -108,7 +108,7 @@ public final class Steps {
 
             for (final Step step : schedulingByEventSteps) {
                 checkState(
-                        SchedulableSagaMethod.class.isAssignableFrom(step.getSupportedEvent()),
+                        SchedulableSagaMethod.class.isAssignableFrom(step.getSupportedEvent().getEventClass()),
                         String.format("The event should be assignment-compatible with '%s' : <saga=%s>", SchedulableSagaMethod.class.getName(), sagaClass.getName())
                 );
             }

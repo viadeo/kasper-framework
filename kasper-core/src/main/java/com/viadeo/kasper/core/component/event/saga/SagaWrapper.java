@@ -11,6 +11,7 @@ import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.event.listener.AxonEventListener;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.listener.EventMessage;
 
@@ -52,7 +53,7 @@ public class SagaWrapper extends AxonEventListener<Event> implements EventListen
     }
 
     @Override
-    public Set<Class<?>> getEventClasses() {
+    public Set<EventDescriptor> getEventDescriptors() {
         return executor.getEventClasses();
     }
 

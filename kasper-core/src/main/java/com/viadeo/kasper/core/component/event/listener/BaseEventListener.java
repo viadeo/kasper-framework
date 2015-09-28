@@ -25,6 +25,10 @@ public class BaseEventListener<EVENT extends Event>
 
     public BaseEventListener() {
         super();
+        eventClass = init();
+    }
+
+    protected Class<EVENT> init() {
         @SuppressWarnings("unchecked")
         final Optional<Class<EVENT>> eventClassOpt =
                 (Optional<Class<EVENT>>)
@@ -35,7 +39,7 @@ public class BaseEventListener<EVENT extends Event>
                         );
 
         if (eventClassOpt.isPresent()) {
-            this.eventClass = eventClassOpt.get();
+            return eventClassOpt.get();
         } else {
             throw new KasperException("Unable to identify event class for " + this.getClass());
         }
@@ -76,8 +80,8 @@ public class BaseEventListener<EVENT extends Event>
     }
 
     @Override
-    public Set<Class<?>> getEventClasses() {
-        return Sets.<Class<?>>newHashSet(this.eventClass);
+    public Set<EventDescriptor> getEventDescriptors() {
+        return Sets.newHashSet(new EventDescriptor(this.eventClass));
     }
 
     @Override

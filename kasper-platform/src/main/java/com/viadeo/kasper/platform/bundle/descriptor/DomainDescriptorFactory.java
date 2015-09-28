@@ -11,15 +11,15 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
@@ -126,16 +126,17 @@ public class DomainDescriptorFactory {
     private List<SagaDescriptor> getSagaDescriptor(Collection<Saga> sagas) {
         final List<SagaDescriptor> sagaDescriptors = Lists.newArrayList();
 
-        for (Saga saga : sagas) {
-            List<SagaDescriptor.StepDescriptor> stepDescriptors = Lists.newArrayList();
+        for (final Saga saga : sagas) {
+            final List<SagaDescriptor.StepDescriptor> stepDescriptors = Lists.newArrayList();
 
             if (stepProcessor.isPresent()) {
-                Set<Step> steps = stepProcessor.get().process(saga.getClass(), SagaIdReconciler.NONE);
-                for (Step step : steps) {
+                final Set<Step> steps = stepProcessor.get().process(saga.getClass(), SagaIdReconciler.NONE);
+
+                for (final Step step : steps) {
                     stepDescriptors.add(
                             new SagaDescriptor.StepDescriptor(
                                     step.name(),
-                                    step.getSupportedEvent(),
+                                    step.getSupportedEvent().getEventClass(),
                                     step.getActions()
                             )
                     );
@@ -172,63 +173,42 @@ public class DomainDescriptorFactory {
 
     @SuppressWarnings("unchecked")
     public static CommandHandlerDescriptor toCommandHandlerDescriptor(final CommandHandler commandHandler) {
-        final Class<? extends CommandHandler> commandHandlerClass = commandHandler.getClass();
-        final Optional<? extends Class> commandClass =
-                ReflectionGenericsResolver.getParameterTypeFromClass(
-                        commandHandlerClass,
-                        CommandHandler.class,
-                        CommandHandler.COMMAND_PARAMETER_POSITION
-                );
-
-        return new CommandHandlerDescriptor(commandHandlerClass, commandClass.get());
+        return new CommandHandlerDescriptor(
+                commandHandler.getHandlerClass(),
+                commandHandler.getInputClass()
+        );
     }
 
     @SuppressWarnings("unchecked")
     public static QueryHandlerDescriptor toQueryHandlerDescriptor(final QueryHandler queryHandler) {
-        final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
-        final Optional<? extends Class> queryClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-            queryHandlerClass,
-            QueryHandler.class,
-            QueryHandler.PARAMETER_QUERY_POSITION
+        return new QueryHandlerDescriptor(
+                queryHandler.getHandlerClass(),
+                queryHandler.getInputClass(),
+                queryHandler.getResultClass()
         );
-        final Optional<Class> queryResultClass = (Optional<Class>) ReflectionGenericsResolver.getParameterTypeFromClass(
-                queryHandlerClass,
-                QueryHandler.class,
-                QueryHandler.PARAMETER_RESULT_POSITION
-        );
-
-        if ( ! queryResultClass.isPresent()) {
-            LOGGER.warn("Failed to identify the query result event : {}", queryHandler.getClass().getName());
-        }
-
-        return new QueryHandlerDescriptor(queryHandlerClass, queryClass.get(), queryResultClass.or(QueryResult.class));
     }
 
     @SuppressWarnings("unchecked")
     public static EventListenerDescriptor toEventListenerDescriptor(final EventListener eventListener) {
-        final Class<? extends EventListener> eventListenerClass = eventListener.getClass();
-        final Optional<Class> eventClass = (Optional<Class>) ReflectionGenericsResolver.getParameterTypeFromClass(
-                eventListenerClass,
-                EventListener.class,
-                EventListener.EVENT_PARAMETER_POSITION
+        return new EventListenerDescriptor(
+                eventListener.getHandlerClass(),
+                Sets.newHashSet(
+                        Collections2.transform(eventListener.getEventDescriptors(), new Function<EventDescriptor, Class<? extends Event>>() {
+                            @Override
+                            public Class<? extends Event> apply(EventDescriptor input) {
+                                return input.getEventClass();
+                            }
+                        })
+                )
         );
-
-        if ( ! eventClass.isPresent()) {
-            LOGGER.warn("Failed to identify the listened event : {}", eventListener.getClass().getName());
-        }
-
-        return new EventListenerDescriptor(eventListenerClass, eventClass.or(Event.class));
     }
 
     @SuppressWarnings("unchecked")
     public static RepositoryDescriptor toRepositoryDescriptor(final Repository repository) {
-        final Class<? extends Repository> repositoryClass = repository.getClass();
-        final Optional<? extends Class> optEntityClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-            repositoryClass,
-            IRepository.class,
-            IRepository.ENTITY_PARAMETER_POSITION
+        return new RepositoryDescriptor(
+                repository.getClass(),
+                toAggregateDescriptor(repository.getAggregateClass())
         );
-        return new RepositoryDescriptor(repositoryClass, toAggregateDescriptor(optEntityClass.get()));
     }
 
     @SuppressWarnings("unchecked")
@@ -290,7 +270,6 @@ public class DomainDescriptorFactory {
 
         for(final EventListenerDescriptor descriptor : domainDescriptor.getEventListenerDescriptors()){
             domainClassByComponentClass.put(descriptor.getReferenceClass(), domainClass);
-            domainClassByComponentClass.put(descriptor.getEventClass(), domainClass);
         }
 
         return domainClassByComponentClass;

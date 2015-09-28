@@ -75,17 +75,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      */
 	public void init(final boolean force) {
 		if ( ! initialized || force) {
-            @SuppressWarnings("unchecked") // Safe
-            final Optional<Class<AGR>> entityType =
-                    (Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
-                            this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
-
-            if ( ! entityType.isPresent()) {
-                throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
-            }
-
-            this.aggregateClass = entityType.get();
-            this.axonRepository = checkNotNull(this.getDecoratedRepository(aggregateClass));
+            this.axonRepository = checkNotNull(this.getDecoratedRepository(getAggregateClass()));
 
             if (null != eventBus) {
                 this.axonRepository.setEventBus(eventBus);
@@ -327,6 +317,18 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the aggregate class
      */
     public Class<AGR> getAggregateClass() {
+        if (aggregateClass == null) {
+            @SuppressWarnings("unchecked") // Safe
+            final Optional<Class<AGR>> entityType =
+                    (Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
+                            this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
+
+            if ( ! entityType.isPresent()) {
+                throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
+            }
+
+            this.aggregateClass = entityType.get();
+        }
         return aggregateClass;
     }
 
