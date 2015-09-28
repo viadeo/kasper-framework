@@ -8,9 +8,14 @@ package com.viadeo.kasper.api.component.command;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
+import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse;
+
+import java.io.Serializable;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,6 +27,7 @@ public class CommandResponse extends KasperResponse {
 
     private String securityToken;
     private String accessToken;
+    private Serializable authenticationToken;
 
     // ------------------------------------------------------------------------
 
@@ -117,6 +123,43 @@ public class CommandResponse extends KasperResponse {
 
     // ------------------------------------------------------------------------
 
+    public static CommandResponse doAuthenticate(final ID subjectID) {
+        return doAuthenticate(subjectID, ImmutableMap.<String,Object>builder().build());
+    }
+
+    public static CommandResponse doAuthenticate(final ID subjectID, final Map<String,Object> properties) {
+        return new DoAuthenticateCommandResponse(new CommandResponse(Status.OK, null), subjectID, properties);
+    }
+
+    public static CommandResponse doAuthenticate(final CommandResponse response, final ID subjectID, final Map<String,Object> properties) {
+        return new DoAuthenticateCommandResponse(response, subjectID, properties);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class DoAuthenticateCommandResponse extends CommandResponse {
+
+        private final ID subjectID;
+        private final Map<String, Object> properties;
+
+        public DoAuthenticateCommandResponse(CommandResponse response, ID subjectID, Map<String,Object> properties) {
+            super(response);
+            this.subjectID = subjectID;
+            this.properties = properties;
+        }
+
+        public ID getSubjectID() {
+            return subjectID;
+        }
+
+        public Map<String, Object> getProperties() {
+            return properties;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Deprecated
     public CommandResponse withSecurityToken(final String securityToken) {
         this.securityToken = checkNotNull(securityToken);
         return this;
@@ -126,6 +169,7 @@ public class CommandResponse extends KasperResponse {
         return Optional.fromNullable(this.securityToken);
     }
 
+    @Deprecated
     public CommandResponse withAccessToken(final String accessToken) {
         this.accessToken = checkNotNull(accessToken);
         return this;
@@ -135,8 +179,18 @@ public class CommandResponse extends KasperResponse {
         return Optional.fromNullable(this.accessToken);
     }
 
+    public CommandResponse withAuthenticationToken(final Serializable authenticationToken) {
+        this.authenticationToken = checkNotNull(authenticationToken);
+        return this;
+    }
+
+    public <TOKEN extends Serializable> Optional<TOKEN> getAuthenticationToken() {
+        return Optional.<TOKEN>fromNullable((TOKEN) this.authenticationToken);
+    }
+
     // ------------------------------------------------------------------------
 
+    @Deprecated
     public CommandResponse(final KasperResponse response, final String securityToken) {
         super(response);
         this.securityToken = checkNotNull(securityToken);
@@ -155,6 +209,10 @@ public class CommandResponse extends KasperResponse {
 
         if (response.getAccessToken().isPresent()) {
             this.accessToken = response.getAccessToken().get();
+        }
+
+        if (response.getAuthenticationToken().isPresent()) {
+            this.authenticationToken = response.getAuthenticationToken().get();
         }
     }
 
@@ -204,6 +262,18 @@ public class CommandResponse extends KasperResponse {
             return false;
         }
 
+        if (this.getAuthenticationToken().isPresent() != other.getAuthenticationToken().isPresent()) {
+            return false;
+        }
+
+        if ( ! this.getAuthenticationToken().isPresent()) {
+            return true;
+        }
+
+        if ( ! this.getAuthenticationToken().get().equals(other.getAuthenticationToken().get())) {
+            return false;
+        }
+
         return true;
     }
 
@@ -215,6 +285,9 @@ public class CommandResponse extends KasperResponse {
         }
         if (this.getAccessToken().isPresent()) {
             hashCode += com.google.common.base.Objects.hashCode(this.getAccessToken().get());
+        }
+        if (this.getAuthenticationToken().isPresent()) {
+            hashCode += com.google.common.base.Objects.hashCode(this.getAuthenticationToken().get());
         }
         return hashCode;
     }
@@ -228,6 +301,9 @@ public class CommandResponse extends KasperResponse {
         }
         if (this.getAccessToken().isPresent()) {
             helper.addValue(this.getAccessToken().get());
+        }
+        if (this.getAuthenticationToken().isPresent()) {
+            helper.addValue(this.getAuthenticationToken().get());
         }
 
         return helper.toString();

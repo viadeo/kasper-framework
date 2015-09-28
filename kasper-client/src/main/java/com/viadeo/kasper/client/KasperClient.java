@@ -48,6 +48,7 @@ import java.util.concurrent.Future;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
 import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_ACCESS_TOKEN;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_AUTHENTICATION_TOKEN;
 import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
@@ -366,6 +367,9 @@ public class KasperClient {
             }
             if (headers.containsKey(HEADER_ACCESS_TOKEN.toHeaderName())) {
                 response.withAccessToken(headers.getFirst(HEADER_ACCESS_TOKEN.toHeaderName()));
+            }
+            if (headers.containsKey(HEADER_AUTHENTICATION_TOKEN.toHeaderName())) {
+                response.withAuthenticationToken(headers.getFirst(HEADER_AUTHENTICATION_TOKEN.toHeaderName()));
             }
 
             return new HTTPCommandResponse(

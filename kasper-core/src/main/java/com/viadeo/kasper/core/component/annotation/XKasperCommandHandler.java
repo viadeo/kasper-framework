@@ -37,4 +37,9 @@ public @interface XKasperCommandHandler {
 	 */
 	String[] tags() default {};
 
+    /**
+     * @return true if the handler generate an authentication token, false otherwise
+     */
+    boolean createAuthenticationToken() default false;
+
 }

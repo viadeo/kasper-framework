@@ -12,6 +12,7 @@ import com.viadeo.kasper.core.component.query.spring.KasperQueryConfiguration;
 import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
 import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
 import com.viadeo.kasper.core.metrics.spring.KasperMetricsConfiguration;
+import com.viadeo.kasper.core.interceptor.authentication.spring.AuthenticationConfiguration;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.builder.SpringPlatform;
 import com.viadeo.kasper.platform.spring.KasperObjectMapperConfiguration;
@@ -32,6 +33,7 @@ public final class Platforms {
                         , KasperQueryConfiguration.class
                         , KasperEventConfiguration.class
                         , KasperPlatformConfiguration.class
+                        , AuthenticationConfiguration.class
                 );
     }
 
