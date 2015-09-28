@@ -2,6 +2,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -184,9 +185,12 @@ public class AMQPTopology {
         fireCreatedQueue(queue);
 
         final RoutingKeys routingKeys = routingKeysResolver.resolve(eventListener);
+        final Map<String,Binding> bindings = Maps.newHashMap();
 
         for (final RoutingKeys.RoutingKey routingKey : routingKeys.all()) {
             final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, fullExchangeName, routingKey.getRoute(), new HashMap<String, Object>());
+
+            bindings.put(binding.toString(), binding);
 
             if (deprecatedEventListener || routingKey.isDeprecated()) {
                 LOGGER.info("Unbinding queue due to deprecated {}, <binding={}>", deprecatedEventListener ? "event listener" : "handling method", binding);
@@ -208,7 +212,17 @@ public class AMQPTopology {
             }
         }
 
-        // TODO delete all obsolete bindings of the queue thanks to QueueFinder
+        for (final Binding binding : queueFinder.getQueueBindings(queueName)) {
+            if ( ! bindings.containsKey(binding.toString())) {
+                LOGGER.info("Detected obsolete binding, <binding={}>", binding);
+                try {
+                    admin.removeBinding(binding);
+                    fireDeletedBinding(binding);
+                } catch (Throwable t) {
+                    LOGGER.error("Failed to unbind queue, <binding={}>", binding);
+                }
+            }
+        }
 
         return queue;
     }
