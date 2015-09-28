@@ -1,6 +1,10 @@
 # Kasper Releases #
 
 ### Version 1.1.0-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.0-SNAPSHOT~~))
+
+* [Pull 339](https://github.com/viadeo/kasper-framework/pull/339) Added new implementation of EventListener allowing to listen different events.
+* [Pull 338](https://github.com/viadeo/kasper-framework/pull/338) Provide a stream that is required for monitoring our circuit-breaker
+* [Pull 306](https://github.com/viadeo/kasper-framework/pull/306) Added a circuit-breaker to be used as an interceptor
 * [Pull 330](https://github.com/viadeo/kasper-framework/pull/330) Add metric for each published message on the bus
 * [Pull 307](https://github.com/viadeo/kasper-framework/pull/307) Use a query bus in order to retrieve response in future
 
