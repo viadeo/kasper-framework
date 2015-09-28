@@ -12,6 +12,8 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse;
 
+import java.io.Serializable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -22,6 +24,7 @@ public class CommandResponse extends KasperResponse {
 
     private String securityToken;
     private String accessToken;
+    private Serializable authenticationToken;
 
     // ------------------------------------------------------------------------
 
@@ -135,6 +138,15 @@ public class CommandResponse extends KasperResponse {
         return Optional.fromNullable(this.accessToken);
     }
 
+    public CommandResponse withAuthenticationToken(final Serializable authenticationToken) {
+        this.authenticationToken = checkNotNull(authenticationToken);
+        return this;
+    }
+
+    public <TOKEN extends Serializable> Optional<TOKEN> getAuthenticationToken() {
+        return Optional.<TOKEN>fromNullable((TOKEN) this.authenticationToken);
+    }
+
     // ------------------------------------------------------------------------
 
     public CommandResponse(final KasperResponse response, final String securityToken) {
@@ -155,6 +167,10 @@ public class CommandResponse extends KasperResponse {
 
         if (response.getAccessToken().isPresent()) {
             this.accessToken = response.getAccessToken().get();
+        }
+
+        if (response.getAuthenticationToken().isPresent()) {
+            this.authenticationToken = response.getAuthenticationToken().get();
         }
     }
 
@@ -204,6 +220,18 @@ public class CommandResponse extends KasperResponse {
             return false;
         }
 
+        if (this.getAuthenticationToken().isPresent() != other.getAuthenticationToken().isPresent()) {
+            return false;
+        }
+
+        if ( ! this.getAuthenticationToken().isPresent()) {
+            return true;
+        }
+
+        if ( ! this.getAuthenticationToken().get().equals(other.getAuthenticationToken().get())) {
+            return false;
+        }
+
         return true;
     }
 
@@ -215,6 +243,9 @@ public class CommandResponse extends KasperResponse {
         }
         if (this.getAccessToken().isPresent()) {
             hashCode += com.google.common.base.Objects.hashCode(this.getAccessToken().get());
+        }
+        if (this.getAuthenticationToken().isPresent()) {
+            hashCode += com.google.common.base.Objects.hashCode(this.getAuthenticationToken().get());
         }
         return hashCode;
     }
@@ -228,6 +259,9 @@ public class CommandResponse extends KasperResponse {
         }
         if (this.getAccessToken().isPresent()) {
             helper.addValue(this.getAccessToken().get());
+        }
+        if (this.getAuthenticationToken().isPresent()) {
+            helper.addValue(this.getAuthenticationToken().get());
         }
 
         return helper.toString();

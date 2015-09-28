@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.annotation;
 
-import com.viadeo.kasper.core.security.AuthorizationManager;
-import com.viadeo.kasper.core.security.CombinesWith;
+import com.viadeo.kasper.core.security.authz.AuthorizationManager;
+import com.viadeo.kasper.core.security.authz.CombinesWith;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,7 +24,7 @@ public interface XKasperAuthz {
     /**
      * Requires a user in context to imply a particular permission in order to execute the annotated Handler.
      * Value contains the list of permissions to be tested.
-     * Manager specifies the {@link com.viadeo.kasper.core.security.AuthorizationManager} to use in order to check given authorizations.
+     * Manager specifies the {@link com.viadeo.kasper.core.security.authz.AuthorizationManager} to use in order to check given authorizations.
      * CombinesWith indicates the operation to do between authorizations.
      *
      * <p>For example:</p>

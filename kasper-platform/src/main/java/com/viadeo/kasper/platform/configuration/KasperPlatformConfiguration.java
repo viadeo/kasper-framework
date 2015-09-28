@@ -26,6 +26,8 @@ import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactor
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.validation.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.core.security.authc.AuthenticationInterceptor;
+import com.viadeo.kasper.core.security.authc.NoAuthentication;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;

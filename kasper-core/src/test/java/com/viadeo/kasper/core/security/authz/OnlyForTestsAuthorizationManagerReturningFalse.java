@@ -4,20 +4,22 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.security.authz;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.core.security.authz.AuthorizationManager;
+import com.viadeo.kasper.core.security.authz.CombinesWith;
 
-public class OnlyForTestsAuthorizationManagerReturningTrue implements AuthorizationManager {
+public class OnlyForTestsAuthorizationManagerReturningFalse implements AuthorizationManager {
 
     @Override
     public boolean isPermitted(String[] permissions, CombinesWith combineWith, ID actorID, Optional targetId) {
-        return true;
+        return false;
     }
 
     @Override
     public boolean hasRole(String[] roles, CombinesWith combineWith, ID actorID, Optional targetId) {
-        return true;
+        return false;
     }
 }

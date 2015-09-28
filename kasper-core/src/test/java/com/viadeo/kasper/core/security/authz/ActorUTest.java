@@ -4,11 +4,14 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.security.authz;
 
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.core.id.TestFormats;
+import com.viadeo.kasper.core.security.authz.Actor;
+import com.viadeo.kasper.core.security.authz.Permission;
+import com.viadeo.kasper.core.security.authz.Role;
 import org.junit.Before;
 import org.junit.Test;
 
