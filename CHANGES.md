@@ -1,6 +1,6 @@
 # Kasper Releases #
 
-### Version 1.0.1-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.0.1-SNAPSHOT~~))
+### Version 1.0.1 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.0.1~~))
 
 * [Pull 297](https://github.com/viadeo/kasper-framework/pull/297) avoid to register bundles with the same name
 * [Pull 296](https://github.com/viadeo/kasper-framework/pull/296) [saga] schedule a method invocation thanks to a datetime brought by an event
