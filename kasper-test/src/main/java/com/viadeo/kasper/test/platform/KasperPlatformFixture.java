@@ -16,10 +16,11 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.Platforms;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
@@ -260,6 +261,7 @@ public class KasperPlatformFixture implements
         private final RecordingPlatform recordingPlatform;
 
         protected SpyCommandBus(final RecordingPlatform recordingPlatform){
+            super(KasperMetrics.getMetricRegistry());
             this.recordingPlatform = checkNotNull(recordingPlatform);
         }
 

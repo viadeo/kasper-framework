@@ -9,9 +9,9 @@ package com.viadeo.kasper.core.component.command;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.exception.KasperCommandException;
+import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.repository.ClientRepository;
-import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 
 public abstract class BaseEntityCommandHandler<COMMAND extends Command, AGGREGATE extends AggregateRoot>
         extends BaseCommandHandler<COMMAND>

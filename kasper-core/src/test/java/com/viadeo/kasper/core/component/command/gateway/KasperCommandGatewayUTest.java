@@ -6,18 +6,28 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.gateway;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.core.component.command.MeasuredCommandHandler;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;
+import com.viadeo.kasper.core.component.query.MeasuredQueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.gateway.KasperQueryGatewayUTest;
+import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -31,6 +41,7 @@ import org.slf4j.MDC;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
@@ -190,5 +201,21 @@ public class KasperCommandGatewayUTest {
 
         verify(interceptorChainRegistry).create(eq(AutowiredCommandHandler.class), any(CommandInterceptorFactory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
+    }
+
+    @Test
+    public void register_should_create_interceptor_with_the_command_handler_class() {
+        // Given
+        final AutowiredCommandHandler commandHandler = mock(AutowiredCommandHandler.class);
+        when(commandHandler.getInputClass()).thenReturn(Command.class);
+        when(commandHandler.getHandlerClass()).thenReturn(AutowiredCommandHandler.class);
+
+        final CommandHandler measuredCommandHandler = new MeasuredCommandHandler(new MetricRegistry(), commandHandler);
+
+        // When
+        commandGateway.register(measuredCommandHandler);
+
+        // Then
+        verify(interceptorChainRegistry).create(eq(AutowiredCommandHandler.class), any(InterceptorFactory.class));
     }
 }

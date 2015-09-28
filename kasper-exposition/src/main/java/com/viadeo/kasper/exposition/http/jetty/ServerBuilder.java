@@ -20,6 +20,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
+import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.viadeo.kasper.exposition.http.HttpCommandExposer;
 import com.viadeo.kasper.exposition.http.HttpEventExposer;
@@ -197,6 +198,7 @@ public class ServerBuilder {
         handler.addServlet(new ServletHolder(new AdminServlet()), "/*");
         handler.addServlet(new ServletHolder(new JettyPingServlet()), "/jetty/*");
         handler.addServlet(new ServletHolder(new SlowServlet()), "/slow/*");
+        handler.addServlet(new ServletHolder(new HystrixMetricsStreamServlet()), "/resilience/*");
         handler.setConnectorNames(new String[]{ADMIN_CONNECTOR_NAME});
 
         return handler;

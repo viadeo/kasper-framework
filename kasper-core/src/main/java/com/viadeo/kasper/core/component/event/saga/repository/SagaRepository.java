@@ -9,10 +9,6 @@ package com.viadeo.kasper.core.component.event.saga.repository;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 
 /**
  * Interface to implement in order to store sagas instances.

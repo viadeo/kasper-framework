@@ -114,7 +114,9 @@ public class KasperHttpConfiguration {
         final List<ExposureDescriptor<Event, EventListener>> exposureDescriptors = Lists.newArrayList();
         for (final DomainDescriptor domainDescriptor : descriptors) {
             for (final EventListenerDescriptor eventListenerDescriptor : domainDescriptor.getEventListenerDescriptors()) {
-                exposureDescriptors.add(new ExposureDescriptor<>(eventListenerDescriptor.getEventClass(), eventListenerDescriptor.getReferenceClass()));
+                for (Class<? extends Event> eventClass : eventListenerDescriptor.getEventClasses()) {
+                    exposureDescriptors.add(new ExposureDescriptor<>(eventClass, eventListenerDescriptor.getReferenceClass()));
+                }
             }
         }
 

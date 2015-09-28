@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.api.response;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.Immutable;
 
 import java.io.Serializable;
-import com.google.common.base.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

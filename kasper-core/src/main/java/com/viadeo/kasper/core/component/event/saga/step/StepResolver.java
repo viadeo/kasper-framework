@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga.step;
 
-import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 

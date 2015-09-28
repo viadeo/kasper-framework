@@ -1,11 +1,14 @@
 package com.viadeo.kasper.exposition.http;
 
+import com.codahale.metrics.InstrumentedExecutorService;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 
 import java.io.Serializable;
 import java.util.concurrent.*;
@@ -95,7 +98,11 @@ public final class CallTypes {
     public static class TimeCallType extends CallTypeAdapter {
 
         private static final Pattern TIME_PATTERN = Pattern.compile("time\\((\\d+)\\)");
-        private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+        private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(
+                new ThreadFactoryBuilder()
+                        .setNameFormat("call-with-limit-time-%d")
+                        .build()
+        );
 
         private Long time;
 

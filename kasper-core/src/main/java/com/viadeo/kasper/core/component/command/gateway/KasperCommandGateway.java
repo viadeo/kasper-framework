@@ -12,7 +12,6 @@ import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.CommandHandler;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.core.context.CurrentContext;
@@ -218,15 +217,14 @@ public class KasperCommandGateway implements CommandGateway {
 
         domainLocator.registerHandler(checkNotNull(commandHandler));
 
-        commandBus.subscribe(
-                commandHandler.getInputClass().getName(),
-                new AxonCommandHandler<>(commandHandler)
-        );
+        AxonCommandHandler<COMMAND> handler = new AxonCommandHandler<>(commandHandler);
+
+        commandBus.subscribe(commandHandler.getInputClass().getName(), handler);
 
         // create immediately the interceptor chain instead of lazy mode
         interceptorChainRegistry.create(
                 commandHandler.getHandlerClass(),
-                new CommandHandlerInterceptorFactory()
+                new CommandHandlerInterceptorFactory(handler)
         );
     }
 

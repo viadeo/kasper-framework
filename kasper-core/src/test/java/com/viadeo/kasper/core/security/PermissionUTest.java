@@ -9,8 +9,6 @@ package com.viadeo.kasper.core.security;
 import com.google.common.base.Optional;
 import org.junit.Test;
 
-import javax.swing.text.html.Option;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

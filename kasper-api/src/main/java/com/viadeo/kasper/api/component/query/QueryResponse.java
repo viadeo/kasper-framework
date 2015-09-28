@@ -28,22 +28,76 @@ public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Get a failure response which is an unexpected and can require intervention before the system can resume at the
+     * same level of operation. This does not mean that failures are always fatal, rather that some capacity of the
+     * system will be reduced following a failure.
+     *
+     * @param reason a reason
+     * @param <R> the type of result
+     * @return a failure response
+     */
+    public static <R extends QueryResult> QueryResponse<R> failure(final KasperReason reason) {
+        return new QueryResponse<R>(Status.FAILURE, reason);
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get an error response which is an expected part of normal operations.
+     *
+     * @param reason  the reason
+     * @param <R> the type of result
+     * @return an error response
+     */
     public static <R extends QueryResult> QueryResponse<R> error(final KasperReason reason) {
         return new QueryResponse<R>(checkNotNull(reason));
     }
 
-    public static <R extends QueryResult> QueryResponse<R> refused(final KasperReason reason) {
-        return new QueryResponse<R>(Status.REFUSED, checkNotNull(reason));
-    }
-
+    /**
+     * Get an error response which is an expected part of normal operations.
+     *
+     * @param code  the core reason code
+     * @param <R> the type of result
+     * @return an error response
+     */
     public static <R extends QueryResult> QueryResponse<R> error(final CoreReasonCode code) {
         return new QueryResponse<R>(new KasperReason(checkNotNull(code)));
     }
 
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get a refused response.
+     *
+     * @param reason the reason
+     * @param <R> the type of result
+     * @return a refused response
+     */
+    public static <R extends QueryResult> QueryResponse<R> refused(final KasperReason reason) {
+        return new QueryResponse<R>(Status.REFUSED, checkNotNull(reason));
+    }
+
+    /**
+     * Get a refused response.
+     *
+     * @param code the core reason code
+     * @param <R> the type of result
+     * @return a refused response
+     */
     public static <R extends QueryResult> QueryResponse<R> refused(final CoreReasonCode code) {
         return new QueryResponse<R>(Status.REFUSED, new KasperReason(checkNotNull(code)));
     }
 
+    // ------------------------------------------------------------------------
+
+    /**
+     * Get a result in the success response
+     *
+     * @param result the result to returned
+     * @param <R> the type of result
+     * @return a success response
+     */
     public static <R extends QueryResult> QueryResponse<R> of(final R result) {
         return new QueryResponse<R>(checkNotNull(result));
     }

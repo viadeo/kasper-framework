@@ -6,14 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.interceptor.cache;
 
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.interceptor.Interceptor;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryCache;
-import com.viadeo.kasper.core.component.query.interceptor.cache.QueryCacheKeyGenerator;
+import com.viadeo.kasper.core.interceptor.Interceptor;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
 
 import javax.cache.Cache;
 import java.io.Serializable;

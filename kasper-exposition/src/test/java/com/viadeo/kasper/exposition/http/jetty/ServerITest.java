@@ -208,9 +208,10 @@ public class ServerITest {
         HttpQueryExposerPlugin httpQueryExposerPlugin = new HttpQueryExposerPlugin();
         HttpEventExposerPlugin httpEventExposerPlugin = new HttpEventExposerPlugin();
         DocumentationPlugin documentationPlugin = new DocumentationPlugin();
+        MetricRegistry metricRegistry = new MetricRegistry();
 
-        new DefaultPlatform.Builder(new KasperPlatformConfiguration())
-                .withEventBus(new KasperEventBus(new MetricRegistry()))
+        new DefaultPlatform.Builder(new KasperPlatformConfiguration(metricRegistry))
+                .withEventBus(new KasperEventBus(metricRegistry))
                 .withConfiguration(config)
                 .addPlugin(httpCommandExposerPlugin)
                 .addPlugin(httpQueryExposerPlugin)

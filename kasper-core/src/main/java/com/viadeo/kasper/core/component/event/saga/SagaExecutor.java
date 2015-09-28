@@ -7,10 +7,14 @@
 package com.viadeo.kasper.core.component.event.saga;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
@@ -20,6 +24,7 @@ import com.viadeo.kasper.core.component.event.saga.step.Steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -55,7 +60,7 @@ public class SagaExecutor {
         this.steps = Maps.newHashMap();
 
         for (final Step step : checkNotNull(steps)) {
-            this.steps.put(step.getSupportedEvent(), step);
+            this.steps.put(step.getSupportedEvent().getEventClass(), step);
         }
     }
 
@@ -228,8 +233,13 @@ public class SagaExecutor {
         return repository;
     }
 
-    protected Set<Class<?>> getEventClasses() {
-        return steps.keySet();
+    protected Set<EventDescriptor> getEventClasses() {
+        return Sets.newHashSet(Collections2.transform(steps.values(), new Function<Step, EventDescriptor>() {
+            @Override
+            public EventDescriptor apply(@Nullable Step input) {
+                return input.getSupportedEvent();
+            }
+        }));
     }
 
 }

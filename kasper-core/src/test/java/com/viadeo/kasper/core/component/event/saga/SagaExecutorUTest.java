@@ -8,12 +8,9 @@ package com.viadeo.kasper.core.component.event.saga;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.core.component.event.saga.Saga;
-import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
-import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
@@ -25,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.viadeo.kasper.core.component.event.saga.TestFixture.*;
 import static org.mockito.Mockito.*;
 
 public class SagaExecutorUTest {
@@ -71,7 +67,7 @@ public class SagaExecutorUTest {
         TestFixture.TestSagaA saga = new TestFixture.TestSagaA();
         Context context = Contexts.empty();
         when(factory.create("2015", TestFixture.TestSagaA.class)).thenReturn(saga);
-        when(repository.load(TestSagaA.class, "2015")).thenReturn(Optional.<Saga>absent());
+        when(repository.load(TestFixture.TestSagaA.class, "2015")).thenReturn(Optional.<Saga>absent());
 
         // When
         executor.execute(context, event);
@@ -87,14 +83,14 @@ public class SagaExecutorUTest {
         TestFixture.TestEvent2 event = new TestFixture.TestEvent2("2015");
         TestFixture.TestSagaA saga = new TestFixture.TestSagaA();
         Context context = Contexts.empty();
-        when(repository.load(TestSagaA.class, "2015")).thenReturn(Optional.<Saga>of(saga));
+        when(repository.load(TestFixture.TestSagaA.class, "2015")).thenReturn(Optional.<Saga>of(saga));
 
         // When
         executor.execute(context, event);
 
         // Then
         verify(factory, never()).create("2015", TestFixture.TestSagaA.class);
-        verify(repository).load(TestSagaA.class, "2015");
+        verify(repository).load(TestFixture.TestSagaA.class, "2015");
         verify(basicStep).invoke(saga, context, event);
     }
 }

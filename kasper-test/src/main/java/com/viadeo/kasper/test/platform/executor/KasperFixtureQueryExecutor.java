@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform.executor;
 
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureQueryResultValidator;
 
 public interface KasperFixtureQueryExecutor<VALIDATOR extends KasperFixtureQueryResultValidator> extends KasperFixtureExecutor {

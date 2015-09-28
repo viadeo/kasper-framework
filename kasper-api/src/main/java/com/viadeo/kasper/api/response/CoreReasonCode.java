@@ -37,7 +37,9 @@ public enum CoreReasonCode {
 
     /* Internal reasons */
     INTERNAL_COMPONENT_TIMEOUT(3001),
-    INTERNAL_COMPONENT_ERROR(3002);
+    INTERNAL_COMPONENT_ERROR(3002),
+    SERVICE_UNAVAILABLE(3003);
+
 
     private static final String CODE_FORMAT = "%04d";
 

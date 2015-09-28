@@ -208,7 +208,7 @@ public class KasperMetricsITest {
         final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomEvent.class, "bip");
 
         // Then
-        assertEquals("mycustomdomain.event.mycustomevent.bip", name);
+        assertEquals("unknown.event.mycustomevent.bip", name);
     }
 
     @Test

@@ -8,17 +8,23 @@ package com.viadeo.kasper.core.component.command.interceptor;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
 
 public class CommandHandlerInterceptorFactory extends CommandInterceptorFactory {
+
+    private final AxonCommandHandler handler;
+
+    public CommandHandlerInterceptorFactory(final AxonCommandHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
         return Optional.of(new com.viadeo.kasper.core.interceptor.InterceptorChain<>(
-                new CommandHandlerInterceptor( /* axonInterceptorChain */ ))
+                new CommandHandlerInterceptor(handler))
         );
     }
 

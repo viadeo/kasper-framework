@@ -36,8 +36,8 @@ public class MeasuredEventListener
     }
 
     @Override
-    public Set<Class<?>> getEventClasses() {
-        return handler.getEventClasses();
+    public Set<EventDescriptor> getEventDescriptors() {
+        return handler.getEventDescriptors();
     }
 
     @Override

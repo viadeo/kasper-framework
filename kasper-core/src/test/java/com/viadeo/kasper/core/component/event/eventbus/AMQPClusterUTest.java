@@ -2,7 +2,6 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.core.component.event.eventbus.*;
 import org.axonframework.eventhandling.DefaultClusterMetaData;
 import org.junit.Before;
 import org.junit.Test;

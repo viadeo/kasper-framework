@@ -33,6 +33,7 @@ dependencies {
     compile libraries.TYPESAFE_CONFIG
     compile libraries.RABBITMQ_MGMT
     compile libraries.JERSEY_CLIENT
+    compile libraries.HYSTRIX
 
     testCompile libraries.SPRING_TEST
     testCompile libraries.LOGBACK

@@ -45,7 +45,7 @@ public class EventBusConfiguration {
     @Bean
     public KasperEventBus eventBus(List<Cluster> clusters) {
         ClassNamePatternClusterSelector selector = new ClassNamePatternClusterSelector(Pattern.compile(".*"), new CompositeCluster(clusters));
-        KasperEventBus eventBus = new KasperEventBus(selector);
+        KasperEventBus eventBus = new KasperEventBus(new MetricRegistry(), selector);
 
         // interceptors
         eventBus.register(new TagsInterceptor.Factory());
@@ -110,11 +110,12 @@ public class EventBusConfiguration {
                 Config config,
                 RabbitAdmin rabbitAdmin,
                 RabbitMQComponentInjector rabbitMQComponentInjector,
+                QueueFinder queueFinder,
                 AMQPComponentNameFormatter amqpComponentNameFormatter
         ) {
             Config amqpConfig = config.getConfig("runtime.eventbus.amqp");
 
-            AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver(), amqpComponentNameFormatter);
+            AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver(), queueFinder, amqpComponentNameFormatter);
             topology.setDeadLetterQueueMaxLength(amqpConfig.getInt("queue.deadLetterMaxLength"));
             topology.setQueueExpires(amqpConfig.getMilliseconds("queue.expires"));
             topology.setMessageTTL(amqpConfig.getMilliseconds("queue.messageTTL"));

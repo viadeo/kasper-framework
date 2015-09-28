@@ -10,10 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

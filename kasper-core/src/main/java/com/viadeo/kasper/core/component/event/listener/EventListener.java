@@ -35,8 +35,8 @@ public interface EventListener<EVENT extends Event>
     String getName();
 
     /**
-     * @return all event classes handled by this <code>EventListener</code>
+     * @return all event descriptors handled by this <code>EventListener</code>
      */
-    Set<Class<?>> getEventClasses();
+    Set<EventDescriptor> getEventDescriptors();
 
 }

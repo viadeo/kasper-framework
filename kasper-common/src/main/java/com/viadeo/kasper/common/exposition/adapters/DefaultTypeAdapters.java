@@ -8,8 +8,8 @@ package com.viadeo.kasper.common.exposition.adapters;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.query.QueryBuilder;
 import com.viadeo.kasper.common.exposition.query.QueryFactory;

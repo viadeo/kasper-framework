@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.query.interceptor.validation;
 
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.interceptor.cache.BaseValidationInterceptor;
-import com.viadeo.kasper.core.interceptor.Interceptor;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.interceptor.Interceptor;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.cache.BaseValidationInterceptor;
 
 import javax.validation.ValidatorFactory;
 

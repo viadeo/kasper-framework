@@ -10,16 +10,12 @@ import com.google.common.collect.Sets;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.step.*;
-import com.viadeo.kasper.core.component.event.saga.TestFixture;
-import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Set;
 
-import static com.viadeo.kasper.core.component.event.saga.TestFixture.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;

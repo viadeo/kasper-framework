@@ -7,12 +7,12 @@
 package com.viadeo.kasper.core.component.command.interceptor;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.core.component.command.gateway.KasperCommandBus;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
@@ -41,30 +41,14 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
 
         final Class<? extends CommandHandler> commandHandlerClassFor = commandBus.findCommandHandlerClassFor(commandMessage);
 
-        final InterceptorChain<Command, CommandResponse> chain;
         final Optional<InterceptorChain<Command, CommandResponse>> optionalInterceptorChain = interceptorChainRegistry.get(commandHandlerClassFor);
-
-        if (optionalInterceptorChain.isPresent()) {
-            chain = optionalInterceptorChain.get();
-        } else {
-            chain = interceptorChainRegistry.create(
-                    commandHandlerClassFor,
-                    new CommandHandlerInterceptorFactory()
-            ).get();
-        }
-
+        final InterceptorChain<Command, CommandResponse> chain = optionalInterceptorChain.get();
         final Context context = (Context) commandMessage.getMetaData().get(Context.METANAME);
-        final CommandHandlerInterceptor tail = (CommandHandlerInterceptor) chain.last().get();
 
-        try {
-            tail.set(axonInterceptorChain);
-            return chain.next(
+        return chain.next(
                 (Command) commandMessage.getPayload(),
                 context
-            );
-        } finally {
-            tail.remove();
-        }
+        );
     }
 
 }

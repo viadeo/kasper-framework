@@ -10,7 +10,6 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandMessage;
-import com.viadeo.kasper.core.component.command.KasperCommandBus;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -43,13 +42,14 @@ public class KasperCommandGatewayITest {
 
     @Before
     public void setUp() throws Exception {
+        final MetricRegistry metricRegistry = new MetricRegistry();
         final UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
-        final KasperCommandBus commandBus = new KasperCommandBus();
+        final KasperCommandBus commandBus = new KasperCommandBus(metricRegistry);
         commandBus.setUnitOfWorkFactory(uowFactory);
 
         this.commandGateway = new KasperCommandGateway(commandBus);
 
-        KasperMetrics.setMetricRegistry(new MetricRegistry());
+        KasperMetrics.setMetricRegistry(metricRegistry);
     }
 
     // ------------------------------------------------------------------------

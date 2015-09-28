@@ -11,8 +11,6 @@ import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;

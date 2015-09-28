@@ -7,12 +7,12 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.core.component.query.QueryHandler;
-import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
+import com.viadeo.kasper.core.component.query.QueryHandler;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

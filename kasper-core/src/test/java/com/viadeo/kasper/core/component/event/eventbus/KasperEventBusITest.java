@@ -241,7 +241,7 @@ public class KasperEventBusITest {
         private AMQPCluster cluster;
 
         public TestEventBus(AMQPCluster cluster) {
-            super(cluster);
+            super(new MetricRegistry(), cluster);
             this.cluster = cluster;
         }
 

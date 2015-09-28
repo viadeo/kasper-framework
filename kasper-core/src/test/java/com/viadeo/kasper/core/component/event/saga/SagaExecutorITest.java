@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.jayway.awaitility.Awaitility;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
@@ -18,7 +19,6 @@ import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryPro
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
-import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;

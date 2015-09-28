@@ -9,7 +9,6 @@ package com.viadeo.kasper.common.exposition;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.query.QueryBuilder;
 import com.viadeo.kasper.common.exposition.query.QueryFactory;
 import com.viadeo.kasper.common.exposition.query.QueryFactoryBuilder;

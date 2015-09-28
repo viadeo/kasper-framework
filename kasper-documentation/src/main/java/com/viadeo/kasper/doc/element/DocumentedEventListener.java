@@ -6,10 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.doc.element;
 
+import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.response.KasperResponse;
-import com.viadeo.kasper.platform.bundle.descriptor.EventListenerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
+import com.viadeo.kasper.platform.bundle.descriptor.EventListenerDescriptor;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DocumentedEventListener extends AbstractDomainElement {
 
-    private final DocumentedEvent documentedEvent;
+    private final List<DocumentedEvent> documentedEvents;
 
     public static class DocumentedEvent extends AbstractPropertyDomainElement {
 
@@ -83,7 +85,12 @@ public class DocumentedEventListener extends AbstractDomainElement {
                 DocumentedElementType.EVENT_LISTENER,
                 checkNotNull(eventListenerDescriptor).getReferenceClass()
         );
-        documentedEvent = new DocumentedEvent(this, eventListenerDescriptor.getEventClass());
+
+        documentedEvents = Lists.newArrayList();
+
+        for (Class<? extends Event> eventClass : eventListenerDescriptor.getEventClasses()) {
+            documentedEvents.add(new DocumentedEvent(this, eventClass));
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -95,18 +102,20 @@ public class DocumentedEventListener extends AbstractDomainElement {
 
     @Override
     public void accept(final DocumentedElementVisitor visitor) {
-        documentedEvent.accept(visitor);
+        for (DocumentedEvent documentedEvent : documentedEvents) {
+            documentedEvent.accept(visitor);
+        }
         visitor.visit(this);
     }
 
     // ------------------------------------------------------------------------
 
-    public LightDocumentedElement<DocumentedEvent> getEvent() {
-        return documentedEvent.getLightDocumentedElement();
-    }
-
-    public String getEventName() {
-        return documentedEvent.getName();
+    public List<LightDocumentedElement<DocumentedEvent>> getEvents() {
+        final List<LightDocumentedElement<DocumentedEvent>> lightDocumentedEvents = Lists.newArrayList();
+        for (DocumentedEvent documentedEvent : documentedEvents) {
+            lightDocumentedEvents.add(documentedEvent.getLightDocumentedElement());
+        }
+        return lightDocumentedEvents;
     }
 
 }

@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.doc.element;
 
-import com.viadeo.kasper.platform.bundle.descriptor.QueryHandlerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
 import com.viadeo.kasper.doc.nodes.DocumentedQueryResponse;
+import com.viadeo.kasper.platform.bundle.descriptor.QueryHandlerDescriptor;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;

@@ -58,7 +58,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         if ( ! acceptMessage(eventMessage)) {
             return EventResponse.error(new KasperReason(
                     CoreReasonCode.INVALID_INPUT,
-                    String.format("Unexpected event : '%s' is not a '%s'", eventMessage.getPayloadType(), getEventClasses())
+                    String.format("Unexpected event : '%s' is not a '%s'", eventMessage.getPayloadType(), getEventDescriptors())
             ));
         }
 
@@ -94,8 +94,8 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
     public boolean acceptMessage(final org.axonframework.domain.EventMessage eventMessage) {
         checkNotNull(eventMessage);
         final Class payloadType = eventMessage.getPayloadType();
-        for (final Class<?> eventClass : getEventClasses()) {
-            if (eventClass != null && eventClass.isAssignableFrom(payloadType)) {
+        for (final EventDescriptor eventDescriptor : getEventDescriptors()) {
+            if (eventDescriptor != null && eventDescriptor.getEventClass().isAssignableFrom(payloadType)) {
                 return Boolean.TRUE;
             }
         }
@@ -108,6 +108,6 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
 
     public abstract void rollback(EventMessage<EVENT> message);
 
-    public abstract Set<Class<?>> getEventClasses();
+    public abstract Set<EventDescriptor> getEventDescriptors();
 
 }

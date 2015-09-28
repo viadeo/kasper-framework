@@ -11,6 +11,8 @@ import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
 
+import java.util.concurrent.Future;
+
 /** The Kasper query gateway, used to result queries from the kasper platform */
 public interface QueryGateway {
 
@@ -22,5 +24,16 @@ public interface QueryGateway {
      * @throws Exception an exception
 	 */
     <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(Query query, Context context) throws Exception;
+
+    /**
+     * Fire and get a Future
+     *
+     * @param query the query to be resulted
+     * @param context the query execution context
+     * @param <RESULT> the query result
+     * @return a future of a query response
+     * @throws Exception an exception
+     */
+    <RESULT extends QueryResult> Future<QueryResponse<RESULT>> retrieveForFuture(Query query, Context context) throws Exception;
 
 }
