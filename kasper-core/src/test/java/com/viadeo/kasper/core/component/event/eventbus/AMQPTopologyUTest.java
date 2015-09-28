@@ -5,6 +5,8 @@ import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
+import com.viadeo.kasper.core.component.event.listener.MultiEventListener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,11 +36,14 @@ public class AMQPTopologyUTest {
     private RabbitAdmin rabbitAdmin;
 
     @Mock
+    private QueueFinder queueFinder;
+
+    @Mock
     private ReflectionRoutingKeysResolver reflectionRoutingKeysResolver;
 
     @Before
     public void setUp() throws Exception {
-        topology = new AMQPTopology(rabbitAdmin, reflectionRoutingKeysResolver, new AMQPComponentNameFormatter());
+        topology = new AMQPTopology(rabbitAdmin, reflectionRoutingKeysResolver, queueFinder, new AMQPComponentNameFormatter());
         when(reflectionRoutingKeysResolver.resolve(any(AutowiredEventListener.class))).thenReturn(
                 new RoutingKeys(Sets.newHashSet(new RoutingKeys.RoutingKey(FakeEvent.class.getName())))
         );
@@ -96,7 +101,39 @@ public class AMQPTopologyUTest {
         Assert.assertEquals(FakeEvent.class.getName(), removedBindings.get(0).getRoutingKey());
     }
 
+    @Test
+    public void createQueue_withMultiEventListener_bindQueue() throws Exception {
+        // Given
+        EventListener eventListener = new NormalEventListener();
+        when(reflectionRoutingKeysResolver.resolve(any(AutowiredEventListener.class))).thenReturn(
+                new RoutingKeys(Sets.newHashSet(
+                        new RoutingKeys.RoutingKey(FakeEvent.class.getName()),
+                        new RoutingKeys.RoutingKey(FakeEvent2.class.getName(), Boolean.TRUE)
+                ))
+        );
+        ArgumentCaptor<Binding> argumentCaptor = ArgumentCaptor.forClass(Binding.class);
+
+        // When
+        Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
+
+        // Then
+        Assert.assertNotNull(queue);
+        verify(rabbitAdmin).declareBinding(bindingArgumentCaptor.capture());
+        verify(rabbitAdmin).removeBinding(argumentCaptor.capture());
+
+        List<Binding> declaredBindings = bindingArgumentCaptor.getAllValues();
+        Assert.assertNotNull(declaredBindings);
+        Assert.assertEquals(1, declaredBindings.size());
+        Assert.assertEquals(FakeEvent.class.getName(), declaredBindings.get(0).getRoutingKey());
+
+        List<Binding> removedBindings = argumentCaptor.getAllValues();
+        Assert.assertNotNull(removedBindings);
+        Assert.assertEquals(1, removedBindings.size());
+        Assert.assertEquals(FakeEvent2.class.getName(), removedBindings.get(0).getRoutingKey());
+    }
+
     static class FakeEvent implements Event { }
+    static class FakeEvent2 implements Event { }
 
     @Deprecated
     static class DeprecatedEventListener extends AutowiredEventListener<FakeEvent> {

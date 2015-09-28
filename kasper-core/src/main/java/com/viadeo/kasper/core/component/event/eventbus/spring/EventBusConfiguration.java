@@ -110,11 +110,12 @@ public class EventBusConfiguration {
                 Config config,
                 RabbitAdmin rabbitAdmin,
                 RabbitMQComponentInjector rabbitMQComponentInjector,
+                QueueFinder queueFinder,
                 AMQPComponentNameFormatter amqpComponentNameFormatter
         ) {
             Config amqpConfig = config.getConfig("runtime.eventbus.amqp");
 
-            AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver(), amqpComponentNameFormatter);
+            AMQPTopology topology = new AMQPTopology(rabbitAdmin, new ReflectionRoutingKeysResolver(), queueFinder, amqpComponentNameFormatter);
             topology.setDeadLetterQueueMaxLength(amqpConfig.getInt("queue.deadLetterMaxLength"));
             topology.setQueueExpires(amqpConfig.getMilliseconds("queue.expires"));
             topology.setMessageTTL(amqpConfig.getMilliseconds("queue.messageTTL"));

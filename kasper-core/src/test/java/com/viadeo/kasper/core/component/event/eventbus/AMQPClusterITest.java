@@ -224,7 +224,7 @@ public class AMQPClusterITest {
         } finally {
             // restore queues!!!
             new AmqpClusterConfiguration()
-                    .amqpTopology(config, new RabbitAdmin(connectionFactory), null, new AMQPComponentNameFormatter())
+                    .amqpTopology(config, new RabbitAdmin(connectionFactory), null, null, new AMQPComponentNameFormatter())
                     .createQueue(
                             config.getString("runtime.eventbus.amqp.exchange.name"),
                             config.getString("runtime.eventbus.amqp.exchange.version"),

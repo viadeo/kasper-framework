@@ -27,6 +27,7 @@ public class AMQPTopology {
 
     private final RabbitAdmin admin;
     private final RoutingKeysResolver routingKeysResolver;
+    private final QueueFinder queueFinder;
     private final List<AMQPTopologyListener> amqpTopologyListeners;
     private final AMQPComponentNameFormatter componentNameFormatter;
 
@@ -34,13 +35,14 @@ public class AMQPTopology {
     private Long messageTTL;
     private int deadLetterQueueMaxLength;
 
-    public AMQPTopology(RabbitAdmin admin, RoutingKeysResolver routingKeysResolver) {
-        this(admin, routingKeysResolver, DEFAULT_COMPONENT_NAME_FORMATTER);
+    public AMQPTopology(RabbitAdmin admin, RoutingKeysResolver routingKeysResolver, QueueFinder queueFinder) {
+        this(admin, routingKeysResolver, queueFinder, DEFAULT_COMPONENT_NAME_FORMATTER);
     }
 
-    public AMQPTopology(RabbitAdmin admin, RoutingKeysResolver routingKeysResolver, AMQPComponentNameFormatter componentNameFormatter) {
+    public AMQPTopology(RabbitAdmin admin, RoutingKeysResolver routingKeysResolver, QueueFinder queueFinder, AMQPComponentNameFormatter componentNameFormatter) {
         this.admin = admin;
         this.routingKeysResolver = routingKeysResolver;
+        this.queueFinder = queueFinder;
         this.amqpTopologyListeners = Lists.newArrayList();
         this.deadLetterQueueMaxLength = DEFAULT_DEAD_LETTER_MAX_LENGTH;
         this.componentNameFormatter = componentNameFormatter;
@@ -183,11 +185,11 @@ public class AMQPTopology {
 
         final RoutingKeys routingKeys = routingKeysResolver.resolve(eventListener);
 
-        for (final RoutingKeys.RoutingKey routingKey : routingKeys.get()) {
+        for (final RoutingKeys.RoutingKey routingKey : routingKeys.all()) {
             final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, fullExchangeName, routingKey.getRoute(), new HashMap<String, Object>());
 
-            if (deprecatedEventListener) {
-                LOGGER.info("Unbinding queue due to deprecated event listener, <binding={}>", binding);
+            if (deprecatedEventListener || routingKey.isDeprecated()) {
+                LOGGER.info("Unbinding queue due to deprecated {}, <binding={}>", deprecatedEventListener ? "event listener" : "handling method", binding);
                 try {
                     admin.removeBinding(binding);
                     fireDeletedBinding(binding);
@@ -205,6 +207,8 @@ public class AMQPTopology {
                 }
             }
         }
+
+        // TODO delete all obsolete bindings of the queue thanks to QueueFinder
 
         return queue;
     }
