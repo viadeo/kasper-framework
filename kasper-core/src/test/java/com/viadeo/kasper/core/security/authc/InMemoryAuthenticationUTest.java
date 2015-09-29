@@ -7,24 +7,25 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class InMemoryAuthenticationUTest {
 
-    private InMemoryAuthentication inMemoryAuthentication;
+    private InMemoryAuthentication<String> inMemoryAuthentication;
 
     @Before
     public void setup(){
-        inMemoryAuthentication = new InMemoryAuthentication();
+        inMemoryAuthentication = new InMemoryAuthentication<String>(new UUIDAuthenticationTokenGenerator());
     }
 
     @Test
     public void isAuthenticated_withTokenInContext_shouldBe(){
         // Given
-        UUID token = UUID.randomUUID();
+        String token = UUID.randomUUID().toString();
+        Context context =  Contexts.builder()
+                .withAuthenticationToken(token)
+                .build();
         inMemoryAuthentication.addToken(token);
-        Context context = getContext(token);
 
         // When
         boolean isAuthenticated = inMemoryAuthentication.isAuthenticated(context);
@@ -36,7 +37,7 @@ public class InMemoryAuthenticationUTest {
     @Test
     public void isAuthenticated_withNoTokenInContext_shouldNotBe(){
         // Given
-        Context context = getContext(UUID.randomUUID());
+        Context context =  Contexts.builder().build();
 
         // When
         boolean isAuthenticated = inMemoryAuthentication.isAuthenticated(context);
@@ -45,9 +46,51 @@ public class InMemoryAuthenticationUTest {
         assertFalse(isAuthenticated);
     }
 
-    private Context getContext(UUID token) {
-        return Contexts.builder().withAuthenticationToken(token).build();
+    @Test
+    public void isAuthenticated_withDifferentTokenInContext_shouldNotBe(){
+        // Given
+        String token1 = UUID.randomUUID().toString();
+        String token2 = UUID.randomUUID().toString();
+        Context context =  Contexts.builder()
+                .withAuthenticationToken(token1)
+                .build();
+        inMemoryAuthentication.addToken(token2);
+
+        // When
+        boolean isAuthenticated = inMemoryAuthentication.isAuthenticated(context);
+
+        //Then
+        assertFalse(isAuthenticated);
     }
 
+    @Test
+    public void createAuthenticationToken_withUserInContext_shouldCreate(){
+        // Given
+        Context context =  Contexts.builder().build();
+
+        // When
+        String token = inMemoryAuthentication.createAuthenticationToken(context);
+
+        // Then
+        assertNotNull(token);
+        context = Contexts.newFrom(context).withAuthenticationToken(token).build();
+        assertTrue(inMemoryAuthentication.isAuthenticated(context));
+    }
+
+    @Test
+    public void removeToken_withTokenInMemory_shouldRemove(){
+        // given
+        String token = UUID.randomUUID().toString();
+        inMemoryAuthentication.addToken(token);
+        Context context =  Contexts.builder()
+                .withAuthenticationToken(token)
+                .build();
+
+        // When
+        inMemoryAuthentication.removeToken(token);
+
+        // Then
+        assertFalse(inMemoryAuthentication.isAuthenticated(context));
+    }
 
 }

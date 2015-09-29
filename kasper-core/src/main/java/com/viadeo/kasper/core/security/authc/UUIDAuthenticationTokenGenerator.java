@@ -7,19 +7,14 @@
 package com.viadeo.kasper.core.security.authc;
 
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.api.id.ID;
 
 import java.io.Serializable;
+import java.util.UUID;
 
-public class NoAuthentication implements Authenticator {
-
-    @Override
-    public boolean isAuthenticated(Context context) {
-        return true;
-    }
+public class UUIDAuthenticationTokenGenerator implements AuthenticationTokenGenerator {
 
     @Override
-    public Serializable createAuthenticationToken(final Context context) {
-        return null;
+    public Serializable generate(Context context) {
+        return UUID.randomUUID().toString();
     }
 }

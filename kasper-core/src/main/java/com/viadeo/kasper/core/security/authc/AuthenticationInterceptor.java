@@ -16,6 +16,7 @@ import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.core.component.annotation.XKasperCreateAuthenticationToken;
 import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
@@ -40,10 +41,27 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
         this.authenticator = checkNotNull(authenticator);
     }
 
-    public static class Factories {
+    @Override
+    public O process(I c, Context context, InterceptorChain<I, O> chain) throws Exception {
+        checkNotNull(context);
 
-        public Factories() {
+        if (!authenticator.isAuthenticated(context)) {
+            LOGGER.error("Invalid authentication for : {}", target.getName());
+            throw new KasperInvalidAuthenticationException(
+                    "Invalid authentication for : " + target.getName(), CoreReasonCode.INVALID_AUTHENTICATION
+            );
         }
+
+        return enrichResponseWithToken(authenticator, chain.next(c, context), context);
+    }
+
+    protected O enrichResponseWithToken(final Authenticator authenticator, final O output, final Context context){
+        return output;
+    }
+
+    public static final class Factories {
+
+        private Factories() {}
 
         public static CommandInterceptorFactory forCommand(
                 final MetricRegistry metricRegistry,
@@ -52,9 +70,21 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
             return new CommandInterceptorFactory() {
                 @Override
                 public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
-                    checkNotNull(type);
+                    final boolean isPublicHandler = checkNotNull(type).getRawType().isAnnotationPresent(XKasperPublic.class);
+                    if(isPublicHandler){
+                        return Optional.absent();
+                    }
+                    final boolean doCreateToken = checkNotNull(type).getRawType().isAnnotationPresent(XKasperCreateAuthenticationToken.class);
                     return Optional.of(InterceptorChain.makeChain(
-                            new AuthenticationInterceptor<Command, CommandResponse>(metricRegistry, type, authenticator)
+                            new AuthenticationInterceptor<Command, CommandResponse>(metricRegistry, type, authenticator) {
+                                @Override
+                                protected CommandResponse enrichResponseWithToken(Authenticator authenticator, CommandResponse output, Context context) {
+                                    if (doCreateToken) {
+                                        return output.withAuthenticationToken(authenticator.createAuthenticationToken(context));
+                                    }
+                                    return super.enrichResponseWithToken(authenticator, output, context);
+                                }
+                            }
                     ));
                 }
             };
@@ -67,32 +97,16 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
             return new QueryInterceptorFactory() {
                 @Override
                 public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
-                    checkNotNull(type);
+                    final boolean isPublicHandler = checkNotNull(type).getRawType().isAnnotationPresent(XKasperPublic.class);
+                    if(isPublicHandler){
+                        return Optional.absent();
+                    }
                     return Optional.of(InterceptorChain.makeChain(
                             new AuthenticationInterceptor<Query, QueryResponse<QueryResult>>(metricRegistry, type, authenticator)
                     ));
                 }
             };
         }
-    }
-
-    @Override
-    public O process(I c, Context context, InterceptorChain<I, O> chain) throws Exception {
-        checkNotNull(context);
-
-        final boolean annotationPresent = target.isAnnotationPresent(XKasperPublic.class);
-        if (annotationPresent) {
-            return chain.next(c, context);
-        }
-
-        if (!authenticator.isAuthenticated(context)) {
-            LOGGER.error("Invalid authentication for : {}", target.getName());
-            throw new KasperInvalidAuthenticationException(
-                    "Invalid authentication for : " + target.getName(), CoreReasonCode.INVALID_AUTHENTICATION
-            );
-        }
-
-        return chain.next(c, context);
     }
 
 }

@@ -7,20 +7,25 @@
 package com.viadeo.kasper.core.security.authc;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.id.ID;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class InMemoryAuthentication<TOKEN extends Serializable> implements Authenticator  {
 
-    private final Set<TOKEN> tokens;
+    private final List<TOKEN> tokens;
+    private final AuthenticationTokenGenerator<TOKEN> authenticationTokenGenerator;
 
-    public InMemoryAuthentication() {
-        this.tokens = Sets.newHashSet();
+    public InMemoryAuthentication(final AuthenticationTokenGenerator<TOKEN> authenticationTokenGenerator) {
+        this.tokens = Lists.newArrayList();
+        this.authenticationTokenGenerator = checkNotNull(authenticationTokenGenerator);
     }
 
     public void addToken(final TOKEN token){
@@ -33,7 +38,22 @@ public class InMemoryAuthentication<TOKEN extends Serializable> implements Authe
 
     @Override
     public boolean isAuthenticated(final Context context) {
-        final Optional<TOKEN> token = checkNotNull(context).getAuthenticationToken();
+        checkNotNull(context);
+        if(!context.getAuthenticationToken().isPresent()){
+            return false;
+        }
+
+        final Optional<TOKEN> token = context.getAuthenticationToken();
         return (token.isPresent() && tokens.contains(token.get()));
+    }
+
+    @Override
+    public TOKEN createAuthenticationToken(final Context context) {
+        checkNotNull(context);
+
+        final TOKEN token = authenticationTokenGenerator.generate(context);
+        addToken(token);
+
+        return token;
     }
 }
