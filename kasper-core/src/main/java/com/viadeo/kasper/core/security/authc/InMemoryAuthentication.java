@@ -39,6 +39,9 @@ public class InMemoryAuthentication<TOKEN extends Serializable> implements Authe
     @Override
     public boolean isAuthenticated(final Context context) {
         checkNotNull(context);
+        if(context.getUserID().isPresent()){
+            return true;
+        }
         if(!context.getAuthenticationToken().isPresent()){
             return false;
         }

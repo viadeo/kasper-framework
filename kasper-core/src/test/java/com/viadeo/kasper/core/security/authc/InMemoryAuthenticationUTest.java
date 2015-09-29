@@ -2,6 +2,8 @@ package com.viadeo.kasper.core.security.authc;
 
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.core.id.TestFormats;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +28,20 @@ public class InMemoryAuthenticationUTest {
                 .withAuthenticationToken(token)
                 .build();
         inMemoryAuthentication.addToken(token);
+
+        // When
+        boolean isAuthenticated = inMemoryAuthentication.isAuthenticated(context);
+
+        //Then
+        assertTrue(isAuthenticated);
+    }
+
+    @Test
+    public void isAuthenticated_withUserIDInContext_shouldBe(){
+        // Given
+        Context context =  Contexts.builder()
+                .withUserID(new ID("viadeo", "member", TestFormats.ID, 42))
+                .build();
 
         // When
         boolean isAuthenticated = inMemoryAuthentication.isAuthenticated(context);
