@@ -4,12 +4,17 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.security.authc;
 
-/**
- * An enum for specifying a combinesWith operation that can be used for interpreting authorization annotations
- */
-public enum CombinesWith {
-    AND,
-    OR
+import com.viadeo.kasper.api.context.Context;
+
+import java.io.Serializable;
+import java.util.UUID;
+
+public class UUIDAuthenticationTokenGenerator implements AuthenticationTokenGenerator {
+
+    @Override
+    public Serializable generate(Context context) {
+        return UUID.randomUUID().toString();
+    }
 }

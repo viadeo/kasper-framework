@@ -60,6 +60,7 @@ public class KasperClientCommandTest extends JerseyTest {
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
     private static final String ACCESS_TOKEN = "666-666-666";
+    private static final String AUTHENTICATION_TOKEN = "999-999-999";
 
     // -------------------------------------------------------------------------
 
@@ -145,6 +146,7 @@ public class KasperClientCommandTest extends JerseyTest {
                     .status(200)
                     .header(HttpContextHeaders.HEADER_SECURITY_TOKEN.toHeaderName(), SECURITY_TOKEN)
                     .header(HttpContextHeaders.HEADER_ACCESS_TOKEN.toHeaderName(), ACCESS_TOKEN)
+                    .header(HttpContextHeaders.HEADER_AUTHENTICATION_TOKEN.toHeaderName(), AUTHENTICATION_TOKEN)
                     .build();
         }
     }

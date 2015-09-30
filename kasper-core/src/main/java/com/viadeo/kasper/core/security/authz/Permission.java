@@ -18,7 +18,7 @@
  */
 
 //inspired from apache shior
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.security.authz;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

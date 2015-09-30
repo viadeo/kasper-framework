@@ -54,6 +54,7 @@ import static org.junit.Assert.*;
 public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
+    private static final String AUTHENTICATION_TOKEN = "42-4242-24-2424";
     public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
 
     public static class CreateAccountCommand implements Command {
@@ -106,7 +107,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
             if (command.getCode() != null)
                 return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
-            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN);
+            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN).withAuthenticationToken(AUTHENTICATION_TOKEN);
         }
     }
 
@@ -216,6 +217,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
+        assertTrue(response.getAuthenticationToken().isPresent());
+        assertEquals(AUTHENTICATION_TOKEN, response.getAuthenticationToken().get());
     }
 
     // ------------------------------------------------------------------------
