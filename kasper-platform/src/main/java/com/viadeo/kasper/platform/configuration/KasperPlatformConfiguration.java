@@ -26,7 +26,6 @@ import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactor
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.validation.QueryValidationInterceptorFactory;
-import com.viadeo.kasper.core.security.authc.AuthenticationConfiguration;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
@@ -92,7 +91,6 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
 
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.register(SagaConfiguration.class);
-        applicationContext.register(AuthenticationConfiguration.class);
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("eventBus", eventBus);
