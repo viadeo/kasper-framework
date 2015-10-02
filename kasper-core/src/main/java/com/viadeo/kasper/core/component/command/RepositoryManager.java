@@ -7,8 +7,6 @@
 package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 
 /**
@@ -27,9 +25,9 @@ public interface RepositoryManager {
      * Get the repository for an entity class
      *
      * @param entityClass the entity class
-     * @param <E> the aggregate type
+     * @param <REPO> the repository type
      * @return the repository responsible for storing this class of entities
      */
-    <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(Class<E> entityClass);
+    <REPO extends Repository> Optional<REPO> getEntityRepository(Class entityClass);
 
 }

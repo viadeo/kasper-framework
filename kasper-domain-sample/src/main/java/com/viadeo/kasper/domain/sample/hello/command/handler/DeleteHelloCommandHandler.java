@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.domain.sample.hello.command.handler;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
@@ -14,7 +15,6 @@ import com.viadeo.kasper.domain.sample.hello.api.HelloDomain;
 import com.viadeo.kasper.domain.sample.hello.api.command.DeleteHelloCommand;
 import com.viadeo.kasper.domain.sample.hello.command.entity.Hello;
 import com.viadeo.kasper.domain.sample.hello.command.repository.HelloRepository;
-import org.axonframework.repository.AggregateNotFoundException;
 
 import javax.inject.Inject;
 
@@ -40,33 +40,27 @@ public class DeleteHelloCommandHandler extends AutowiredEntityCommandHandler<Del
 
     @Override
     public CommandResponse handle(final DeleteHelloCommand command) {
-
-
         /**
          * Load the entity as we plan to modify it
          */
-        try {
+        Optional<Hello> helloOptional = repository.load(command.getId());
 
-            final Hello hello = repository.load(command.getId());
-
-            /**
-             * Mutate the aggregate
-             */
-            hello.delete();
-
-            /**
-             * Once loaded by the repository an entity will be automagically saved
-             * after handling
-             */
-            return CommandResponse.ok();
-
-        } catch (AggregateNotFoundException e) {
-            return CommandResponse.error(
-                    CoreReasonCode.NOT_FOUND,
-                    "Supplied HelloWorld id cannot be found"
-            );
+        if (!helloOptional.isPresent()) {
+            return CommandResponse.error(CoreReasonCode.NOT_FOUND, "Supplied HelloWorld id cannot be found");
         }
 
+        final Hello hello = helloOptional.get();
+
+        /**
+         * Mutate the aggregate
+         */
+        hello.delete();
+
+        /**
+         * Once loaded by the repository an entity will be automagically saved
+         * after handling
+         */
+        return CommandResponse.ok();
     }
 
 }

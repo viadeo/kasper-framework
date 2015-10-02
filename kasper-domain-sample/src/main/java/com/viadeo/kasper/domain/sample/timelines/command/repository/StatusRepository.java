@@ -9,11 +9,11 @@ package com.viadeo.kasper.domain.sample.timelines.command.repository;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.domain.sample.timelines.command.model.entity.Status;
 
 @XKasperRepository
-public class StatusRepository extends Repository<Status> {
+public class StatusRepository extends AutowiredRepository<KasperID,Status> {
 
     @Override
     protected Optional<Status> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {

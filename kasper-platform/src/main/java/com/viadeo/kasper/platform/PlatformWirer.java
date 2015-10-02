@@ -17,6 +17,7 @@ import com.viadeo.kasper.core.component.command.WirableCommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
@@ -91,8 +92,9 @@ public class PlatformWirer {
         );
 
         for (final Repository repository : bundle.getRepositories()) {
-            repository.init();
-            repository.setEventBus(eventBus);
+            if (repository instanceof WirableRepository) {
+                ((WirableRepository)repository).setEventBus(eventBus);
+            }
             repositoryManager.register(repository);
         }
 

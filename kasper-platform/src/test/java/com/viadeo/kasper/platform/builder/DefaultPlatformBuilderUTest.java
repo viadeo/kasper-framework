@@ -18,6 +18,7 @@ import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
@@ -32,8 +33,8 @@ import com.viadeo.kasper.platform.bundle.descriptor.*;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.platform.plugin.Plugin;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -50,13 +51,7 @@ public class DefaultPlatformBuilderUTest {
         private static final long serialVersionUID = -7248313390394661735L;
     }
 
-    private static class TestRepository extends Repository<TestConcept> {
-
-        public TestRepository() throws Exception {
-            final Field declaredField = Repository.class.getDeclaredField("initialized");
-            declaredField.setAccessible(true);
-            declaredField.set(this, true);
-        }
+    private static class TestRepository extends AutowiredRepository<KasperID,TestConcept> {
 
         @Override
         protected Optional<TestConcept> doLoad(final KasperID aggregateIdentifier,
@@ -421,7 +416,8 @@ public class DefaultPlatformBuilderUTest {
     @Test
     public void build_withDomainBundle_containingRepository_shouldWiredTheComponent() throws Exception {
         // Given
-        final Repository repository = spy(new TestRepository());
+        final ArgumentCaptor<Repository> captor = ArgumentCaptor.forClass(Repository.class);
+        final TestRepository repository = spy(new TestRepository());
 
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(repository)
@@ -448,7 +444,11 @@ public class DefaultPlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(repository).setEventBus(refEq(eventBus));
-        verify(repositoryManager).register(refEq(repository));
+        verify(repositoryManager).register(captor.capture());
+
+        Repository capturedRepository = captor.getValue();
+        assertNotNull(capturedRepository);
+        assertEquals(repository.getClass(), capturedRepository.getRepositoryClass());
     }
 
     @Test

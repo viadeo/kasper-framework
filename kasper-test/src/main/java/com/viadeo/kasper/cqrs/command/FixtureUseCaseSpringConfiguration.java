@@ -23,10 +23,10 @@ public class FixtureUseCaseSpringConfiguration {
         return new TestRepository();
     }
 
-    @Bean
-    public TestEventRepository eventRepository(EventStore eventStore) {
-        return new TestEventRepository(eventStore);
-    }
+//    @Bean
+//    public TestEventRepository eventRepository(EventStore eventStore) {
+//        return new TestEventRepository(eventStore);
+//    }
 
     @Bean
     public TestCreateCommandHandler createCommandHandler() {

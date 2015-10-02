@@ -27,7 +27,7 @@ import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
@@ -66,7 +66,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
             StaticChecker.verify(CurrentContext.value().get());
 
-            final ClientRepository<ContextTestAGR> repo = this.getRepository();
+            final Repository<KasperID,ContextTestAGR> repo = this.getRepository();
 
             try {
                 repo.load(new KasperTestId("42"), 0L);
@@ -106,7 +106,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     }
 
     @XKasperRepository
-    public static class ContextTestRepository extends Repository<ContextTestAGR> {
+    public static class ContextTestRepository extends AutowiredRepository<KasperID,ContextTestAGR> {
         @Override
         protected Optional<ContextTestAGR> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
             StaticChecker.verify(CurrentContext.value().get());

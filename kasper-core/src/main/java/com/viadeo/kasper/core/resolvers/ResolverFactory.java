@@ -81,7 +81,7 @@ public class ResolverFactory {
 
     public Optional<Resolver> getResolverFromClass(final Class clazz) {
 
-        if (checkNotNull(clazz).equals(EventListener.class)) {
+        if (checkNotNull(clazz).equals(EventListener.class) || checkNotNull(clazz).equals(Repository.class)) {
             return Optional.absent();
         }
 

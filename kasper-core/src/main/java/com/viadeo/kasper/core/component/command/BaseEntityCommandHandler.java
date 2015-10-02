@@ -11,49 +11,48 @@ import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
 
 public abstract class BaseEntityCommandHandler<COMMAND extends Command, AGGREGATE extends AggregateRoot>
         extends BaseCommandHandler<COMMAND>
         implements EntityCommandHandler<COMMAND, AGGREGATE>
 {
 
-    // Consistent data container for entity class and repository
-    protected static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
-        private ClientRepository<E> repository;
-        private Class<E> entityClass;
-
-        @SuppressWarnings("unchecked")
-        void setEntityClass(final Class entityClass) {
-            this.entityClass = (Class<E>) entityClass;
-        }
-
-        @SuppressWarnings("unchecked")
-        void setRepository(final ClientRepository repository) {
-            this.repository = (ClientRepository<E>) repository;
-        }
-
-        public ClientRepository<E> getRepository() {
-            return repository;
-        }
-
-        public Class<E> getEntityClass() {
-            return entityClass;
-        }
-    }
-
-    protected final transient ConsistentRepositoryEntity<AGGREGATE> consistentRepositoryEntity;
+//    // Consistent data container for entity class and repository
+//    protected static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
+//        private Repository<? extends KasperID, E> repository;
+//        private Class<E> entityClass;
+//
+//        @SuppressWarnings("unchecked")
+//        void setEntityClass(final Class entityClass) {
+//            this.entityClass = (Class<E>) entityClass;
+//        }
+//
+//        void setRepository(final Repository<? extends KasperID, E> repository) {
+//            this.repository = repository;
+//        }
+//
+//        public Repository<? extends KasperID, E> getRepository() {
+//            return repository;
+//        }
+//
+//        public Class<E> getEntityClass() {
+//            return entityClass;
+//        }
+//    }
+//
+//    protected final transient ConsistentRepositoryEntity<AGGREGATE> consistentRepositoryEntity;
+    protected final Class<AGGREGATE> aggregateClass;
 
     public BaseEntityCommandHandler() {
         super();
 
-        consistentRepositoryEntity = new ConsistentRepositoryEntity<>();
+//        consistentRepositoryEntity = new ConsistentRepositoryEntity<>();
 
         @SuppressWarnings("unchecked")
         final Optional<Class<? extends AggregateRoot>> entityAssignClass = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
                 .getParameterTypeFromClass(
                         this.getClass(),
-                        AutowiredEntityCommandHandler.class,
+                        BaseCommandHandler.class,
                         ENTITY_PARAMETER_POSITION
                 );
 
@@ -64,11 +63,11 @@ public abstract class BaseEntityCommandHandler<COMMAND extends Command, AGGREGAT
             );
         }
 
-        this.consistentRepositoryEntity.setEntityClass(entityAssignClass.get());
+        this.aggregateClass = (Class<AGGREGATE>) entityAssignClass.get();
     }
 
     @Override
     public Class<AGGREGATE> getAggregateClass() {
-        return consistentRepositoryEntity.getEntityClass();
+        return aggregateClass;
     }
 }

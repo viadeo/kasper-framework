@@ -9,10 +9,10 @@ package com.viadeo.kasper.core.component.command;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.exception.KasperCommandException;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,14 +33,13 @@ public abstract class AutowiredEntityCommandHandler<C extends Command, AGR exten
         implements EntityCommandHandler<C,AGR>, WirableCommandHandler<C>
 {
 
-
-    protected final transient BaseEntityCommandHandler.ConsistentRepositoryEntity<AGR> consistentRepositoryEntity;
+    protected final Class<AGR> aggregateClass;
+    protected Repository<? extends KasperID, AGR> repository;
 
     // ------------------------------------------------------------------------
 
     public AutowiredEntityCommandHandler() {
         super();
-        consistentRepositoryEntity = new BaseEntityCommandHandler.ConsistentRepositoryEntity<>();
 
         @SuppressWarnings("unchecked")
         final Optional<Class<? extends AggregateRoot>> entityAssignClass = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
@@ -57,26 +56,24 @@ public abstract class AutowiredEntityCommandHandler<C extends Command, AGR exten
             );
         }
 
-        this.consistentRepositoryEntity.setEntityClass(entityAssignClass.get());
+        this.aggregateClass = (Class<AGR>) entityAssignClass.get();
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     public Class<AGR> getAggregateClass() {
-        return consistentRepositoryEntity.getEntityClass();
+        return aggregateClass;
     }
 
     // ------------------------------------------------------------------------
 
     /**
      * @param repository the repository related to the aggregate handled by this instance
-     * @see AutowiredEntityCommandHandler#setRepository(com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository)
+     * @see AutowiredEntityCommandHandler#setRepository(com.viadeo.kasper.core.component.command.repository.Repository)
      */
-    public void setRepository(final IRepository<AGR> repository) {
-        this.consistentRepositoryEntity.setRepository(
-                new ClientRepository<>(checkNotNull(repository))
-        );
+    public <ID extends KasperID> void setRepository(final Repository<ID,AGR> repository) {
+        this.repository = checkNotNull(repository);
     }
 
     /**
@@ -85,42 +82,25 @@ public abstract class AutowiredEntityCommandHandler<C extends Command, AGR exten
      * @return the repository
      */
     @SuppressWarnings("unchecked")
-    public ClientRepository<AGR> getRepository() {
-        if (null == this.consistentRepositoryEntity.getRepository()) {
+    public <REPO extends Repository> REPO getRepository() {
+        if (null == this.repository) {
 
             if (null == repositoryManager) {
                 throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
             }
 
-            final Optional<ClientRepository<AGR>> optRepo =
-                    repositoryManager.getEntityRepository(this.consistentRepositoryEntity.getEntityClass());
+            final Optional<Repository<KasperID,AGR>> optRepo = repositoryManager.getEntityRepository(getAggregateClass());
 
             if ( ! optRepo.isPresent()) {
                 throw new KasperCommandException(String.format(
-                        "The entity %s has not been recorded on any domain",
-                        this.consistentRepositoryEntity.getEntityClass().getSimpleName())
+                        "The entity %s has not been recorded on any domain", getAggregateClass().getSimpleName())
                 );
             }
 
-            this.consistentRepositoryEntity.setRepository(optRepo.get());
+            this.repository = optRepo.get();
         }
 
-        return this.consistentRepositoryEntity.getRepository();
-    }
-
-    /**
-     * Get the related repository of the specified entity class
-     *
-     * @param entityClass the class of the entity
-     * @param <E> the type of the entity
-     * @return the entity repository
-     */
-    public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(final Class<E> entityClass) {
-        if (null == repositoryManager) {
-            throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
-        }
-
-        return repositoryManager.getEntityRepository(entityClass);
+        return (REPO) repository;
     }
 
     // ------------------------------------------------------------------------

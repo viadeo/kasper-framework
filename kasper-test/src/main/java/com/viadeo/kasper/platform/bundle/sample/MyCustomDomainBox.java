@@ -25,7 +25,7 @@ import com.viadeo.kasper.core.component.annotation.XKasperRepository;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
@@ -71,7 +71,7 @@ public class MyCustomDomainBox {
     }
 
     @XKasperRepository()
-    public static class MyCustomRepository extends Repository<MyCustomEntity> {
+    public static class MyCustomRepository extends AutowiredRepository<KasperID,MyCustomEntity> {
 
         @Override
         protected Optional<MyCustomEntity> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {

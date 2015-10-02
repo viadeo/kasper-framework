@@ -19,6 +19,7 @@ import com.viadeo.kasper.core.component.command.MeasuredCommandHandler;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
@@ -41,10 +42,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.refEq;
@@ -242,7 +242,8 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_a_repository() throws Exception {
         // Given
-        final Repository repository = spy(new TestRepository());
+        final ArgumentCaptor<Repository> captor = ArgumentCaptor.forClass(Repository.class);
+        final TestRepository repository = spy(new TestRepository());
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(repository)
                 .build();
@@ -251,8 +252,12 @@ public class PlatformWirerUTest {
         platformWirer.wire(domainBundle);
 
         // Then
-        verify(repositoryManager).register(refEq(repository));
+        verify(repositoryManager).register(captor.capture());
         verify(repository).setEventBus(refEq(eventBus));
+
+        Repository capturedRepository = captor.getValue();
+        assertNotNull(capturedRepository);
+        assertEquals(repository.getClass(), capturedRepository.getRepositoryClass());
     }
 
     @Test
@@ -334,15 +339,7 @@ public class PlatformWirerUTest {
         platformWirer.wire(bundleB);
     }
 
-
-
-    private static class TestRepository extends Repository<MyCustomDomainBox.MyCustomEntity> {
-
-        public TestRepository() throws Exception {
-            final Field declaredField = Repository.class.getDeclaredField("initialized");
-            declaredField.setAccessible(true);
-            declaredField.set(this, true);
-        }
+    private static class TestRepository extends AutowiredRepository<KasperID,MyCustomDomainBox.MyCustomEntity> {
 
         @Override
         protected Optional<MyCustomDomainBox.MyCustomEntity> doLoad(final KasperID aggregateIdentifier,

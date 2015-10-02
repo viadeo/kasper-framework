@@ -68,7 +68,7 @@ public class KasperPlatformFixture implements
     // ------------------------------------------------------------------------
 
     private KasperPlatformExecutor prepare() {
-        this.platform.recordedEvents.clear();
+        this.platform.reset();
         return new KasperPlatformExecutor(this.platform);
     }
 
@@ -207,7 +207,7 @@ public class KasperPlatformFixture implements
         public void reset() {
             this.recordedCommands.clear();
             this.recordedEvents.clear();
-            this.listeners.clear();
+//            this.listeners.clear();
         }
     }
 
