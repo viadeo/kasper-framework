@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.DomainEvent;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
@@ -18,6 +19,7 @@ import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
+import com.viadeo.kasper.core.component.command.repository.BaseEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
@@ -110,22 +112,22 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
     }
 
     public KasperAggregateExecutor givenEvents(final DomainEvent... events) {
-//        if (events.length > 0) {
-//            if ( ! EventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
-//                throw new KasperException(
-//                        "Your repository is not event-sourced, you cannot use given(events)"
-//                );
-//            }
-//        }
+        if (events.length > 0) {
+            if ( ! BaseEventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
+                throw new KasperException(
+                        "Your repository is not event-sourced, you cannot use given(events)"
+                );
+            }
+        }
         return new KasperAggregateExecutor(fixture.given((Object[]) events));
     }
 
     public KasperAggregateExecutor givenEvents(final List<DomainEvent> events) {
-//        if ( ! EventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
-//            throw new KasperException(
-//                    "Your repository is not event-sourced, you cannot use given(events)"
-//            );
-//        }
+        if ( ! BaseEventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
+            throw new KasperException(
+                    "Your repository is not event-sourced, you cannot use given(events)"
+            );
+        }
         return new KasperAggregateExecutor(fixture.given(events));
     }
 

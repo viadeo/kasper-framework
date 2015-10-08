@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import org.axonframework.eventstore.EventStore;
 import org.springframework.context.annotation.Bean;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
@@ -23,10 +22,10 @@ public class FixtureUseCaseSpringConfiguration {
         return new TestRepository();
     }
 
-//    @Bean
-//    public TestEventRepository eventRepository(EventStore eventStore) {
-//        return new TestEventRepository(eventStore);
-//    }
+    @Bean
+    public TestEventRepository eventRepository() {
+        return new TestEventRepository();
+    }
 
     @Bean
     public TestCreateCommandHandler createCommandHandler() {

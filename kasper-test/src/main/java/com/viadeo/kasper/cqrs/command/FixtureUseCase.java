@@ -470,7 +470,10 @@ public class FixtureUseCase {
                           new TestGetSomeDataQueryHandler(),
                           new TestCoreReasonCodeQueryHandler()
                 )
-                , Lists.<Repository>newArrayList(new TestRepository())
+                , Lists.<Repository>newArrayList(
+                        new TestRepository(),
+                        new TestEventRepository()
+                )
                 , Lists.<EventListener>newArrayList(
                         new TestCreatedEventListener(),
                         new TestFirstNameChangedEventListener(),

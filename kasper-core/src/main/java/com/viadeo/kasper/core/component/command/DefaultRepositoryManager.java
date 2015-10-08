@@ -28,13 +28,6 @@ public class DefaultRepositoryManager implements RepositoryManager {
 
     @Override
     public void register(final Repository repository) {
-//        checkNotNull(repository);
-//        if ( ! repository.isInitialized()) {
-//            throw new KasperException(
-//                    "The repository isn't initialized : "
-//                            + repository.getClass().getName()
-//            );
-//        }
         repositoryByAggregateClass.put(repository.getAggregateClass(), repository);
     }
 

@@ -207,7 +207,6 @@ public class KasperPlatformFixture implements
         public void reset() {
             this.recordedCommands.clear();
             this.recordedEvents.clear();
-//            this.listeners.clear();
         }
     }
 
