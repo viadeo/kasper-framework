@@ -40,7 +40,7 @@ public abstract class DecorateStep implements Step {
     }
 
     @Override
-    public <T> Optional<T> getSagaIdentifierFrom(final Event event) {
+    public Optional<Object> getSagaIdentifierFrom(final Event event) {
         return delegateStep.getSagaIdentifierFrom(event);
     }
 

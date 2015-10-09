@@ -49,6 +49,7 @@ public class DefaultKasperRelationIdTest {
         assertEquals(id2, id.getTargetId());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testFixedStringId_shouldDeserializeItsOwnSerializedId() {
         // Given
@@ -74,6 +75,7 @@ public class DefaultKasperRelationIdTest {
         assertEquals(id2.getClass(), id.getTargetId().getClass());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testFixedIntegerId_shouldDeserializeItsOwnSerializedId() {
         // Given
@@ -99,6 +101,7 @@ public class DefaultKasperRelationIdTest {
         assertEquals(id2.getClass(), id.getTargetId().getClass());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testFixedMixedId_shouldDeserializeItsOwnSerializedId() {
         // Given

@@ -16,6 +16,6 @@ public interface SagaFactoryProvider {
 
     SagaFactory getOrCreate(final Saga saga);
 
-    Optional<SagaFactory> get(final Class<? extends Saga> sagaClass);
+    <SAGA extends Saga> Optional<SagaFactory> get(final Class<SAGA> sagaClass);
 
 }

@@ -63,6 +63,7 @@ public class KasperQueryGatewayUTest {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public KasperQueryGatewayUTest() {
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         interceptorChainRegistry = mock(InterceptorChainRegistry.class);

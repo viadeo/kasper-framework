@@ -22,6 +22,7 @@ public class EventListenerDescriptor implements KasperComponentDescriptor {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public EventListenerDescriptor(
             final Class<? extends EventListener> eventListenerClass,
             final Class<? extends Event> eventClass

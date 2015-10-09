@@ -10,8 +10,9 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
 import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
-import com.viadeo.kasper.domain.sample.root.command.model.entity.Member_connectedTo_Member;
+import com.viadeo.kasper.domain.sample.root.command.model.entity.*;
 
+@SuppressWarnings("deprecation")
 @XKasperRepository
 public class MemberConnectionsRepository extends AutowiredRepository<KasperID,Member_connectedTo_Member> {
 

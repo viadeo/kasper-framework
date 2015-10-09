@@ -113,6 +113,7 @@ public class DefaultKasperRelationId extends AbstractKasperID<String> implements
         return String.format("%s%s%s", sourceId.toString(), SEPARATOR, targetId.toString());
     }
 
+    @SuppressWarnings("deprecation")
     protected static KasperID stringToKasperId(final String id) {
         try {
             final UUID uuid = UUID.fromString(id);

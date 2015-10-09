@@ -21,13 +21,13 @@ import static org.junit.Assert.assertTrue;
 
 public class QueryAttributesKeyGeneratorTest {
 
-    private QueryAttributesKeyGenerator keyGenerator;
+    private QueryAttributesKeyGenerator<Query> keyGenerator;
 
     // ------------------------------------------------------------------------
 
     @Before
     public void setUp() {
-        keyGenerator = new QueryAttributesKeyGenerator();
+        keyGenerator = new QueryAttributesKeyGenerator<>();
     }
 
     // ------------------------------------------------------------------------

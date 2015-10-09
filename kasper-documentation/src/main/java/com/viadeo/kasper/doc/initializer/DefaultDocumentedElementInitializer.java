@@ -35,6 +35,7 @@ import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQue
 import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedConcept;
 import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedRelation;
 
+@SuppressWarnings("unchecked")
 public class DefaultDocumentedElementInitializer implements DocumentedElementVisitor {
 
     private final DocumentedPlatform documentedPlatform;

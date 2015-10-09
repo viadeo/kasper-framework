@@ -123,6 +123,7 @@ public class DomainDescriptorFactory {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private List<SagaDescriptor> getSagaDescriptor(Collection<Saga> sagas) {
         final List<SagaDescriptor> sagaDescriptors = Lists.newArrayList();
 

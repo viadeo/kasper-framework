@@ -15,12 +15,12 @@ import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.MeasuredQueryHandler;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptor;
+import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptor;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import org.junit.Before;
 import org.junit.Test;
@@ -120,7 +120,7 @@ public class KasperQueryBusUTest {
     @Test
     public void getInterceptorChain_should_create_interceptor_from_the_handler_class() {
         // Given
-        final QueryHandler queryHandler = new MeasuredQueryHandler(new MetricRegistry(), new QueryHandlerWithFiltersForTest());
+        final QueryHandler<Query, QueryResult> queryHandler = new MeasuredQueryHandler(new MetricRegistry(), new QueryHandlerWithFiltersForTest());
         final QueryFilterInterceptorFactory interceptorFactory = spy(new QueryFilterInterceptorFactory());
 
         queryGateway.register(interceptorFactory);
@@ -132,6 +132,6 @@ public class KasperQueryBusUTest {
 
         // Then
         assertTrue(interceptorChain.isPresent());
-        verify(interceptorChainRegistry).create(eq(QueryHandlerWithFiltersForTest.class), any(InterceptorFactory.class));
+        verify(interceptorChainRegistry).create(eq(QueryHandlerWithFiltersForTest.class), any(QueryHandlerInterceptorFactory.class));
     }
 }

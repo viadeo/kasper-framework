@@ -103,7 +103,7 @@ public class BaseStep implements Step {
     }
 
     @Override
-    public <T> Optional<T> getSagaIdentifierFrom(final Event event) {
+    public Optional<Object> getSagaIdentifierFrom(final Event event) {
         checkNotNull(event);
 
         Object identifier = null;
@@ -116,9 +116,10 @@ public class BaseStep implements Step {
 
         final Object reconciledIdentifier = reconciler.reconcile(identifier);
 
-        return Optional.fromNullable((T) reconciledIdentifier);
+        return Optional.fromNullable(reconciledIdentifier);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends Saga> getSagaClass() {
         return (Class<? extends Saga>) sagaMethod.getDeclaringClass();

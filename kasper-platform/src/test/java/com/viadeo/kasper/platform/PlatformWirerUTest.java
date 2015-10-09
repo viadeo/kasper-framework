@@ -14,7 +14,6 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.MeasuredCommandHandler;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
@@ -23,7 +22,6 @@ import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.listener.QueryEventListener;
@@ -79,6 +77,7 @@ public class PlatformWirerUTest {
 
     private PlatformWirer platformWirer;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
         platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager);
@@ -135,7 +134,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_a_command_handler() {
         // Given
-        final AutowiredCommandHandler commandHandler = spy(new MyCustomDomainBox.MyCustomCommandHandler());
+        final MyCustomDomainBox.MyCustomCommandHandler commandHandler = spy(new MyCustomDomainBox.MyCustomCommandHandler());
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(commandHandler)
                 .build();
@@ -177,7 +176,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_an_event_listener() {
         // Given
-        final AutowiredEventListener eventListener = spy(new MyCustomDomainBox.MyCustomEventListener());
+        final MyCustomDomainBox.MyCustomEventListener eventListener = spy(new MyCustomDomainBox.MyCustomEventListener());
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -199,7 +198,7 @@ public class PlatformWirerUTest {
         // Given
         final CommandEventListener eventListener = mock(CommandEventListener.class);
         when(eventListener.getHandlerClass()).thenReturn(CommandEventListener.class);
-        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor(Event.class)));
+        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor<>(Event.class)));
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -222,7 +221,7 @@ public class PlatformWirerUTest {
         // Given
         final QueryEventListener eventListener = mock(QueryEventListener.class);
         when(eventListener.getHandlerClass()).thenReturn(QueryEventListener.class);
-        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor(Event.class)));
+        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor<>(Event.class)));
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)

@@ -25,7 +25,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class TagsInterceptor<C> implements Interceptor<C, Object> {
+public class TagsInterceptor<I,O> implements Interceptor<I,O> {
 
     private final Class<?> target;
 
@@ -34,8 +34,9 @@ public class TagsInterceptor<C> implements Interceptor<C, Object> {
         target = type.getRawType();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object process(C c, Context context, InterceptorChain<C, Object> chain) throws Exception {
+    public O process(I c, Context context, InterceptorChain<I, O> chain) throws Exception {
         checkNotNull(context);
 
         final Set<String> additionalTags = TagsHolder.getTags(target);
@@ -63,11 +64,11 @@ public class TagsInterceptor<C> implements Interceptor<C, Object> {
         return contextMap;
     }
 
-    public static class Factory implements InterceptorFactory {
+    public static class Factory<I,O> implements InterceptorFactory<I,O> {
         @Override
-        public Optional<InterceptorChain> create(TypeToken type) {
+        public Optional<InterceptorChain<I,O>> create(TypeToken type) {
             checkNotNull(type);
-            return Optional.of(InterceptorChain.makeChain(new TagsInterceptor(type)));
+            return Optional.of(InterceptorChain.<I,O>makeChain(new TagsInterceptor<I,O>(type)));
         }
     }
 }

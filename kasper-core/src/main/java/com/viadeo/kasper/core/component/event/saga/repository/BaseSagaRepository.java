@@ -36,7 +36,7 @@ public abstract class BaseSagaRepository implements SagaRepository {
     // ------------------------------------------------------------------------
 
     @Override
-    public Optional<Saga> load(Class<? extends Saga> sagaClass, Object identifier) throws SagaPersistenceException {
+    public <SAGA extends Saga> Optional<SAGA> load(Class<SAGA> sagaClass, Object identifier) throws SagaPersistenceException {
         checkNotNull(identifier);
         checkNotNull(sagaClass);
 
@@ -54,7 +54,6 @@ public abstract class BaseSagaRepository implements SagaRepository {
         }
 
         final Object sagaClassAsString = properties.get(SagaMapper.X_KASPER_SAGA_CLASS);
-        final Class sagaClazz;
 
         if (sagaClassAsString == null) {
             throw new SagaPersistenceException(
@@ -68,18 +67,7 @@ public abstract class BaseSagaRepository implements SagaRepository {
             );
         }
 
-        try {
-            sagaClazz = Class.forName(sagaClassAsString.toString());
-        } catch (ClassNotFoundException e) {
-            throw new SagaPersistenceException(
-                    String.format("Failed to load a saga instance with '%s' as identifier : unknown saga type, <saga=%s> <properties=%s>", identifier, sagaClassAsString, properties),
-                    e
-            );
-        }
-
-
-
-        return Optional.fromNullable(sagaMapper.to(sagaClazz, identifier, properties));
+        return Optional.fromNullable(sagaMapper.to(sagaClass, identifier, properties));
     }
 
     @Override

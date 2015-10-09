@@ -10,6 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.rabbitmq.client.Channel;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.exception.KasperEventException;
 import com.viadeo.kasper.api.response.CoreReasonCode;

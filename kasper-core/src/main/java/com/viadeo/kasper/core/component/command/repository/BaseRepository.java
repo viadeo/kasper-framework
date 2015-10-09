@@ -35,6 +35,7 @@ public abstract class BaseRepository<ID extends KasperID, AGR extends AggregateR
         return new AxonRepository<>(new MeasuredRepository<>(metricRegistry, repository));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected AxonRepository<ID,AGR> getAxonRepository() {
         return (AxonRepository<ID,AGR>) super.getAxonRepository();

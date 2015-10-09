@@ -25,8 +25,6 @@ import java.util.Collection;
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
 import static org.junit.Assert.fail;
 
-//import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
-
 @RunWith(Parameterized.class)
 public class TestFixtureAggregateTest {
 

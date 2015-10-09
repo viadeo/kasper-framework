@@ -27,6 +27,7 @@ public class AliasRegistry {
 
     public static List<String> aliasesFrom(final Class clazz) {
         final List<String> aliases = Lists.newArrayList();
+        @SuppressWarnings("unchecked")
         final XKasperAlias XKasperAliasAnnotation = (XKasperAlias) clazz.getAnnotation(XKasperAlias.class);
 
         if (null != XKasperAliasAnnotation) {

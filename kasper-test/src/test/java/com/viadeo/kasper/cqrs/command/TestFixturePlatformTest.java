@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.api.id.StringKasperId;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.test.platform.KasperMatcher;
@@ -242,12 +241,13 @@ public class TestFixturePlatformTest {
                 );
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testEventNotificationOk() {
         fixture
                 .given()
                 .when(new TestCreatedEvent(
-                        new StringKasperId("one"))
+                        new com.viadeo.kasper.api.id.StringKasperId("one"))
                 )
                 .expectEventNotificationOn(
                         TestCreatedEventListener.class

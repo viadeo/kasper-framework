@@ -15,6 +15,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -111,6 +112,7 @@ public class ImmutabilityModule extends ParanamerModule {
          *
          * @param declaringClass the declaring class of the object
          */
+        @SuppressWarnings("unchecked")
         protected void checkClassDefinition(final Class<?> declaringClass) {
             final Constructor[] declaredConstructors = declaringClass.getDeclaredConstructors();
 
@@ -119,6 +121,7 @@ public class ImmutabilityModule extends ParanamerModule {
             }
 
             Constructor annotatedConstructor = null;
+
             for (final Constructor constructor : declaredConstructors) {
                 if (null != constructor.getAnnotation(JsonCreator.class)) {
                     if (null != annotatedConstructor) {

@@ -23,7 +23,7 @@ public abstract class BaseEntityCommandHandler<COMMAND extends Command, AGGREGAT
         super();
 
         @SuppressWarnings("unchecked")
-        final Optional<Class<? extends AggregateRoot>> entityAssignClass = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
+        final Optional<Class<AGGREGATE>> entityAssignClass = (Optional<Class<AGGREGATE>>) ReflectionGenericsResolver
                 .getParameterTypeFromClass(
                         this.getClass(),
                         BaseCommandHandler.class,
@@ -37,7 +37,7 @@ public abstract class BaseEntityCommandHandler<COMMAND extends Command, AGGREGAT
             );
         }
 
-        this.aggregateClass = (Class<AGGREGATE>) entityAssignClass.get();
+        this.aggregateClass = entityAssignClass.get();
     }
 
     @Override

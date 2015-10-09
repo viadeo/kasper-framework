@@ -34,6 +34,7 @@ public class InterceptorChainRegistry<INPUT, OUTPUT> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final Class key,
                                                             final InterceptorFactory<INPUT, OUTPUT> tailFactory) {
         checkNotNull(key);

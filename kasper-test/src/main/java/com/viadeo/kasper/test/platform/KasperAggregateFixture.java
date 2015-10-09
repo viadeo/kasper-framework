@@ -90,7 +90,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         return this;
     }
 
-    public KasperAggregateFixture<AGR> registerCommandHandler(final CommandHandler commandHandler) {
+    public <COMMAND extends Command> KasperAggregateFixture<AGR> registerCommandHandler(final CommandHandler<COMMAND> commandHandler) {
         if (commandHandler instanceof AutowiredCommandHandler) {
             AutowiredCommandHandler autoWiringCommandHandler = (AutowiredCommandHandler) commandHandler;
             autoWiringCommandHandler.setEventBus(fixture.getEventBus());
@@ -99,7 +99,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
 
         fixture.registerCommandHandler(
                 commandHandler.getInputClass(),
-                new AxonCommandHandler(commandHandler)
+                new AxonCommandHandler<>(commandHandler)
         );
         return this;
     }

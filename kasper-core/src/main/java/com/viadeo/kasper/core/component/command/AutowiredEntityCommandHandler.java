@@ -42,7 +42,7 @@ public abstract class AutowiredEntityCommandHandler<C extends Command, AGR exten
         super();
 
         @SuppressWarnings("unchecked")
-        final Optional<Class<? extends AggregateRoot>> entityAssignClass = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
+        final Optional<Class<AGR>> entityAssignClass = (Optional<Class<AGR>>) ReflectionGenericsResolver
                 .getParameterTypeFromClass(
                         this.getClass(),
                         AutowiredEntityCommandHandler.class,
@@ -56,7 +56,7 @@ public abstract class AutowiredEntityCommandHandler<C extends Command, AGR exten
             );
         }
 
-        this.aggregateClass = (Class<AGR>) entityAssignClass.get();
+        this.aggregateClass = entityAssignClass.get();
     }
 
     // ------------------------------------------------------------------------

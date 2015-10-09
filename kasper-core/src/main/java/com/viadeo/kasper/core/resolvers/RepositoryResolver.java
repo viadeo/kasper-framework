@@ -86,6 +86,7 @@ public class RepositoryResolver extends AbstractResolver<Repository> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Class<? extends AggregateRoot> getStoredEntityClass(final Class<? extends Repository> clazz) {
         @SuppressWarnings("unchecked")
         final Optional<Class<? extends AggregateRoot>> agr =

@@ -151,7 +151,7 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new TestFixture.StepEvent(identifier));
 
         // Then
-        TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaRepository.load(TestFixture.TestSagaB.class, identifier).get();
+        TestFixture.TestSagaB saga = sagaRepository.load(TestFixture.TestSagaB.class, identifier).get();
         assertEquals(3, saga.getCount());
     }
 
@@ -261,9 +261,9 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Optional<Saga> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
+                Optional<TestFixture.TestSagaB> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
                 if (sagaOptional.isPresent()) {
-                    TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
+                    TestFixture.TestSagaB saga = sagaOptional.get();
                     return 1 == saga.getInvokedMethodCount();
                 }
                 return Boolean.FALSE;
@@ -285,9 +285,9 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Optional<Saga> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
+                Optional<TestFixture.TestSagaB> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
                 if (sagaOptional.isPresent()) {
-                    TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
+                    TestFixture.TestSagaB saga = sagaOptional.get();
                     return 1 == saga.getInvokedMethodCount();
                 }
                 return Boolean.FALSE;
@@ -310,9 +310,9 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                Optional<Saga> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
+                Optional<TestFixture.TestSagaB> sagaOptional = sagaRepository.load(TestFixture.TestSagaB.class, identifierSaga);
                 if (sagaOptional.isPresent()) {
-                    TestFixture.TestSagaB saga = (TestFixture.TestSagaB) sagaOptional.get();
+                    TestFixture.TestSagaB saga = sagaOptional.get();
                     return 0 == saga.getInvokedMethodCount();
                 }
                 return Boolean.FALSE;

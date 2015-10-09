@@ -79,6 +79,7 @@ public class ResolverFactory {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Optional<Resolver> getResolverFromClass(final Class clazz) {
 
         if (checkNotNull(clazz).equals(EventListener.class) || checkNotNull(clazz).equals(Repository.class)) {

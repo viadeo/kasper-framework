@@ -21,7 +21,7 @@ public class ResetMdcContextMap implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                Map original = Objects.firstNonNull(MDC.getCopyOfContextMap(), Collections.emptyMap());
+                Map<String,String> original = Objects.firstNonNull(MDC.getCopyOfContextMap(), Collections.<String,String>emptyMap());
                 try {
                     base.evaluate();
                 } finally {

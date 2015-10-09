@@ -112,6 +112,7 @@ public class EventMessageHandlerUTest {
         verify(messageRecoverer).recover(eq(message), any(Throwable.class));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void onMessage_withIgnoredResponse_shouldAck() throws Exception {
         // Given

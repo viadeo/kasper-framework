@@ -79,7 +79,7 @@ public class TagsInterceptorUTest {
                 .thenReturn(OUTPUT);
 
         // When
-        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final TagsInterceptor<Object,Object> tagsInterceptor = interceptor(TestCommandHandler.class);
         final Object result = tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
 
         // Then
@@ -101,7 +101,7 @@ public class TagsInterceptorUTest {
         thrown.expect(sameInstance(exception));
 
         // When
-        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final TagsInterceptor<Object,Object> tagsInterceptor = interceptor(TestCommandHandler.class);
         tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
     }
 
@@ -135,7 +135,7 @@ public class TagsInterceptorUTest {
         });
 
         // When
-        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final TagsInterceptor<Object,Object> tagsInterceptor = interceptor(TestCommandHandler.class);
         final Object result = tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
 
         // Then
@@ -180,7 +180,7 @@ public class TagsInterceptorUTest {
         });
 
         // When
-        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final TagsInterceptor<Object,Object> tagsInterceptor = interceptor(TestCommandHandler.class);
         final Object result = tagsInterceptor.process(INPUT, context, chain);
 
         // Then
@@ -202,7 +202,7 @@ public class TagsInterceptorUTest {
         setMdcContextMap(tagsAlreadyInMdcContextMap);
 
         // When
-        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final TagsInterceptor<Object,Object> tagsInterceptor = interceptor(TestCommandHandler.class);
         tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
 
         // Then
@@ -232,7 +232,7 @@ public class TagsInterceptorUTest {
 
         try {
             // When
-            final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+            final TagsInterceptor<Object,Object> tagsInterceptor = interceptor(TestCommandHandler.class);
             tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
             fail("should have thrown at this point");
         } catch (Exception e) {
@@ -246,7 +246,7 @@ public class TagsInterceptorUTest {
 
     // ------------------------------------------------------------------------
 
-    private static TagsInterceptor<Object> interceptor(Class<?> type) {
+    private static TagsInterceptor<Object,Object> interceptor(Class<?> type) {
         return new TagsInterceptor<>(TypeToken.of(type));
     }
 

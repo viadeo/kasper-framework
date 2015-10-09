@@ -52,10 +52,9 @@ public interface Step {
      * retrieve the <code>Saga</code> identifier from the given <code>Event</code>
      *
      * @param event an <code>Event</code>
-     * @param <T> the identifier type
      * @return the optional identifier
      */
-    <T> Optional<T> getSagaIdentifierFrom(Event event);
+    Optional<Object> getSagaIdentifierFrom(Event event);
 
     /**
      * get the <code>Saga</code> Class

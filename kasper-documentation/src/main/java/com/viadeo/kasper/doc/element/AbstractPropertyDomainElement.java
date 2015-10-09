@@ -28,7 +28,9 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
 
         this.properties = new DocumentedBean(referenceClass);
 
+        @SuppressWarnings("unchecked")
         final XKasperAlias annotation = (XKasperAlias) referenceClass.getAnnotation(XKasperAlias.class);
+
         if (null != annotation) {
             this.aliases = Lists.newArrayList(annotation.values());
         } else {

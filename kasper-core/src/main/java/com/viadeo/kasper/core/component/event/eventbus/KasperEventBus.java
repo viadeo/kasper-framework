@@ -380,7 +380,7 @@ public class KasperEventBus extends ClusteringEventBus {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    public void register(final InterceptorFactory interceptorFactory) {
+    public void register(final InterceptorFactory<Event, Void> interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 

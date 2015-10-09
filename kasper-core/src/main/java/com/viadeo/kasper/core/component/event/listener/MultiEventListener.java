@@ -114,6 +114,7 @@ public class MultiEventListener extends BaseEventListener<Event> {
         return EventResponse.class.isAssignableFrom(method.getReturnType());
     }
 
+    @SuppressWarnings("unchecked")
     public final EventResponse handle(final Context context, final Event event) {
         for (final EventDescriptor eventDescriptor : handlerByEventClasses.keySet()) {
             if (eventDescriptor.isDeprecated()) {
@@ -191,6 +192,7 @@ public class MultiEventListener extends BaseEventListener<Event> {
             return objects;
         }
 
+        @SuppressWarnings("unchecked")
         public EventDescriptor getEventDescriptor() {
             if (eventDescriptor == null) {
                 for (final Class<?> parameterClass : method.getParameterTypes()) {

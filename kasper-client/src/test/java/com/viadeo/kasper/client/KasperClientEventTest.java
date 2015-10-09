@@ -95,6 +95,7 @@ public class KasperClientEventTest {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSendEvent() {
 

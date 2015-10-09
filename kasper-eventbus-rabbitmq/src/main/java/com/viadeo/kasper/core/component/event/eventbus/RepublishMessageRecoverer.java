@@ -82,6 +82,7 @@ public class RepublishMessageRecoverer implements MessageRecoverer {
         private final Optional<Class<EventListener>> source;
         private final String routingKey;
 
+        @SuppressWarnings("unchecked")
         private MessageDescriptor(Message message, Throwable throwable) {
             this.message = checkNotNull(message);
 

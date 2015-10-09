@@ -262,6 +262,7 @@ public class FixtureUseCase {
     public static class TestCreateCommandHandler
             extends AutowiredEntityCommandHandler<TestCreateCommand, TestAggregate> {
 
+        @SuppressWarnings("unchecked")
         public CommandResponse handle(final CommandMessage<TestCreateCommand> message) {
 
             final TestAggregate agr = new TestAggregate(message.getCommand().getIdToUse());
@@ -278,6 +279,7 @@ public class FixtureUseCase {
     public static class TestChangeLastNameCommandHandler
             extends AutowiredEntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
 
+        @SuppressWarnings("unchecked")
         public CommandResponse handle(final CommandMessage<TestChangeLastNameCommand> message) {
 
             final Optional<TestAggregate> agr =

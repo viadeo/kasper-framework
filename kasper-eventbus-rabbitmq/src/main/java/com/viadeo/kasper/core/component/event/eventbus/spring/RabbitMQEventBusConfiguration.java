@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.ContextHelper;
 import com.viadeo.kasper.core.component.event.eventbus.*;
 import com.viadeo.kasper.core.interceptor.tags.TagsInterceptor;
@@ -48,7 +49,7 @@ public class RabbitMQEventBusConfiguration {
         KasperEventBus eventBus = new KasperEventBus(new MetricRegistry(), selector);
 
         // interceptors
-        eventBus.register(new TagsInterceptor.Factory());
+        eventBus.register(new TagsInterceptor.Factory<Event,Void>());
 
         return eventBus;
     }

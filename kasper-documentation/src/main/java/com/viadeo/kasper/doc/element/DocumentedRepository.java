@@ -241,6 +241,7 @@ public class DocumentedRepository extends AbstractDomainElement {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public LightDocumentedElement<DocumentedAggregate> getAggregate() {
         return documentedAggregate.getLightDocumentedElement();
     }

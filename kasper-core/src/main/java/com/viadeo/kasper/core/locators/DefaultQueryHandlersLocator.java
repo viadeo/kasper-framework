@@ -76,7 +76,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public void registerHandler(final String name, final QueryHandler handler,
                                 final Class<? extends Domain> domainClass) {
