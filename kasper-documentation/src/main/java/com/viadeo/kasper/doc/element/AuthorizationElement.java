@@ -7,7 +7,7 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.core.security.CombinesWith;
+import com.viadeo.kasper.core.interceptor.authorization.CombinesWith;
 
 import java.util.List;
 

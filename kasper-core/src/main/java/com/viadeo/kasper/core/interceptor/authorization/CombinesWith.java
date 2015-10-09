@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.interceptor.authorization;
 
 /**
  * An enum for specifying a combinesWith operation that can be used for interpreting authorization annotations
