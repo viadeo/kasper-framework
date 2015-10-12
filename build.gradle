@@ -9,7 +9,7 @@ ext.nexusCredentials = {
     password nexus_password
 }
 
-wrapper.gradleVersion = '2.5'
+wrapper.gradleVersion = '2.7'
 
 configure(allprojects) {
     apply plugin: 'idea'
