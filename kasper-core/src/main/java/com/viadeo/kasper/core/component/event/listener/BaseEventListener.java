@@ -81,7 +81,7 @@ public class BaseEventListener<EVENT extends Event>
 
     @Override
     public Set<EventDescriptor> getEventDescriptors() {
-        return Sets.newHashSet(new EventDescriptor(this.eventClass));
+        return Sets.newHashSet(new EventDescriptor(this.eventClass, getClass().isAnnotationPresent(Deprecated.class)));
     }
 
     @Override
