@@ -84,7 +84,7 @@ ext.libraries = [
                 'junit:junit:4.11',
                 'org.hamcrest:hamcrest-all:1.3',
         ],
-        MOCKITO: 'org.mockito:mockito-all:1.9.5',
+        MOCKITO: 'org.mockito:mockito-all:1.10.19',
         JODA_TIME: 'joda-time:joda-time:2.3',
         JODA_MONEY: 'org.joda:joda-money:0.9',
         GUAVA: [
@@ -108,9 +108,9 @@ ext.libraries = [
         TYPESAFE_CONFIG: 'com.typesafe:config:1.0.2',
 
         POWER_MOCK: [
-                'org.powermock:powermock:1.5.5',
-                'org.powermock:powermock-api-mockito:1.5.5',
-                'org.powermock:powermock-module-junit4:1.5.5'
+                'org.powermock:powermock:1.6.3',
+                'org.powermock:powermock-api-mockito:1.6.3',
+                'org.powermock:powermock-module-junit4:1.6.3'
         ],
 
         AWAITILITY               : [
