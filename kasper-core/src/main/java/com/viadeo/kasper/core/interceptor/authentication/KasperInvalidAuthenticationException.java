@@ -11,11 +11,12 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 
 public class KasperInvalidAuthenticationException extends KasperSecurityException {
 
-    public KasperInvalidAuthenticationException(String message, CoreReasonCode coreReasonCode) {
+    public KasperInvalidAuthenticationException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
     }
 
-    public KasperInvalidAuthenticationException(String message, Throwable cause, CoreReasonCode coreReasonCode) {
+    public KasperInvalidAuthenticationException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
+
 }

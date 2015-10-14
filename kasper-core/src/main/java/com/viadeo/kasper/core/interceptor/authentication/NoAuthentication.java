@@ -13,12 +13,12 @@ import com.viadeo.kasper.api.id.ID;
 public class NoAuthentication implements Authenticator {
 
     @Override
-    public boolean isAuthenticated(Context context) {
+    public boolean isAuthenticated(final Context context) {
         return true;
     }
 
     @Override
-    public Optional<ID> getSubject(Context context) {
+    public Optional<ID> getSubject(final Context context) {
         return Optional.absent();
     }
 

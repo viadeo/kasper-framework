@@ -46,7 +46,7 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
     }
 
     @Override
-    public O process(I c, Context context, InterceptorChain<I, O> chain) throws Exception {
+    public O process(final I c, final Context context, final InterceptorChain<I, O> chain) throws Exception {
         checkAuthentication(context);
         return enrichResponseWithToken(chain.next(c, context));
     }
@@ -73,7 +73,7 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
 
         public static CommandInterceptorFactory forCommand(
                 final Authenticator authenticator,
-                final AuthenticationTokenGenerator authenticationTokenGenerator
+                final AuthenticationTokenGenerator<String> authenticationTokenGenerator
         ) {
             return new CommandInterceptorFactory() {
                 @Override
@@ -84,14 +84,15 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
                                 @Override
                                 protected CommandResponse enrichResponseWithToken(final CommandResponse response) {
                                     if (response instanceof DoAuthenticateCommandResponse) {
-                                        DoAuthenticateCommandResponse doAuthenticateCommandResponse = (DoAuthenticateCommandResponse) response;
+                                        final DoAuthenticateCommandResponse doAuthenticateCommandResponse =
+                                                (DoAuthenticateCommandResponse) response;
                                         try {
-                                            Serializable token = authenticationTokenGenerator.generate(
+                                            final Serializable token = authenticationTokenGenerator.generate(
                                                     doAuthenticateCommandResponse.getSubjectID(),
                                                     doAuthenticateCommandResponse.getProperties()
                                             );
-                                            return new AuthenticatedCommandResponse(response, token);
-                                        } catch (Exception e){
+                                            return new AuthenticatedCommandResponse<>(response, token);
+                                        } catch (final Exception e){
                                             LOGGER.error("Could not create AuthenticationToken",e);
                                         }
                                     }
@@ -105,7 +106,7 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
 
         public static QueryInterceptorFactory forQuery(
                 final Authenticator authenticator,
-                final AuthenticationTokenGenerator authenticationTokenGenerator
+                final AuthenticationTokenGenerator<String> authenticationTokenGenerator
         ) {
             return new QueryInterceptorFactory() {
                 @Override

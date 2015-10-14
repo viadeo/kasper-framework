@@ -8,8 +8,6 @@ package com.viadeo.kasper.core.interceptor.authorization;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.ID;
-import com.viadeo.kasper.core.interceptor.authorization.AuthorizationManager;
-import com.viadeo.kasper.core.interceptor.authorization.CombinesWith;
 
 public class OnlyForTestsAuthorizationManagerReturningTrue implements AuthorizationManager {
 

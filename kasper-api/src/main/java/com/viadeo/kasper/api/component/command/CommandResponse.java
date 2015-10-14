@@ -15,6 +15,7 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -142,10 +143,16 @@ public class CommandResponse extends KasperResponse {
         private final ID subjectID;
         private final Map<String, Object> properties;
 
-        public DoAuthenticateCommandResponse(CommandResponse response, ID subjectID, Map<String,Object> properties) {
+        public DoAuthenticateCommandResponse(final CommandResponse response, final ID subjectID, final Map<String,Object> properties) {
             super(response);
-            this.subjectID = subjectID;
-            this.properties = properties;
+            this.subjectID = checkNotNull(subjectID);
+            this.properties = checkNotNull(properties);
+        }
+
+        public DoAuthenticateCommandResponse(final CommandResponse response, final ID subjectID) {
+            super(response);
+            this.subjectID = checkNotNull(subjectID);
+            this.properties = Collections.emptyMap();
         }
 
         public ID getSubjectID() {

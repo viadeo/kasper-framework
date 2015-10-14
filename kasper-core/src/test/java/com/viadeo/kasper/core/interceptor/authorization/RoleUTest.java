@@ -7,8 +7,6 @@
 package com.viadeo.kasper.core.interceptor.authorization;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.interceptor.authorization.Permission;
-import com.viadeo.kasper.core.interceptor.authorization.Role;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

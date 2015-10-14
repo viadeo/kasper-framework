@@ -9,9 +9,6 @@ package com.viadeo.kasper.core.interceptor.authorization;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.core.id.TestFormats;
-import com.viadeo.kasper.core.interceptor.authorization.Actor;
-import com.viadeo.kasper.core.interceptor.authorization.Permission;
-import com.viadeo.kasper.core.interceptor.authorization.Role;
 import org.junit.Before;
 import org.junit.Test;
 

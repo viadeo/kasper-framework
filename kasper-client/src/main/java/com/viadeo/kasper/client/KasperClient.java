@@ -47,9 +47,7 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
-import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_ACCESS_TOKEN;
-import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_AUTHENTICATION_TOKEN;
-import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_SECURITY_TOKEN;
+import static com.viadeo.kasper.common.exposition.HttpContextHeaders.*;
 
 /**
  * <p>

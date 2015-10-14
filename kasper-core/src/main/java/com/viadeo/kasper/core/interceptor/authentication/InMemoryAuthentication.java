@@ -14,7 +14,6 @@ import com.viadeo.kasper.api.id.ID;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class InMemoryAuthentication implements Authenticator, AuthenticationTokenGenerator<java.lang.String>  {
@@ -25,21 +24,21 @@ public class InMemoryAuthentication implements Authenticator, AuthenticationToke
         this.tokens = Maps.newHashMap();
     }
 
-    public void addToken(final String token, final ID subjectID){
+    public void addToken(final String token, final ID subjectID) {
         this.tokens.put(token, subjectID);
     }
 
-    public void removeToken(final String token){
+    public void removeToken(final String token) {
         this.tokens.remove(token);
     }
 
     @Override
     public boolean isAuthenticated(final Context context) {
         checkNotNull(context);
-        if(context.getUserID().isPresent()){
+        if (context.getUserID().isPresent()) {
             return true;
         }
-        if(!context.getAuthenticationToken().isPresent()){
+        if ( ! context.getAuthenticationToken().isPresent()) {
             return false;
         }
 
@@ -49,17 +48,20 @@ public class InMemoryAuthentication implements Authenticator, AuthenticationToke
 
     @Override
     public Optional<ID> getSubject(final Context context) {
-        if(context.getAuthenticationToken().isPresent()){
+        if (context.getAuthenticationToken().isPresent()) {
             return Optional.fromNullable(tokens.get(context.getAuthenticationToken().get()));
         }
         return Optional.absent();
     }
 
     @Override
-    public String generate(ID subjectID, Map<String, Object> properties) {
+    public String generate(final ID subjectID, final Map<String, Object> properties) {
         checkNotNull(subjectID);
+
         final String token = UUID.randomUUID().toString();
         addToken(token, subjectID);
+
         return token;
     }
+
 }

@@ -8,7 +8,6 @@ package com.viadeo.kasper.core.component.query.gateway;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
-import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
@@ -25,8 +24,6 @@ import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 
 import static com.viadeo.kasper.core.component.query.gateway.KasperQueryGatewayUTest.*;
 import static org.junit.Assert.*;
