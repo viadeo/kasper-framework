@@ -6,13 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.spring.platform;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.platform.plugin.Plugin;
+import com.viadeo.kasper.platform.plugin.PluginAdapter;
 import org.junit.Test;
 
 import java.util.List;
@@ -22,15 +21,13 @@ import static org.junit.Assert.assertNotNull;
 
 public class SpringDomainBundleITest {
 
-    private static class SpyPlugin implements Plugin {
+    private static class SpyPlugin extends PluginAdapter {
 
         final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
         @Override
-        public void initialize(final Platform platform,
-                               final MetricRegistry metricRegistry,
-                               final DomainDescriptor... domainDescriptors) {
-            this.domainDescriptors.addAll(Lists.newArrayList(domainDescriptors));
+        public void domainRegistered(DomainDescriptor domainDescriptor) {
+            domainDescriptors.add(domainDescriptor);
         }
     }
 

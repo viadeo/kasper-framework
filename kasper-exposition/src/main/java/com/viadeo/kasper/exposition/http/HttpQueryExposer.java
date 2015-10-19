@@ -71,6 +71,11 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
 
     // ------------------------------------------------------------------------
 
+    public void register(ExposureDescriptor<Query,QueryHandler> exposureDescriptor) {
+        checkNotNull(exposureDescriptor);
+        descriptors.add(exposureDescriptor);
+    }
+
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing queries ===============");

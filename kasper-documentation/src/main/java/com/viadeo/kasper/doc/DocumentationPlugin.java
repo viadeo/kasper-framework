@@ -6,17 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.doc;
 
-import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
-import com.viadeo.kasper.platform.plugin.Plugin;
+import com.viadeo.kasper.platform.plugin.PluginAdapter;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class DocumentationPlugin implements Plugin {
+public class DocumentationPlugin extends PluginAdapter {
 
     private final DocumentedPlatform documentedPlatform;
     private boolean initialized;
@@ -25,7 +27,6 @@ public class DocumentationPlugin implements Plugin {
 
     public DocumentationPlugin() {
         this(new DocumentedPlatform());
-
     }
 
     protected DocumentationPlugin(final DocumentedPlatform documentedPlatform) {
@@ -34,18 +35,6 @@ public class DocumentationPlugin implements Plugin {
     }
 
     // ------------------------------------------------------------------------
-
-    @Override
-    public void initialize(final Platform platform, final MetricRegistry metricRegistry,
-                           final DomainDescriptor... domainDescriptors) {
-
-        for (final DomainDescriptor domainDescriptor : checkNotNull(domainDescriptors)) {
-            documentedPlatform.registerDomain(domainDescriptor.getName(), domainDescriptor);
-        }
-
-        documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
-        initialized = true;
-    }
 
     public DocumentedPlatform getDocumentedPlatform() {
         checkState(initialized, "The documentation plugin must be initialized");
@@ -56,4 +45,27 @@ public class DocumentationPlugin implements Plugin {
         return initialized;
     }
 
+    @Override
+    public void platformStarted(Platform platform) {
+        documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
+        initialized = true;
+    }
+
+    @Override
+    public void domainRegistered(DomainDescriptor domainDescriptor) {
+        documentedPlatform.registerDomain(domainDescriptor.getName(), domainDescriptor);
+    }
+
+    @Override
+    public <E> List<E> get(Class<E> clazz) {
+        if (DocumentedPlatform.class.isAssignableFrom(clazz)) {
+            return (List<E>) Lists.newArrayList(documentedPlatform);
+        }
+        return super.get(clazz);
+    }
+
+    @Override
+    public int getPhase() {
+        return Integer.MAX_VALUE - 1;
+    }
 }

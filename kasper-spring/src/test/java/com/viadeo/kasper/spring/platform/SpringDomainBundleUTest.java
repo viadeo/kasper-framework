@@ -16,7 +16,8 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.Meta;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.junit.BeforeClass;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.mock;
 
 public class SpringDomainBundleUTest {
 
-    private static BuilderContext platformBuilderContext;
+    private static PlatformContext platformPlatformContext;
 
     @Configuration
     public static class FakeConfiguration {
@@ -49,13 +50,14 @@ public class SpringDomainBundleUTest {
 
     @BeforeClass
     public static void setup() {
-        platformBuilderContext = new BuilderContext(
+        platformPlatformContext = new PlatformContext(
             mock(Config.class),
             mock(KasperEventBus.class),
             mock(CommandGateway.class),
             mock(QueryGateway.class),
             mock(MetricRegistry.class),
-            Lists.<ExtraComponent>newArrayList()
+            Lists.<ExtraComponent>newArrayList(),
+            mock(Meta.class)
         );
     }
 
@@ -68,7 +70,7 @@ public class SpringDomainBundleUTest {
         );
 
         // When
-        springDomainBundle.configure(platformBuilderContext);
+        springDomainBundle.configure(platformPlatformContext);
 
         // Then throws no exception
     }
@@ -82,7 +84,7 @@ public class SpringDomainBundleUTest {
         );
 
         // When
-        springDomainBundle.configure(platformBuilderContext);
+        springDomainBundle.configure(platformPlatformContext);
 
         // Then
         final Optional<MyCustomDomainBox.MyCustomCommandHandler> commandHandlerOptional =
@@ -103,7 +105,7 @@ public class SpringDomainBundleUTest {
         );
 
         // When
-        springDomainBundle.configure(platformBuilderContext);
+        springDomainBundle.configure(platformPlatformContext);
 
         // Then
 
@@ -125,7 +127,7 @@ public class SpringDomainBundleUTest {
         );
 
         // When
-        springDomainBundle.configure(platformBuilderContext);
+        springDomainBundle.configure(platformPlatformContext);
 
         // Then
         final Optional<DefaultFormatter> formatterOptional = springDomainBundle.get(DefaultFormatter.class);
@@ -154,13 +156,18 @@ public class SpringDomainBundleUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final BuilderContext builderContext = new SpringBuilderContext(
-            platformConfiguration,
-            extraComponents
+        final PlatformContext platformContext = new PlatformContext(
+                platformConfiguration.configuration(),
+                platformConfiguration.eventBus(),
+                platformConfiguration.commandGateway(),
+                platformConfiguration.queryGateway(),
+                platformConfiguration.metricRegistry(),
+                extraComponents,
+                Meta.UNKNOWN
         );
 
         // When
-        springDomainBundle.configure(builderContext);
+        springDomainBundle.configure(platformContext);
 
         // Then
         assertEquals(workers, springDomainBundle.get(ExecutorService.class).get());

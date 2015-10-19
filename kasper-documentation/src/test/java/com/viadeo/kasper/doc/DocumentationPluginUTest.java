@@ -6,15 +6,18 @@
 // ============================================================================
 package com.viadeo.kasper.doc;
 
-import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -50,7 +53,8 @@ public class DocumentationPluginUTest {
     public void getKasperDocResource_fromInitializedPlugin_shouldReturnDocumentation(){
         // Given
         final DocumentationPlugin documentationPlugin = new DocumentationPlugin();
-        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class));
+        documentationPlugin.initialize(mock(PlatformContext.class));
+        documentationPlugin.platformStarted(mock(Platform.class));
 
         // When
         final DocumentedPlatform documentedPlatform = documentationPlugin.getDocumentedPlatform();
@@ -64,10 +68,10 @@ public class DocumentationPluginUTest {
     public void initialize_withNoDomainBundle_shouldBeOk(){
         // Given
         final DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
-        final DomainDescriptor[] descriptors = {};
 
         // When
-        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class), descriptors);
+        documentationPlugin.initialize(mock(PlatformContext.class));
+        documentationPlugin.platformStarted(mock(Platform.class));
 
         // Then
         assertTrue(documentationPlugin.isInitialized());
@@ -83,10 +87,11 @@ public class DocumentationPluginUTest {
 
         final DomainDescriptor descriptor = mock(DomainDescriptor.class);
         when(descriptor.getName()).thenReturn(domainName);
-        final DomainDescriptor[] descriptors = {descriptor};
 
         // When
-        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class), descriptors);
+        documentationPlugin.initialize(mock(PlatformContext.class));
+        documentationPlugin.domainRegistered(descriptor);
+        documentationPlugin.platformStarted(mock(Platform.class));
 
         // Then
         assertTrue(documentationPlugin.isInitialized());
@@ -98,12 +103,27 @@ public class DocumentationPluginUTest {
     public void initialize_withNullAsDomainDescriptors_shouldThrowException(){
         // Given
         final DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
-        final DomainDescriptor[] descriptors = null;
 
         // When
-        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class), descriptors);
+        documentationPlugin.initialize(mock(PlatformContext.class));
+        documentationPlugin.domainRegistered(null);
 
         // Then throws an exception
+    }
+
+    @Test
+    public void get_documented_platform_is_ok() {
+        // Given
+        final DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
+        documentationPlugin.initialize(mock(PlatformContext.class));
+        documentationPlugin.platformStarted(mock(Platform.class));
+
+        // When
+        List<DocumentedPlatform> documentedPlatforms = documentationPlugin.get(DocumentedPlatform.class);
+
+        // Then
+        assertNotNull(documentedPlatforms);
+        assertTrue(documentedPlatforms.size() == 1);
     }
 
 }

@@ -17,7 +17,7 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public interface DomainBundle {
      *
      * @param context the context of the builder
      */
-    void configure(BuilderContext context);
+    void configure(PlatformContext context);
 
     /**
      * @return the name of the domain

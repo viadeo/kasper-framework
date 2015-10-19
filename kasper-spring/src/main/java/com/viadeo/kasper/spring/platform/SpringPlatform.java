@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.spring.platform;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -18,9 +19,11 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.PlatformAware;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.spring.core.ConfigPropertySource;
 import com.viadeo.kasper.spring.core.KasperConfiguration;
+import com.viadeo.kasper.platform.plugin.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -30,10 +33,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -44,6 +44,8 @@ public class SpringPlatform implements Platform {
     private final Meta meta;
     private final KasperEventBus eventBus;
     private final ApplicationContext applicationContext;
+    private final MetricRegistry metricRegistry;
+    private final List<Plugin> platformAwares;
 
     // ------------------------------------------------------------------------
 
@@ -53,6 +55,16 @@ public class SpringPlatform implements Platform {
         this.queryGateway = applicationContext.getBean(QueryGateway.class);
         this.eventBus = applicationContext.getBean(KasperEventBus.class);
         this.meta = applicationContext.getBean(Meta.class);
+        this.metricRegistry = applicationContext.getBean(MetricRegistry.class);
+        this.platformAwares = Lists.newArrayList(applicationContext.getBeansOfType(Plugin.class).values());
+
+        Collections.sort(platformAwares, Plugin.REVERSED_COMPARATOR);
+
+        for (final PlatformAware platformAware : platformAwares) {
+            if (platformAware instanceof Plugin) {
+                platformAware.pluginRegistered((Plugin) platformAware);
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -77,18 +89,39 @@ public class SpringPlatform implements Platform {
         return meta;
     }
 
+    @Override
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
+    }
+
+    @Override
     public SpringPlatform start() {
         applicationContext.getBean(LifecycleProcessor.class).start();
+        firePlatformStarted();
         return this;
     }
 
+    @Override
     public SpringPlatform stop() {
         applicationContext.getBean(LifecycleProcessor.class).stop();
+        firePlatformStopped();
         return this;
     }
 
     public ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    private void firePlatformStarted() {
+        for (final PlatformAware platformAware : platformAwares) {
+            platformAware.platformStarted(this);
+        }
+    }
+
+    private void firePlatformStopped() {
+        for (final PlatformAware platformAware : platformAwares) {
+            platformAware.platformStopped(this);
+        }
     }
 
     // ========================================================================

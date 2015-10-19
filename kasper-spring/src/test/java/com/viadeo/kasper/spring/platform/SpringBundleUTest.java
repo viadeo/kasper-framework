@@ -2,7 +2,7 @@ package com.viadeo.kasper.spring.platform;
 
 import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.fixture.DummySpringBundle;
 import com.viadeo.kasper.platform.bundle.fixture.command.handler.DummyCommandHandler;
 import com.viadeo.kasper.platform.bundle.fixture.command.listener.DummyCommandListener;
@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 public class SpringBundleUTest {
 
     @Mock
-    private BuilderContext builderContext;
+    private PlatformContext platformContext;
     private AnnotationConfigApplicationContext context;
 
     @Before
@@ -40,7 +40,7 @@ public class SpringBundleUTest {
         context.register(DummyBackend.class);
 
         SpringBundle springBundle = new DummySpringBundle(context);
-        springBundle.configure(builderContext);
+        springBundle.configure(platformContext);
 
         // command
         ApplicationContext command = springBundle.getCommandContext();
@@ -72,6 +72,6 @@ public class SpringBundleUTest {
     public void init_withMissPlacedBundle_ThrowsIllegalStateException() {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         SpringBundle springBundle = new MissplacedBundle(context);
-        springBundle.configure(builderContext);
+        springBundle.configure(platformContext);
     }
 }

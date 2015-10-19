@@ -35,6 +35,8 @@ import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactor
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.plugin.Plugin;
+import com.viadeo.kasper.platform.plugin.PluginAdapter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +45,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.lang.reflect.Field;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.refEq;
@@ -80,7 +85,7 @@ public class PlatformWirerUTest {
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
-        platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager);
+        platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager, mock(Meta.class));
         when(sagaManager.register(any(Saga.class))).thenReturn(mock(SagaExecutor.class));
     }
 
@@ -336,6 +341,44 @@ public class PlatformWirerUTest {
         // When
         platformWirer.wire(bundleA);
         platformWirer.wire(bundleB);
+    }
+
+    @Test
+    public void sort_registered_plugins_is_ok() {
+        // Given
+        Plugin pluginA = new PhasedPlugin("A", 2);
+        Plugin pluginB = new PhasedPlugin("B", 3);
+        Plugin pluginC = new PhasedPlugin("C", 1);
+        platformWirer.wire(pluginA);
+        platformWirer.wire(pluginB);
+        platformWirer.wire(pluginC);
+
+        // When
+        Collection<Plugin> actualPlugins = platformWirer.sortRegisteredPlugins();
+
+        //Then
+        assertEquals(Lists.newArrayList(pluginC, pluginA, pluginB), actualPlugins);
+    }
+
+    private static class PhasedPlugin extends PluginAdapter {
+
+        private final String name;
+        private final int phase;
+
+        private PhasedPlugin(final String name, final int phase) {
+            this.name = name;
+            this.phase = phase;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public int getPhase() {
+            return phase;
+        }
     }
 
     private static class TestRepository extends AutowiredRepository<KasperID,MyCustomDomainBox.MyCustomEntity> {

@@ -84,6 +84,11 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
     // ------------------------------------------------------------------------
 
+    public void register(ExposureDescriptor<Event,EventListener> exposureDescriptor) {
+        checkNotNull(exposureDescriptor);
+        descriptors.add(exposureDescriptor);
+    }
+
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing events ===============");

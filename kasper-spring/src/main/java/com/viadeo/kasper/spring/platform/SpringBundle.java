@@ -19,7 +19,7 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +158,7 @@ public class SpringBundle extends DefaultDomainBundle {
      * @param context platform context
      */
     @Override
-    public void configure(BuilderContext context) {
+    public void configure(PlatformContext context) {
         long startRefreshTimeInMillis = System.currentTimeMillis();
 
         commandContext.refresh();

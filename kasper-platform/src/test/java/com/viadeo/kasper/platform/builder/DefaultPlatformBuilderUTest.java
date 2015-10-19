@@ -26,6 +26,7 @@ import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
@@ -327,7 +328,7 @@ public class DefaultPlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(domainBundle).configure(refEq(new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList())));
+        verify(domainBundle).configure(refEq(new PlatformContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList(), Meta.UNKNOWN)));
     }
 
     @Test
@@ -354,7 +355,7 @@ public class DefaultPlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(plugin).initialize(refEq(platform), refEq(metricRegistry), (DomainDescriptor[]) anyVararg());
+        verify(plugin).initialize(new PlatformContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList(), Meta.UNKNOWN));
     }
 
     @Test
@@ -411,8 +412,6 @@ public class DefaultPlatformBuilderUTest {
         verify(eventBus).register(refEq(eventInterceptorFactory));
     }
 
-
-
     @Test
     public void build_withDomainBundle_containingRepository_shouldWiredTheComponent() throws Exception {
         // Given
@@ -425,10 +424,9 @@ public class DefaultPlatformBuilderUTest {
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        final DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
         final RepositoryManager repositoryManager = mock(DefaultRepositoryManager.class);
 
-        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(domainDescriptorFactory)
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -482,7 +480,7 @@ public class DefaultPlatformBuilderUTest {
         expectedExtraComponents.add(new ExtraComponent(name, component.getClass(), component));
 
         assertNotNull(platform);
-        verify(domainBundle).configure(eq(new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents)));
+        verify(domainBundle).configure(eq(new PlatformContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents, Meta.UNKNOWN)));
     }
 
     @Test

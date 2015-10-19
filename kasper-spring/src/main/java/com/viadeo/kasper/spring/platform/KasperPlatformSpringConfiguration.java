@@ -25,6 +25,7 @@ import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DescriptorRegistry;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.platform.plugin.Plugin;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.DefaultLifecycleProcessor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -43,6 +46,9 @@ public class KasperPlatformSpringConfiguration {
 
     @Autowired(required = false)
     List<ExtraComponent> extraComponents;
+
+    @Autowired(required = false)
+    List<Plugin> plugins;
 
     @Autowired(required = false)
     List<DomainBundle> bundles;
@@ -66,13 +72,22 @@ public class KasperPlatformSpringConfiguration {
             final KasperCommandGateway commandGateway,
             final KasperQueryGateway queryGateway,
             final SagaManager sagaManager,
-            final RepositoryManager repositoryManager
+            final RepositoryManager repositoryManager,
+            final Meta meta
     ) {
-        final PlatformWirer platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager);
+        final PlatformWirer platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager, meta);
 
         if (extraComponents != null) {
             for (final ExtraComponent extraComponent : extraComponents) {
                 platformWirer.register(extraComponent);
+            }
+        }
+
+        if (plugins != null) {
+            ArrayList<Plugin> toWirer = Lists.newArrayList(plugins);
+            Collections.sort(toWirer, Plugin.REVERSED_COMPARATOR);
+            for (final Plugin plugin : toWirer) {
+                platformWirer.wire(plugin);
             }
         }
 

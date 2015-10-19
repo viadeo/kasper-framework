@@ -16,30 +16,34 @@ import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Meta;
 
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class BuilderContext {
+public class PlatformContext {
 
     private final Config configuration;
     private final KasperEventBus eventBus;
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
     private final MetricRegistry metricRegistry;
+    private final Meta meta;
     private final Map<ExtraComponent.Key, ExtraComponent> extraComponents;
 
     // --------------------------------------------------------------------
 
-    public BuilderContext(final Config configuration,
-                          final KasperEventBus eventBus,
-                          final CommandGateway commandGateway,
-                          final QueryGateway queryGateway,
-                          final MetricRegistry metricRegistry,
-                          final List<ExtraComponent> extraComponents
+    public PlatformContext(final Config configuration,
+                           final KasperEventBus eventBus,
+                           final CommandGateway commandGateway,
+                           final QueryGateway queryGateway,
+                           final MetricRegistry metricRegistry,
+                           final List<ExtraComponent> extraComponents,
+                           final Meta meta
     ) {
+        this.meta = checkNotNull(meta);
         this.configuration = checkNotNull(configuration);
         this.eventBus = checkNotNull(eventBus);
         this.commandGateway = checkNotNull(commandGateway);
@@ -76,6 +80,10 @@ public class BuilderContext {
         return metricRegistry;
     }
 
+    public Meta getMeta() {
+        return meta;
+    }
+
     @SuppressWarnings("unchecked")
     public <E> Optional<E> getExtraComponent(final String name, final Class<E> clazz) {
         return Optional.fromNullable((E) extraComponents.get(new ExtraComponent.Key(name, clazz)));
@@ -87,7 +95,7 @@ public class BuilderContext {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
+        return Objects.hashCode(configuration, eventBus, commandGateway, queryGateway, metricRegistry, meta, extraComponents);
     }
 
     @Override
@@ -98,19 +106,7 @@ public class BuilderContext {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final BuilderContext other = (BuilderContext) obj;
-        return Objects.equal(this.configuration, other.configuration) && Objects.equal(this.eventBus, other.eventBus) && Objects.equal(this.commandGateway, other.commandGateway) && Objects.equal(this.queryGateway, other.queryGateway) && Objects.equal(this.metricRegistry, other.metricRegistry) && Objects.equal(this.extraComponents, other.extraComponents);
-    }
-
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("configuration", configuration)
-                .add("eventBus", eventBus)
-                .add("commandGateway", commandGateway)
-                .add("queryGateway", queryGateway)
-                .add("metricRegistry", metricRegistry)
-                .add("extraComponents", extraComponents)
-                .toString();
+        final PlatformContext other = (PlatformContext) obj;
+        return Objects.equal(this.configuration, other.configuration) && Objects.equal(this.eventBus, other.eventBus) && Objects.equal(this.commandGateway, other.commandGateway) && Objects.equal(this.queryGateway, other.queryGateway) && Objects.equal(this.metricRegistry, other.metricRegistry) && Objects.equal(this.meta, other.meta) && Objects.equal(this.extraComponents, other.extraComponents);
     }
 }

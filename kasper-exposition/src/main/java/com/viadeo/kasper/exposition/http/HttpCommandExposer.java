@@ -71,6 +71,11 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     // ------------------------------------------------------------------------
 
+    public void register(ExposureDescriptor<Command,CommandHandler> exposureDescriptor) {
+        checkNotNull(exposureDescriptor);
+        descriptors.add(exposureDescriptor);
+    }
+
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
