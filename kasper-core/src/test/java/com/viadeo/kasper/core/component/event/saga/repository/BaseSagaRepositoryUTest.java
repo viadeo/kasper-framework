@@ -1,15 +1,12 @@
 package com.viadeo.kasper.core.component.event.saga.repository;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaMapper;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;

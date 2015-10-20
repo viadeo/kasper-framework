@@ -21,12 +21,10 @@ import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.internal.matchers.EndsWith;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;

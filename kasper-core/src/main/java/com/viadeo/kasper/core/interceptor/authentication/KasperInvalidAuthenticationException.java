@@ -4,18 +4,19 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.interceptor.authentication;
 
 import com.viadeo.kasper.api.exception.KasperSecurityException;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 
-public class KasperInvalidAuthorizationException extends KasperSecurityException {
+public class KasperInvalidAuthenticationException extends KasperSecurityException {
 
-    public KasperInvalidAuthorizationException(String message, CoreReasonCode coreReasonCode) {
+    public KasperInvalidAuthenticationException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
     }
 
-    public KasperInvalidAuthorizationException(String message, Throwable cause, CoreReasonCode coreReasonCode) {
+    public KasperInvalidAuthenticationException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
+
 }

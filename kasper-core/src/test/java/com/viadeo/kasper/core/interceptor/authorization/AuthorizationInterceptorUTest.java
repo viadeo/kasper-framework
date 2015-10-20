@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.security;
+package com.viadeo.kasper.core.interceptor.authorization;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

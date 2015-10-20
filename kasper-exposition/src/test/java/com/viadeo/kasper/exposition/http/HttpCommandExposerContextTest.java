@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
 
     public static final String RETURNED_SECURITY_TOKEN = UUID.randomUUID().toString();
+    public static final String RETURNED_AUTHENTICATION_TOKEN = UUID.randomUUID().toString();
 
     public HttpCommandExposerContextTest() {
         Locale.setDefault(Locale.US);
@@ -76,6 +77,8 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
         assertTrue(response.isOK());
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(RETURNED_SECURITY_TOKEN, response.getSecurityToken().get());
+        assertTrue(response.getAuthenticationToken().isPresent());
+        assertEquals(RETURNED_AUTHENTICATION_TOKEN, response.getAuthenticationToken().get());
     }
 
     // ------------------------------------------------------------------------
@@ -102,7 +105,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
     public static class ContextCheckCommandHandler extends AutowiredCommandHandler<ContextCheckCommand> {
         @Override
         public CommandResponse handle(final CommandMessage<ContextCheckCommand> message) {
-            return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
+            return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN).withAuthenticationToken(RETURNED_AUTHENTICATION_TOKEN);
         }
     }
 
