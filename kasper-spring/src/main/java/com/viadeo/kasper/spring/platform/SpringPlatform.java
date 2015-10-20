@@ -62,7 +62,7 @@ public class SpringPlatform implements Platform {
 
         for (final PlatformAware platformAware : platformAwares) {
             if (platformAware instanceof Plugin) {
-                platformAware.pluginRegistered((Plugin) platformAware);
+                platformAware.onPluginRegistered((Plugin) platformAware);
             }
         }
     }
@@ -114,13 +114,13 @@ public class SpringPlatform implements Platform {
 
     private void firePlatformStarted() {
         for (final PlatformAware platformAware : platformAwares) {
-            platformAware.platformStarted(this);
+            platformAware.onPlatformStarted(this);
         }
     }
 
     private void firePlatformStopped() {
         for (final PlatformAware platformAware : platformAwares) {
-            platformAware.platformStopped(this);
+            platformAware.onPlatformStopped(this);
         }
     }
 

@@ -18,4 +18,5 @@ public class KasperDocumentationConfiguration {
     public Plugin documentationPlugin() {
         return new DocumentationPlugin();
     }
+
 }

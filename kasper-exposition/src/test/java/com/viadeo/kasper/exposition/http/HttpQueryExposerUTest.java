@@ -105,7 +105,7 @@ public class HttpQueryExposerUTest {
 
         // When
         boolean exposable = exposer.isExposable(
-                new ExposureDescriptor<Query, Object>(
+                new ExposureDescriptor<Query, QueryHandler>(
                         AQuery.class,
                         QueryHandlerB.class
                 )

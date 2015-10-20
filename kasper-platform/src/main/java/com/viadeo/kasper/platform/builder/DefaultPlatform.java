@@ -99,7 +99,7 @@ public class DefaultPlatform implements Platform {
     @Override
     public DefaultPlatform start() {
         for (final PlatformAware platformAware : plugins) {
-            platformAware.platformStarted(this);
+            platformAware.onPlatformStarted(this);
         }
         return this;
     }
@@ -107,7 +107,7 @@ public class DefaultPlatform implements Platform {
     @Override
     public DefaultPlatform stop() {
         for (final PlatformAware platformAware : plugins) {
-            platformAware.platformStopped(this);
+            platformAware.onPlatformStopped(this);
         }
         return this;
     }

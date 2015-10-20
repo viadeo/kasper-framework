@@ -31,10 +31,9 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
+public class HttpQueryExposer extends HttpExposer<Query, QueryHandler, QueryResponse> {
     private static final long serialVersionUID = 8448984922303895624L;
 
-    private final transient List<ExposureDescriptor<Query,QueryHandler>> descriptors;
     private final transient QueryGateway queryGateway;
 
     private final ObjectToHttpServletResponse objectToHttpResponse;
@@ -60,9 +59,8 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
                             final QueryFactory queryAdapterFactory,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
-        super(contextDeserializer, meta);
+        super(contextDeserializer, meta, descriptors);
         this.queryGateway = checkNotNull(queryGateway);
-        this.descriptors = checkNotNull(descriptors);
 
         this.objectToHttpResponse = new ObjectToHttpServletResponse(mapper);
         this.httpRequestToObjectWithJson = new HttpServletRequestToObject.JsonToObjectMapper(mapper);
@@ -71,17 +69,12 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
 
     // ------------------------------------------------------------------------
 
-    public void register(ExposureDescriptor<Query,QueryHandler> exposureDescriptor) {
-        checkNotNull(exposureDescriptor);
-        descriptors.add(exposureDescriptor);
-    }
-
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
-        for (final ExposureDescriptor<Query,QueryHandler> descriptor : descriptors) {
+        for (final ExposureDescriptor<Query,QueryHandler> descriptor : getDescriptors()) {
             expose(descriptor);
         }
 

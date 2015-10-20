@@ -57,11 +57,14 @@ public class PlatformWirer {
     private final RepositoryManager repositoryManager;
     private final DomainDescriptorFactory domainDescriptorFactory;
     private final List<ExtraComponent> extraComponents;
+
     private final Config config;
     private final MetricRegistry metricRegistry;
     private final Set<String> registeredBundleNames;
     private final Map<String,Plugin> registeredPlugins;
     private final Meta meta;
+
+    // ------------------------------------------------------------------------
 
     public PlatformWirer(
             final Config config,
@@ -88,8 +91,10 @@ public class PlatformWirer {
         this.eventStore = new VolatileEventStore();
     }
 
-    public void wire(Plugin plugin) {
-        checkState(!registeredPlugins.containsKey(plugin.getName()), "Plugin name already wired : <name=%s>", plugin.getName());
+    // ------------------------------------------------------------------------
+
+    public void wire(final Plugin plugin) {
+        checkState( ! registeredPlugins.containsKey(plugin.getName()), "Plugin name already wired : <name=%s>", plugin.getName());
         registeredPlugins.put(plugin.getName(), plugin);
         plugin.initialize(
                 new PlatformContext(
@@ -105,8 +110,8 @@ public class PlatformWirer {
         firePluginRegistered(plugin);
     }
 
-    public DomainDescriptor wire(DomainBundle bundle) {
-        checkState(!registeredBundleNames.contains(bundle.getName()), "Bundle name already wired : <name=%s>", bundle.getName());
+    public DomainDescriptor wire(final DomainBundle bundle) {
+        checkState( ! registeredBundleNames.contains(bundle.getName()), "Bundle name already wired : <name=%s>", bundle.getName());
         bundle.configure(
                 new PlatformContext(
                         config,
@@ -187,18 +192,19 @@ public class PlatformWirer {
         return domainDescriptor;
     }
 
-    public void wire(CommandInterceptorFactory factory) {
+    public void wire(final CommandInterceptorFactory factory) {
         commandGateway.register(factory);
     }
-    public void wire(QueryInterceptorFactory factory) {
+
+    public void wire(final QueryInterceptorFactory factory) {
         queryGateway.register(factory);
     }
 
-    public void wire(EventInterceptorFactory factory) {
+    public void wire(final EventInterceptorFactory factory) {
         eventBus.register(factory);
     }
 
-    public void register(ExtraComponent extraComponent) {
+    public void register(final ExtraComponent extraComponent) {
         checkNotNull(extraComponent);
         extraComponents.add(extraComponent);
     }
@@ -212,15 +218,16 @@ public class PlatformWirer {
 
     private void fireDomainBundleRegistered(final DomainDescriptor domainDescriptor) {
         checkNotNull(domainDescriptor);
-        for (Plugin plugin : sortRegisteredPlugins()) {
-            plugin.domainRegistered(domainDescriptor);
+        for (final Plugin plugin : sortRegisteredPlugins()) {
+            plugin.onDomainRegistered(domainDescriptor);
         }
     }
 
     private void firePluginRegistered(final Plugin registeredPlugin) {
         checkNotNull(registeredPlugin);
-        for (Plugin plugin : sortRegisteredPlugins()) {
-            plugin.pluginRegistered(registeredPlugin);
+        for (final Plugin plugin : sortRegisteredPlugins()) {
+            plugin.onPluginRegistered(registeredPlugin);
         }
     }
+
 }

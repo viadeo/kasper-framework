@@ -15,23 +15,24 @@ public interface PlatformAware {
      * Invoked when a platform is started
      * @param platform a platform
      */
-    void platformStarted(Platform platform);
+    void onPlatformStarted(Platform platform);
 
     /**
      * Invoked when a platform is stopped
      * @param platform a platform
      */
-    void platformStopped(Platform platform);
+    void onPlatformStopped(Platform platform);
 
     /**
      * Invoked when a domain is registered
      * @param domainDescriptor the registered domain descriptor
      */
-    void domainRegistered(DomainDescriptor domainDescriptor);
+    void onDomainRegistered(DomainDescriptor domainDescriptor);
 
     /**
      * Invoked when a plugin is registered
      * @param plugin the registered plugin
      */
-    void pluginRegistered(Plugin plugin);
+    void onPluginRegistered(Plugin plugin);
+
 }

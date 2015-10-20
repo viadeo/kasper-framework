@@ -555,7 +555,7 @@ public class DefaultPlatformBuilderUTest {
 //        // Given
 //        final DomainHelper domainHelper = mock(DomainHelper.class);
 //
-//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration());
+//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformSpringConfiguration());
 //        builder.setDomainHelper(domainHelper);
 //
 //        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain()).build();

@@ -26,7 +26,6 @@ public final class Platforms {
                         , KasperQueryConfiguration.class
                         , AuthenticationConfiguration.class
                         , KasperEventBusConfiguration.class
-                        , KasperPlatformSpringConfiguration.class
                 );
     }
 

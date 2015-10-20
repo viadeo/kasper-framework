@@ -46,11 +46,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * domain to come
  * </p>
  */
-public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
+public class HttpEventExposer extends HttpExposer<Event, EventListener, KasperResponse> {
 
     private static final long serialVersionUID = 3099102125586430908L;
 
-    private final transient List<ExposureDescriptor<Event, EventListener>> descriptors;
     private final transient KasperEventBus eventBus;
 
     private final ObjectToHttpServletResponse objectToHttpResponse;
@@ -74,20 +73,14 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
                             final List<ExposureDescriptor<Event, EventListener>> descriptors,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
-        super(contextDeserializer, meta);
+        super(contextDeserializer, meta, descriptors);
         this.eventBus = checkNotNull(eventBus);
-        this.descriptors = checkNotNull(descriptors);
 
         this.httpRequestToObject = new HttpServletRequestToObject.JsonToObjectMapper(mapper);
         this.objectToHttpResponse = new ObjectToHttpServletResponse(mapper);
     }
 
     // ------------------------------------------------------------------------
-
-    public void register(ExposureDescriptor<Event,EventListener> exposureDescriptor) {
-        checkNotNull(exposureDescriptor);
-        descriptors.add(exposureDescriptor);
-    }
 
     @Override
     public void init() throws ServletException {
@@ -96,7 +89,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
         final MultiValueMap<Class<? extends Event>, String> aliasesByEventClasses = CollectionUtils.toMultiValueMap(Maps.<Class<? extends Event>, List<String>>newHashMap());
         final Set<Class<? extends Event>> eventClasses = Sets.newHashSet();
 
-        for (final ExposureDescriptor<Event, EventListener> descriptor : descriptors) {
+        for (final ExposureDescriptor<Event, EventListener> descriptor : getDescriptors()) {
             for (final String alias : AliasRegistry.aliasesFrom(descriptor.getInput())) {
                 aliasesByEventClasses.add(descriptor.getInput(), alias);
             }

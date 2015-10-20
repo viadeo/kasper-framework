@@ -54,7 +54,7 @@ public class DocumentationPluginUTest {
         // Given
         final DocumentationPlugin documentationPlugin = new DocumentationPlugin();
         documentationPlugin.initialize(mock(PlatformContext.class));
-        documentationPlugin.platformStarted(mock(Platform.class));
+        documentationPlugin.onPlatformStarted(mock(Platform.class));
 
         // When
         final DocumentedPlatform documentedPlatform = documentationPlugin.getDocumentedPlatform();
@@ -71,7 +71,7 @@ public class DocumentationPluginUTest {
 
         // When
         documentationPlugin.initialize(mock(PlatformContext.class));
-        documentationPlugin.platformStarted(mock(Platform.class));
+        documentationPlugin.onPlatformStarted(mock(Platform.class));
 
         // Then
         assertTrue(documentationPlugin.isInitialized());
@@ -90,8 +90,8 @@ public class DocumentationPluginUTest {
 
         // When
         documentationPlugin.initialize(mock(PlatformContext.class));
-        documentationPlugin.domainRegistered(descriptor);
-        documentationPlugin.platformStarted(mock(Platform.class));
+        documentationPlugin.onDomainRegistered(descriptor);
+        documentationPlugin.onPlatformStarted(mock(Platform.class));
 
         // Then
         assertTrue(documentationPlugin.isInitialized());
@@ -106,7 +106,7 @@ public class DocumentationPluginUTest {
 
         // When
         documentationPlugin.initialize(mock(PlatformContext.class));
-        documentationPlugin.domainRegistered(null);
+        documentationPlugin.onDomainRegistered(null);
 
         // Then throws an exception
     }
@@ -116,7 +116,7 @@ public class DocumentationPluginUTest {
         // Given
         final DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
         documentationPlugin.initialize(mock(PlatformContext.class));
-        documentationPlugin.platformStarted(mock(Platform.class));
+        documentationPlugin.onPlatformStarted(mock(Platform.class));
 
         // When
         List<DocumentedPlatform> documentedPlatforms = documentationPlugin.get(DocumentedPlatform.class);

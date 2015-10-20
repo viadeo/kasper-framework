@@ -24,24 +24,25 @@ public abstract class PluginAdapter implements Plugin {
     }
 
     @Override
-    public <E> List<E> get(Class<E> clazz) {
+    public <E> List<E> get(final Class<E> clazz) {
         return Lists.newArrayList();
     }
 
     @Override
-    public void platformStarted(Platform platform) { }
+    public void onPlatformStarted(final Platform platform) { /* Do nothing */ }
 
     @Override
-    public void platformStopped(Platform platform) { }
+    public void onPlatformStopped(final Platform platform) { /* Do nothing */ }
 
     @Override
-    public void domainRegistered(DomainDescriptor domainDescriptor) { }
+    public void onDomainRegistered(final DomainDescriptor domainDescriptor) { /* Do nothing */ }
 
     @Override
-    public void pluginRegistered(Plugin plugin) { }
+    public void onPluginRegistered(final Plugin plugin) { /* Do nothing */  }
 
     @Override
     public int getPhase() {
         return Integer.MIN_VALUE;
     }
+
 }

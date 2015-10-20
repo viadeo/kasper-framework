@@ -41,16 +41,19 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpExposurePlugin extends PluginAdapter {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpExposurePlugin.class);
 
     private final HealthCheckRegistry healthCheckRegistry;
     private final HttpContextDeserializer contextDeserializer;
     private final DefaultResourceConfig resourceConfig;
+
     private Server server;
+
     private HttpCommandExposer commandExposer;
     private HttpQueryExposer queryExposer;
     private HttpEventExposer eventExposer;
+
+    // ------------------------------------------------------------------------
 
     public HttpExposurePlugin() {
         this(new SimpleHttpContextDeserializer());
@@ -63,6 +66,8 @@ public class HttpExposurePlugin extends PluginAdapter {
         this.resourceConfig = new DefaultResourceConfig();
         this.resourceConfig.getFeatures().put(ResourceConfig.FEATURE_DISABLE_WADL, true);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public void initialize(final PlatformContext context) {
@@ -111,7 +116,7 @@ public class HttpExposurePlugin extends PluginAdapter {
     }
 
     @Override
-    public void platformStarted(Platform platform) {
+    public void onPlatformStarted(final Platform platform) {
         LOGGER.info("Exposing {} command handlers", commandExposer.getExposedInputs().size());
         LOGGER.info("Exposing {} query handlers", queryExposer.getExposedInputs().size());
         LOGGER.info("Exposing {} event listeners", eventExposer.getExposedInputs().size());
@@ -126,14 +131,14 @@ public class HttpExposurePlugin extends PluginAdapter {
     }
 
     @Override
-    public void platformStopped(final Platform platform) {
+    public void onPlatformStopped(final Platform platform) {
         if (server != null) {
             server.stop();
         }
     }
 
     @Override
-    public void domainRegistered(final DomainDescriptor domainDescriptor) {
+    public void onDomainRegistered(final DomainDescriptor domainDescriptor) {
         checkNotNull(domainDescriptor);
 
         for (final Class<? extends Event> eventClass : domainDescriptor.getEventClasses()) {
@@ -150,7 +155,7 @@ public class HttpExposurePlugin extends PluginAdapter {
     }
 
     @Override
-    public void pluginRegistered(final Plugin plugin) {
+    public void onPluginRegistered(final Plugin plugin) {
         checkNotNull(plugin);
 
         for (final DocumentedPlatform documentedPlatform : plugin.get(DocumentedPlatform.class)) {
@@ -193,4 +198,5 @@ public class HttpExposurePlugin extends PluginAdapter {
     protected HttpEventExposer getEventExposer() {
         return eventExposer;
     }
+
 }

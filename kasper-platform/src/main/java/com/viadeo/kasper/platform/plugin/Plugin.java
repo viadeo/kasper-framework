@@ -22,17 +22,19 @@ public interface Plugin extends PlatformAware {
 
     static final Comparator<Plugin> COMPARATOR = new Comparator<Plugin>() {
         @Override
-        public int compare(Plugin o1, Plugin o2) {
+        public int compare(final Plugin o1, final Plugin o2) {
             return Integer.compare(o1.getPhase(), o2.getPhase());
         }
     };
 
     static final Comparator<Plugin> REVERSED_COMPARATOR = new Comparator<Plugin>() {
         @Override
-        public int compare(Plugin o1, Plugin o2) {
+        public int compare(final Plugin o1, final Plugin o2) {
             return -1 * Integer.compare(o1.getPhase(), o2.getPhase());
         }
     };
+
+    // ------------------------------------------------------------------------
 
     /**
      * Initialize the plugin
@@ -58,4 +60,5 @@ public interface Plugin extends PlatformAware {
      * @return a list with the matching beans
      */
     <E> List<E> get(Class<E> clazz);
+
 }

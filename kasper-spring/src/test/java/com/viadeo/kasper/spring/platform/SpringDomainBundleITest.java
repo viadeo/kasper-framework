@@ -26,7 +26,7 @@ public class SpringDomainBundleITest {
         final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
         @Override
-        public void domainRegistered(DomainDescriptor domainDescriptor) {
+        public void onDomainRegistered(DomainDescriptor domainDescriptor) {
             domainDescriptors.add(domainDescriptor);
         }
     }

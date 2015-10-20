@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkState;
 public class DocumentationPlugin extends PluginAdapter {
 
     private final DocumentedPlatform documentedPlatform;
+
     private boolean initialized;
 
     // ------------------------------------------------------------------------
@@ -46,18 +47,19 @@ public class DocumentationPlugin extends PluginAdapter {
     }
 
     @Override
-    public void platformStarted(Platform platform) {
+    public void onPlatformStarted(final Platform platform) {
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
         initialized = true;
     }
 
     @Override
-    public void domainRegistered(DomainDescriptor domainDescriptor) {
+    public void onDomainRegistered(final DomainDescriptor domainDescriptor) {
         documentedPlatform.registerDomain(domainDescriptor.getName(), domainDescriptor);
     }
 
     @Override
-    public <E> List<E> get(Class<E> clazz) {
+    @SuppressWarnings("unchecked")
+    public <E> List<E> get(final Class<E> clazz) {
         if (DocumentedPlatform.class.isAssignableFrom(clazz)) {
             return (List<E>) Lists.newArrayList(documentedPlatform);
         }
@@ -68,4 +70,5 @@ public class DocumentationPlugin extends PluginAdapter {
     public int getPhase() {
         return Integer.MAX_VALUE - 1;
     }
+
 }
