@@ -15,7 +15,6 @@ import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
-import com.viadeo.kasper.api.response.KasperResponse;
 import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
@@ -120,7 +119,7 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
     }
 
     static class AuthenticatedCommandResponse<TOKEN extends Serializable> extends CommandResponse {
-        public AuthenticatedCommandResponse(KasperResponse response, TOKEN token) {
+        public AuthenticatedCommandResponse(CommandResponse response, TOKEN token) {
             super(response);
             withAuthenticationToken(token);
         }
