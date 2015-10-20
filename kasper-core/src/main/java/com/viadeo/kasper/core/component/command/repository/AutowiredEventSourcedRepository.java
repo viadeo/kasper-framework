@@ -29,6 +29,8 @@ public abstract class AutowiredEventSourcedRepository<ID extends KasperID, AGR e
 
     private AxonEventSourcedRepository<ID,AGR> axonEventSourcedRepository;
 
+    // ------------------------------------------------------------------------
+
     protected AutowiredEventSourcedRepository() {
         super(null, null);
     }
@@ -39,21 +41,25 @@ public abstract class AutowiredEventSourcedRepository<ID extends KasperID, AGR e
         return axonEventSourcedRepository;
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void setEventBus(EventBus eventBus) {
+    public void setEventBus(final EventBus eventBus) {
         checkNotNull(eventBus);
         getAxonRepository().setEventBus(eventBus);
         this.eventBus = eventBus;
     }
 
     @Override
-    public void setEventStore(EventStore eventStore) {
+    public void setEventStore(final EventStore eventStore) {
         checkNotNull(eventStore);
         this.eventStore.init(eventStore);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    protected Optional<AGR> doLoad(ID aggregateIdentifier, Long expectedVersion) {
+    protected Optional<AGR> doLoad(final ID aggregateIdentifier, final Long expectedVersion) {
         try {
             return Optional.of(
                     this.axonEventSourcedRepository.doRealLoad(aggregateIdentifier, expectedVersion)
@@ -64,12 +70,13 @@ public abstract class AutowiredEventSourcedRepository<ID extends KasperID, AGR e
     }
 
     @Override
-    protected void doSave(AGR aggregate) {
+    protected void doSave(final AGR aggregate) {
         this.axonEventSourcedRepository.doRealSaveWithLock(aggregate);
     }
 
     @Override
-    protected void doDelete(AGR aggregate) {
+    protected void doDelete(final AGR aggregate) {
         this.axonEventSourcedRepository.doRealDeleteWithLock(aggregate);
     }
+
 }

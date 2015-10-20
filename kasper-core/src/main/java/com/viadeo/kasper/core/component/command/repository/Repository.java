@@ -103,4 +103,5 @@ public interface Repository<ID extends KasperID, AGR extends AggregateRoot> {
      * @return the repository class
      */
     Class<?> getRepositoryClass();
+
 }

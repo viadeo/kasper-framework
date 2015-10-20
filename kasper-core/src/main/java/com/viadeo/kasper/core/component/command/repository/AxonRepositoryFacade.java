@@ -12,8 +12,13 @@ public interface AxonRepositoryFacade<AGR extends AggregateRoot>
         extends org.axonframework.repository.Repository<AGR>
 {
     void save(AGR aggregate);
+
     void update(AGR aggregate);
+
     void delete(AGR aggregate);
+
     AGR get(Object aggregateIdentifier, Long expectedVersion);
+
     AGR get(Object aggregateIdentifier);
+
 }

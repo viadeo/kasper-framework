@@ -23,24 +23,24 @@ public abstract class AutowiredRepository<ID extends KasperID, AGR extends Aggre
     extends BaseRepository<ID,AGR>
     implements WirableRepository
 {
-
     protected AutowiredRepository() {
         super(null);
     }
 
     @Override
-    public void setEventBus(EventBus eventBus) {
+    public void setEventBus(final EventBus eventBus) {
         checkNotNull(eventBus);
         getAxonRepository().setEventBus(eventBus);
         this.eventBus = eventBus;
     }
 
     @Override
-    public void setEventStore(EventStore eventStore) {
+    public void setEventStore(final EventStore eventStore) {
         checkNotNull(eventStore);
         this.eventStore.init(eventStore);
     }
 
     // FIXME remove as soon as this method
     public void init() {}
+
 }

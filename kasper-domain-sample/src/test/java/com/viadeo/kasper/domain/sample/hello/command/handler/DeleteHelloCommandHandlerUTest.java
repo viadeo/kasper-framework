@@ -14,19 +14,12 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.domain.sample.hello.api.command.DeleteHelloCommand;
 import com.viadeo.kasper.domain.sample.hello.command.entity.Hello;
 import com.viadeo.kasper.domain.sample.hello.command.repository.HelloRepository;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 

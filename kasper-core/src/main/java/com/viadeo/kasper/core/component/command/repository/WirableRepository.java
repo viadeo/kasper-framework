@@ -20,11 +20,12 @@ public interface WirableRepository {
      * Wires an event bus on this <code>Repository</code> instance.
      * @param eventBus an event bus
      */
-    void setEventBus(final EventBus eventBus);
+    void setEventBus(EventBus eventBus);
 
     /**
      * Wires an event store on this <code>Repository</code> instance.
      * @param eventStore an event bus
      */
-    void setEventStore(final EventStore eventStore);
+    void setEventStore(EventStore eventStore);
+
 }

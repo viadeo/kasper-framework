@@ -20,46 +20,50 @@ public class AxonRepository<ID extends KasperID, AGR extends AggregateRoot>
 
     private final AbstractRepository<ID,AGR> repository;
 
-    public AxonRepository(AbstractRepository<ID, AGR> repository) {
+    // ------------------------------------------------------------------------
+
+    public AxonRepository(final AbstractRepository<ID, AGR> repository) {
         super(repository.getAggregateClass());
         this.repository = checkNotNull(repository);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void save(AGR aggregate) {
+    public void save(final AGR aggregate) {
         doSave(aggregate);
     }
 
     @Override
-    public void update(AGR aggregate) {
+    public void update(final AGR aggregate) {
         doUpdate(aggregate);
     }
 
     @Override
-    public void delete(AGR aggregate) {
+    public void delete(final AGR aggregate) {
         doDelete(aggregate);
     }
 
     @Override
-    public AGR load(Object aggregateIdentifier) {
+    public AGR load(final Object aggregateIdentifier) {
         return load(aggregateIdentifier, null);
     }
 
     @Override
-    public AGR get(Object aggregateIdentifier, Long expectedVersion) {
+    public AGR get(final Object aggregateIdentifier, final Long expectedVersion) {
         return doLoad(aggregateIdentifier, expectedVersion);
     }
 
     @Override
-    public AGR get(Object aggregateIdentifier) {
+    public AGR get(final Object aggregateIdentifier) {
         return get(aggregateIdentifier, null);
     }
 
     @Override
-    protected void doSave(AGR aggregate) {
+    protected void doSave(final AGR aggregate) {
         checkNotNull(aggregate);
 
-        if (aggregate.getVersion() != null) {
+        if (null != aggregate.getVersion()) {
             doUpdate(aggregate);
         } else {
             repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
@@ -68,11 +72,11 @@ public class AxonRepository<ID extends KasperID, AGR extends AggregateRoot>
         }
     }
 
-    protected void doUpdate(AGR aggregate) {
+    protected void doUpdate(final AGR aggregate) {
         checkNotNull(aggregate);
         repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
 
-        if (aggregate.getVersion() != null) {
+        if (null != aggregate.getVersion()) {
             aggregate.setVersion(aggregate.getVersion() + 1L);
         }
 
@@ -81,7 +85,7 @@ public class AxonRepository<ID extends KasperID, AGR extends AggregateRoot>
 
     @SuppressWarnings("unchecked")
     @Override
-    protected AGR doLoad(Object aggregateIdentifier, Long expectedVersion) {
+    protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
         checkNotNull(aggregateIdentifier);
 
         final Optional<AGR> optionalAggregate = repository.doLoad((ID) aggregateIdentifier, expectedVersion);
@@ -98,11 +102,11 @@ public class AxonRepository<ID extends KasperID, AGR extends AggregateRoot>
     }
 
     @Override
-    protected void doDelete(AGR aggregate) {
+    protected void doDelete(final AGR aggregate) {
         checkNotNull(aggregate);
         repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
 
-        if (aggregate.getVersion() != null) {
+        if (null != aggregate.getVersion()) {
             aggregate.setVersion(aggregate.getVersion() + 1L);
         }
 

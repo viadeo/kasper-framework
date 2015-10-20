@@ -44,4 +44,5 @@ public abstract class BaseEntityCommandHandler<COMMAND extends Command, AGGREGAT
     public Class<AGGREGATE> getAggregateClass() {
         return aggregateClass;
     }
+
 }

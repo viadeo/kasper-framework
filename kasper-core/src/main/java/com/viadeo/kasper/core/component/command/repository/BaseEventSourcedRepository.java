@@ -31,6 +31,8 @@ public abstract class BaseEventSourcedRepository<ID extends KasperID,AGR extends
         super(metricRegistry, eventStore, eventBus);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     protected AxonEventSourcedRepository<ID,AGR> createAxonRepository(final MetricRegistry metricRegistry, final AbstractRepository<ID,AGR> repository) {
         return new AxonEventSourcedRepository<>(

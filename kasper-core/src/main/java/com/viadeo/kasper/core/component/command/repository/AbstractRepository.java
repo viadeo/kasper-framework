@@ -45,6 +45,8 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
      */
     private final MetricRegistry metricRegistry;
 
+    // ------------------------------------------------------------------------
+
     public AbstractRepository(final MetricRegistry metricRegistry, final EventStore eventStore, final EventBus eventBus) {
         this(metricRegistry, new EventStoreWrapper().init(eventStore), eventBus);
     }
@@ -55,8 +57,10 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
         this.eventBus = eventBus;
     }
 
+    // ------------------------------------------------------------------------
+
     protected AxonRepositoryFacade<AGR> getAxonRepository() {
-        if (axonRepository == null) {
+        if (null == axonRepository) {
             this.axonRepository = createAxonRepository(metricRegistry, this);
         }
         return axonRepository;
@@ -67,7 +71,11 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
         this.axonRepository = axonRepository;
     }
 
-    protected abstract AxonRepositoryFacade<AGR> createAxonRepository(final MetricRegistry metricRegistry, final AbstractRepository<ID,AGR> repository);
+    protected abstract AxonRepositoryFacade<AGR> createAxonRepository(
+            final MetricRegistry metricRegistry, final AbstractRepository<ID,AGR> repository
+    );
+
+    // ------------------------------------------------------------------------
 
     /**
      * loads an aggregate from the repository
@@ -118,9 +126,11 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
         throw new UnsupportedOperationException("has() operation not implemented");
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public Class<AGR> getAggregateClass() {
-        if (aggregateClass == null) {
+        if (null == aggregateClass) {
             @SuppressWarnings("unchecked") // Safe
             final Optional<Class<AGR>> entityType =
                     (Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
@@ -136,7 +146,7 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
     }
 
     @Override
-    public void add(AGR aggregate) {
+    public void add(final AGR aggregate) {
         /* All aggregates must have an ID */
         if (null == aggregate.getIdentifier()) {
             throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
@@ -146,22 +156,22 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
     }
 
     @Override
-    public boolean has(ID id) {
+    public boolean has(final ID id) {
         return doHas(id);
     }
 
     @Override
-    public void save(AGR aggregate) {
+    public void save(final AGR aggregate) {
         getAxonRepository().save(aggregate);
     }
 
     @Override
-    public void delete(AGR aggregate) {
+    public void delete(final AGR aggregate) {
         getAxonRepository().delete(aggregate);
     }
 
     @Override
-    public Optional<AGR> load(ID aggregateIdentifier) {
+    public Optional<AGR> load(final ID aggregateIdentifier) {
         try {
             return Optional.fromNullable(getAxonRepository().load(aggregateIdentifier));
         } catch (AggregateNotFoundException e) {
@@ -170,27 +180,27 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
     }
 
     @Override
-    public Optional<AGR> load(ID aggregateIdentifier, Long expectedVersion) {
+    public Optional<AGR> load(final ID aggregateIdentifier, final Long expectedVersion) {
         return Optional.fromNullable(getAxonRepository().load(aggregateIdentifier, expectedVersion));
     }
 
     @Deprecated
-    public AGR loadWithException(ID aggregateIdentifier) throws AggregateNotFoundException {
+    public AGR loadWithException(final ID aggregateIdentifier) throws AggregateNotFoundException {
         return getAxonRepository().load(aggregateIdentifier);
     }
 
     @Override
-    public Optional<AGR> get(ID aggregateIdentifier) {
+    public Optional<AGR> get(final ID aggregateIdentifier) {
         return Optional.fromNullable(getAxonRepository().get(aggregateIdentifier));
     }
 
     @Override
-    public Optional<AGR> get(ID aggregateIdentifier, final Long expectedVersion) {
+    public Optional<AGR> get(final ID aggregateIdentifier, final Long expectedVersion) {
         return Optional.fromNullable(getAxonRepository().get(aggregateIdentifier, expectedVersion));
     }
 
     @Deprecated
-    public AGR getWithException(ID aggregateIdentifier) throws AggregateNotFoundException {
+    public AGR getWithException(final ID aggregateIdentifier) throws AggregateNotFoundException {
         return getAxonRepository().get(aggregateIdentifier);
     }
 
@@ -211,16 +221,17 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
         }
 
         @Override
-        public void appendEvents(String type, DomainEventStream events) {
+        public void appendEvents(final String type, final DomainEventStream events) {
             if (eventStore != null) {
                 eventStore.appendEvents(type, events);
             }
         }
 
         @Override
-        public DomainEventStream readEvents(String type, Object identifier) {
+        public DomainEventStream readEvents(final String type, final Object identifier) {
             checkState(eventStore != null);
             return eventStore.readEvents(type, identifier);
         }
     }
+
 }

@@ -47,6 +47,8 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
     private final MetricRegistry metricRegistry;
     private final AbstractRepository<ID,AGR> repository;
 
+    // ------------------------------------------------------------------------
+
     public MeasuredRepository(final MetricRegistry metricRegistry, final AbstractRepository<ID,AGR> repository) {
         super(metricRegistry, repository.eventStore, repository.eventBus);
         this.metricRegistry = checkNotNull(metricRegistry);
@@ -60,6 +62,8 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
         this.meterDeleteErrorsName = name(repository.getRepositoryClass(), "delete-errors");
     }
 
+    // ------------------------------------------------------------------------
+
     protected AxonRepositoryFacade<AGR> createAxonRepository(
             final MetricRegistry metricRegistry,
             final AbstractRepository<ID,AGR> repository
@@ -68,10 +72,11 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
     }
 
     @Override
-    protected void doUpdate(AGR aggregate) {
+    protected void doUpdate(final AGR aggregate) {
         final Timer.Context timer = metricRegistry.timer(timerSaveTimeName).time();
 
         try {
+
             repository.doUpdate(aggregate);
 
         } catch (final Exception exception) {
@@ -86,10 +91,11 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
     }
 
     @Override
-    protected void doSave(AGR aggregate) {
+    protected void doSave(final AGR aggregate) {
         final Timer.Context timer = metricRegistry.timer(timerSaveTimeName).time();
 
         try {
+
             repository.doSave(aggregate);
 
         } catch (final Exception exception) {
@@ -104,12 +110,13 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
     }
 
     @Override
-    protected Optional<AGR>  doLoad(ID aggregateIdentifier, Long expectedVersion) {
+    protected Optional<AGR>  doLoad(final ID aggregateIdentifier, final Long expectedVersion) {
         final Timer.Context timer = metricRegistry.timer(timerLoadTimeName).time();
 
         final Optional<AGR> agr;
 
         try {
+
             agr = repository.doLoad(aggregateIdentifier, expectedVersion);
 
         } catch (final Exception exception) {
@@ -126,10 +133,11 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
     }
 
     @Override
-    protected void doDelete(AGR aggregate) {
+    protected void doDelete(final AGR aggregate) {
         final Timer.Context timer = metricRegistry.timer(timerDeleteTimeName).time();
 
         try {
+
             repository.doDelete(aggregate);
 
         } catch (final Exception exception) {
@@ -149,42 +157,42 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
     }
 
     @Override
-    public void save(AGR aggregate) {
+    public void save(final AGR aggregate) {
         repository.save(aggregate);
     }
 
     @Override
-    public Optional<AGR> load(ID aggregateIdentifier, Long expectedVersion) {
+    public Optional<AGR> load(final ID aggregateIdentifier, final Long expectedVersion) {
         return repository.load(aggregateIdentifier, expectedVersion);
     }
 
     @Override
-    public Optional<AGR> load(ID aggregateIdentifier) {
+    public Optional<AGR> load(final ID aggregateIdentifier) {
         return repository.load(aggregateIdentifier);
     }
 
     @Override
-    public void delete(AGR aggregate) {
+    public void delete(final AGR aggregate) {
         repository.delete(aggregate);
     }
 
     @Override
-    public void add(AGR aggregate) {
+    public void add(final AGR aggregate) {
         repository.add(aggregate);
     }
 
     @Override
-    public boolean has(ID id) {
+    public boolean has(final ID id) {
         return repository.has(id);
     }
 
     @Override
-    public Optional<AGR> get(ID aggregateIdentifier, Long expectedVersion) {
+    public Optional<AGR> get(final ID aggregateIdentifier, final Long expectedVersion) {
         return repository.get(aggregateIdentifier, expectedVersion);
     }
 
     @Override
-    public Optional<AGR> get(ID aggregateIdentifier) {
+    public Optional<AGR> get(final ID aggregateIdentifier) {
         return repository.get(aggregateIdentifier);
     }
 

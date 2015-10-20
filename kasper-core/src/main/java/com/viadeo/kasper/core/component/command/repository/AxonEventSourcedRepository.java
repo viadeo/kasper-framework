@@ -19,18 +19,21 @@ public class AxonEventSourcedRepository<ID extends KasperID, AGR extends Aggrega
 {
     private final AbstractRepository<ID,AGR> repository;
 
-    public AxonEventSourcedRepository(AbstractRepository<ID, AGR> repository, final EventStore eventStore) {
+    // ------------------------------------------------------------------------
+
+    public AxonEventSourcedRepository(final AbstractRepository<ID, AGR> repository, final EventStore eventStore) {
         super(repository.getAggregateClass(), eventStore);
         this.repository = checkNotNull(repository);
     }
 
+    // ------------------------------------------------------------------------
 
     @Override
-    public void save(AGR aggregate) {
+    public void save(final AGR aggregate) {
         checkNotNull(aggregate);
         repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
 
-        if (aggregate.getVersion() != null && aggregate.getVersion() > 0L) {
+        if ((null != aggregate.getVersion()) && (aggregate.getVersion() > 0L)) {
             aggregate.setVersion(aggregate.getVersion() + 1L);
             repository.doUpdate(aggregate);
         } else {
@@ -40,11 +43,11 @@ public class AxonEventSourcedRepository<ID extends KasperID, AGR extends Aggrega
     }
 
     @Override
-    public void update(AGR aggregate) {
+    public void update(final AGR aggregate) {
         checkNotNull(aggregate);
         repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
 
-        if (aggregate.getVersion() != null) {
+        if (null != aggregate.getVersion()) {
             aggregate.setVersion(aggregate.getVersion() + 1L);
         }
 
@@ -52,11 +55,11 @@ public class AxonEventSourcedRepository<ID extends KasperID, AGR extends Aggrega
     }
 
     @Override
-    public void delete(AGR aggregate) {
+    public void delete(final AGR aggregate) {
         checkNotNull(aggregate);
         repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
 
-        if (aggregate.getVersion() != null) {
+        if (null != aggregate.getVersion()) {
             aggregate.setVersion(aggregate.getVersion() + 1L);
         }
 
@@ -64,16 +67,16 @@ public class AxonEventSourcedRepository<ID extends KasperID, AGR extends Aggrega
     }
 
     @Override
-    public AGR get(Object aggregateIdentifier, Long expectedVersion) {
-        AGR agr = doLoad(aggregateIdentifier, expectedVersion);
-        if (agr != null &&  agr.getVersion() == null) {
+    public AGR get(final Object aggregateIdentifier, Long expectedVersion) {
+        final AGR agr = doLoad(aggregateIdentifier, expectedVersion);
+        if (null != agr) &&  (null != agr.getVersion()) {
             agr.setVersion(0L);
         }
         return agr;
     }
 
     @Override
-    public AGR get(Object aggregateIdentifier) {
+    public AGR get(final Object aggregateIdentifier) {
         return get(aggregateIdentifier, null);
     }
 
@@ -88,4 +91,5 @@ public class AxonEventSourcedRepository<ID extends KasperID, AGR extends Aggrega
     public void doRealDeleteWithLock(final AGR aggregate) {
         super.doDeleteWithLock(aggregate);
     }
+
 }
