@@ -28,7 +28,7 @@ public class InMemoryAuthentication implements Authenticator, AuthenticationToke
         this.tokens.put(token, subjectID);
     }
 
-    public void removeToken(final String token) {
+    public void revoke(final String token) {
         this.tokens.remove(token);
     }
 
@@ -57,11 +57,8 @@ public class InMemoryAuthentication implements Authenticator, AuthenticationToke
     @Override
     public String generate(final ID subjectID, final Map<String, Object> properties) {
         checkNotNull(subjectID);
-
         final String token = UUID.randomUUID().toString();
         addToken(token, subjectID);
-
         return token;
     }
-
 }

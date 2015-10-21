@@ -90,7 +90,7 @@ public class InMemoryAuthenticationUTest {
                 .build();
 
         // When
-        inMemoryAuthentication.removeToken(token);
+        inMemoryAuthentication.revoke(token);
 
         // Then
         assertFalse(inMemoryAuthentication.isAuthenticated(context));

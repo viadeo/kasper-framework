@@ -13,6 +13,7 @@ import java.util.Map;
 
 public interface AuthenticationTokenGenerator<TOKEN extends Serializable> {
 
-    TOKEN generate(ID subjectID, Map<String, Object> properties);
+    TOKEN generate(final ID subjectID, final Map<String, Object> properties);
 
+    void revoke(final TOKEN token);
 }
