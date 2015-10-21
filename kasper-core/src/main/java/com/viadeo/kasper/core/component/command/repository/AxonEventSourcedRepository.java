@@ -69,7 +69,7 @@ public class AxonEventSourcedRepository<ID extends KasperID, AGR extends Aggrega
     @Override
     public AGR get(final Object aggregateIdentifier, Long expectedVersion) {
         final AGR agr = doLoad(aggregateIdentifier, expectedVersion);
-        if (null != agr) &&  (null != agr.getVersion()) {
+        if (null != agr &&  null != agr.getVersion()) {
             agr.setVersion(0L);
         }
         return agr;
