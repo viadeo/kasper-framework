@@ -30,4 +30,5 @@ dependencies {
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
     testCompile libraries.SPRING_TEST
+    testCompile libraries.HAMCREST
 }
