@@ -17,6 +17,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +27,6 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -131,7 +131,7 @@ public class KasperQueryGatewayITest {
 
         // Then
         exception.expect(ExecutionException.class);
-        exception.expectCause(isA(JSR303ViolationException.class));
+        exception.expectCause(IsInstanceOf.<Throwable>instanceOf(JSR303ViolationException.class));
 
         // When
         Future<QueryResponse<QueryResult>> future = queryGateway.retrieveForFuture(new TestQuery(null), Contexts.empty());
