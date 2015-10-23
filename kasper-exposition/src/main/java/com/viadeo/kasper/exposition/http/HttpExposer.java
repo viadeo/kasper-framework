@@ -118,6 +118,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         // This request serialization time
         Timer.Context timerRequestSerialization = null;
 
+        final String payload = getPayloadAsString(httpRequest);
+
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
         try {
@@ -130,7 +132,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             checkMediaType(httpRequest);
 
             /* 2) Extract the input and payload from request */
-            input = extractInput(httpRequest, requestToObject);
+            input = extractInput(httpRequest, requestToObject, payload);
 
             timerRequest = getMetricRegistry().timer(
                     name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "requests-time")
@@ -236,7 +238,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
                 sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
-                final String payload = getPayloadAsString(httpRequest);
                 final String truncatedPayload = payload.substring(0, Math.min(payload.length(), PAYLOAD_DEBUG_MAX_SIZE));
 
                 if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
@@ -251,7 +252,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     );
                 }
             } else if(response.getStatus() == KasperResponse.Status.FAILURE) {
-                final String payload = getPayloadAsString(httpRequest);
+
                 final String truncatedPayload = payload.substring(0, Math.min(payload.length(), PAYLOAD_DEBUG_MAX_SIZE));
 
                 requestLogger.error("Failure in {} [{}] : <reason={}> <payload={}>",
@@ -361,7 +362,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected INPUT extractInput(
             final HttpServletRequest httpRequest,
-            final HttpServletRequestToObject httpRequestToObject
+            final HttpServletRequestToObject httpRequestToObject,
+            final String payloadAsString
     ) throws HttpExposerException, IOException {
         long startMillis = System.currentTimeMillis();
 
@@ -381,12 +383,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             /* 3) Resolve the input class*/
             final Class<INPUT> inputClass = getInputClass(requestName);
 
-            /* 4) Extract payload*/
-            final String payload = getPayloadAsString(httpRequest);
-
             /* 4) Extract to a known input */
             try {
-                return httpRequestToObject.map(httpRequest, payload, inputClass);
+                return httpRequestToObject.map(httpRequest, payloadAsString, inputClass);
             } catch (Throwable t) {
                 throw new RuntimeException(String.format("Failed to deserialize payload : %s (reason: %s)", requestName, t.getMessage()), t);
             }
