@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.interceptor.authentication.spring;
+package com.viadeo.kasper.spring.core;
 
 import com.viadeo.kasper.core.interceptor.authentication.AuthenticationTokenGenerator;
 import com.viadeo.kasper.core.interceptor.authentication.Authenticator;

@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.interceptor.resilience.spring;
+package com.viadeo.kasper.spring.core;
 
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.interceptor.resilience.ResilienceConfigurator;

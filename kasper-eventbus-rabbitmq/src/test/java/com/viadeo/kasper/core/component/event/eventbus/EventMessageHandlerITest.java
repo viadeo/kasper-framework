@@ -29,13 +29,10 @@ import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfigurat
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
-import com.viadeo.kasper.core.config.spring.KasperConfiguration;
-import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
-import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.spring.core.KasperConfiguration;
 import com.viadeo.kasper.spring.core.KasperContextConfiguration;
 import com.viadeo.kasper.spring.core.KasperIDConfiguration;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
 import io.github.fallwizard.rabbitmq.mgmt.model.Queue;
 import org.axonframework.domain.EventMessage;

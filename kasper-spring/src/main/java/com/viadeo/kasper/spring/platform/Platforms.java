@@ -6,19 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.spring.platform;
 
-import com.viadeo.kasper.core.component.command.spring.KasperCommandConfiguration;
-import com.viadeo.kasper.core.component.event.eventbus.spring.KasperEventBusConfiguration;
-import com.viadeo.kasper.core.component.query.spring.KasperQueryConfiguration;
-import com.viadeo.kasper.core.context.spring.KasperContextConfiguration;
-import com.viadeo.kasper.core.id.spring.KasperIDConfiguration;
-import com.viadeo.kasper.core.interceptor.authentication.spring.AuthenticationConfiguration;
-import com.viadeo.kasper.core.metrics.spring.KasperMetricsConfiguration;
-import com.viadeo.kasper.spring.core.KasperCommandConfiguration;
-import com.viadeo.kasper.spring.core.KasperEventBusConfiguration;
-import com.viadeo.kasper.spring.core.KasperQueryConfiguration;
-import com.viadeo.kasper.spring.core.KasperContextConfiguration;
-import com.viadeo.kasper.spring.core.KasperIDConfiguration;
-import com.viadeo.kasper.spring.core.KasperMetricsConfiguration;
+import com.viadeo.kasper.spring.core.AuthenticationConfiguration;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.spring.core.*;
 
