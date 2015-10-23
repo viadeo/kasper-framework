@@ -7,7 +7,7 @@
 package com.viadeo.kasper.domain.sample.hello;
 
 import com.viadeo.kasper.domain.sample.hello.api.HelloDomain;
-import com.viadeo.kasper.platform.bundle.SpringBundle;
+import com.viadeo.kasper.spring.platform.SpringBundle;
 import org.springframework.context.ApplicationContext;
 
 import javax.inject.Inject;

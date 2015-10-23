@@ -18,8 +18,6 @@ import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInt
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
-import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
-import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
 import com.viadeo.kasper.core.component.event.saga.DefaultSagaManager;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;

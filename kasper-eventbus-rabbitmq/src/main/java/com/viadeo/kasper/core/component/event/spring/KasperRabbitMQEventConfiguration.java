@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.spring;
 
-import com.viadeo.kasper.core.component.event.eventbus.spring.KasperEventBusConfiguration;
+import com.viadeo.kasper.spring.core.KasperEventBusConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration;
 import org.springframework.context.annotation.Configuration;
