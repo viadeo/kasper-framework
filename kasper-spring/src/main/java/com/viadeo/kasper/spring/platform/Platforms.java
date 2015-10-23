@@ -20,6 +20,7 @@ import com.viadeo.kasper.spring.core.KasperContextConfiguration;
 import com.viadeo.kasper.spring.core.KasperIDConfiguration;
 import com.viadeo.kasper.spring.core.KasperMetricsConfiguration;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
+import com.viadeo.kasper.spring.core.*;
 
 // TOSO SPRING import com.viadeo.kasper.core.component.event.spring.KasperRabbitMQEventConfiguration;
 

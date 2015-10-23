@@ -13,7 +13,6 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaMapper;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactory;
-import com.viadeo.kasper.spring.core.DefaultSpringSagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.event.saga.factory.SagaFactoryProvider;
 import org.junit.Before;

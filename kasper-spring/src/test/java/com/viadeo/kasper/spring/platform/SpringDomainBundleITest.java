@@ -9,12 +9,10 @@ package com.viadeo.kasper.spring.platform;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.spring.platform.Platforms;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.platform.plugin.Plugin;
-import com.viadeo.kasper.spring.platform.SpringDomainBundle;
 import org.junit.Test;
 
 import java.util.List;

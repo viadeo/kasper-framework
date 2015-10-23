@@ -1,7 +1,6 @@
 package com.viadeo.kasper.spring.platform;
 
 
-import com.viadeo.kasper.spring.platform.SpringBundle;
 import com.viadeo.kasper.platform.bundle.fixture.api.DummyDomain;
 import org.springframework.context.ApplicationContext;
 

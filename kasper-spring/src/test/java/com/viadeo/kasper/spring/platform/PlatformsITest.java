@@ -7,7 +7,6 @@
 package com.viadeo.kasper.spring.platform;
 
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.spring.platform.Platforms;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

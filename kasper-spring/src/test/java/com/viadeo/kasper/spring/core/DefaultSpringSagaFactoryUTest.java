@@ -14,7 +14,6 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
 import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactory;
-import com.viadeo.kasper.spring.core.DefaultSpringSagaFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

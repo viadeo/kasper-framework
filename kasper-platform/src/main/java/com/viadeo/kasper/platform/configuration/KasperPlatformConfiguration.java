@@ -20,9 +20,6 @@ import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactor
 import com.viadeo.kasper.core.component.event.interceptor.EventValidationInterceptorFactory;
 import com.viadeo.kasper.core.component.event.saga.DefaultSagaManager;
 import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.event.saga.SagaManager;
-import com.viadeo.kasper.core.component.event.saga.spring.SagaConfiguration;
-import com.viadeo.kasper.core.component.event.saga.step.StepProcessor;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.component.query.interceptor.cache.CacheInterceptorFactory;

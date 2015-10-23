@@ -11,7 +11,6 @@ import com.viadeo.kasper.core.id.Converter;
 import com.viadeo.kasper.core.id.ConverterRegistry;
 import com.viadeo.kasper.core.id.TestConverters;
 import com.viadeo.kasper.core.id.TestFormats;
-import com.viadeo.kasper.spring.core.KasperIDConfiguration;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
