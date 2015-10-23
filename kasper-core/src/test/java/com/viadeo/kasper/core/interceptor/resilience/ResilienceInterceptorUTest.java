@@ -89,8 +89,8 @@ public class ResilienceInterceptorUTest {
         queryHandler = mockedQueryHandler();
 
         configurer = mock(ResilienceConfigurator.class);
-        when(configurer.configure(any(Query.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
-        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
+        when(configurer.configure(any(Query.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000, 10, 5));
+        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000, 10, 5));
 
         final MetricRegistry metricRegistry = new MetricRegistry();
         final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
@@ -197,7 +197,7 @@ public class ResilienceInterceptorUTest {
         // Given
         doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
         // we tweak the configuration in order to open the circuit breaker fo a specific input
-        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 0, 0, 100, 1000));
+        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 0, 0, 100, 1000, 10, 5));
 
         // When
         final QueryResponse<QueryResult> response = interceptorChain.next(new Query2(), Contexts.empty());

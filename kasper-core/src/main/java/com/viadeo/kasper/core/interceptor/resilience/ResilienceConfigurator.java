@@ -30,7 +30,9 @@ public class ResilienceConfigurator {
                 config.getInt("runtime.hystrix.circuitBreaker.requestVolumeThreshold"),
                 config.getInt("runtime.hystrix.circuitBreaker.thresholdInPercent"),
                 config.getInt("runtime.hystrix.circuitBreaker.sleepWindowInMillis"),
-                config.getInt("runtime.hystrix.execution.timeoutInMillis")
+                config.getInt("runtime.hystrix.execution.timeoutInMillis"),
+                config.getInt("runtime.hystrix.threadPool.coreSize"),
+                config.getInt("runtime.hystrix.threadPool.queueSizeRejectionThreshold")
         );
     }
 
@@ -52,7 +54,9 @@ public class ResilienceConfigurator {
                         getIntOr(config, "circuitBreaker.requestVolumeThreshold", defaultInputConfig.circuitBreakerRequestVolumeThreshold),
                         getIntOr(config, "circuitBreaker.thresholdInPercent", defaultInputConfig.circuitBreakerThresholdInPercent),
                         getIntOr(config, "circuitBreaker.sleepWindowInMillis", defaultInputConfig.circuitBreakerSleepWindowInMillis),
-                        getIntOr(config, "execution.timeoutInMillis", defaultInputConfig.executionTimeoutInMillis)
+                        getIntOr(config, "execution.timeoutInMillis", defaultInputConfig.executionTimeoutInMillis),
+                        getIntOr(config, "threadPool.coreSize", defaultInputConfig.threadPoolCoreSize),
+                        getIntOr(config, "threadPool.queueSizeRejectionThreshold", defaultInputConfig.threadPoolQueueSizeRejectionThreshold)
                 );
 
             } catch (final ConfigException e) {
@@ -108,18 +112,32 @@ public class ResilienceConfigurator {
          */
         public final Integer executionTimeoutInMillis;
 
+        /**
+         *  Core thread-pool size
+         */
+        public final Integer threadPoolCoreSize;
+
+        /**
+         *  Queue size rejection threshold is an artificial "max" size at which rejections will occur even if max queue size has not been reached
+         */
+        public final Integer threadPoolQueueSizeRejectionThreshold;
+
         public InputConfig(
                 final Boolean circuitBreakerEnable,
                 final Integer circuitBreakerRequestVolumeThreshold,
                 final Integer circuitBreakerThresholdInPercent,
                 final Integer circuitBreakerSleepWindowInMillis,
-                final Integer executionTimeoutInMillis
+                final Integer executionTimeoutInMillis,
+                final Integer threadPoolCoreSize,
+                final Integer threadPoolQueueSizeRejectionThreshold
         ) {
             this.circuitBreakerEnable = circuitBreakerEnable;
             this.circuitBreakerRequestVolumeThreshold = circuitBreakerRequestVolumeThreshold;
             this.circuitBreakerThresholdInPercent = circuitBreakerThresholdInPercent;
             this.circuitBreakerSleepWindowInMillis = circuitBreakerSleepWindowInMillis;
             this.executionTimeoutInMillis = executionTimeoutInMillis;
+            this.threadPoolCoreSize = threadPoolCoreSize;
+            this.threadPoolQueueSizeRejectionThreshold = threadPoolQueueSizeRejectionThreshold;
         }
     }
 

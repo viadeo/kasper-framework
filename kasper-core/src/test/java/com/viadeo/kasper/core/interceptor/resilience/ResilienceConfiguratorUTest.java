@@ -28,6 +28,8 @@ public class ResilienceConfiguratorUTest {
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.thresholdInPercent", 20)
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.sleepWindowInMillis", 1800000)
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".execution.timeoutInMillis", 3000)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".threadPool.coreSize", 10)
+                            .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".threadPool.queueSizeRejectionThreshold", 5)
                             .build()
             ));
 
@@ -50,6 +52,8 @@ public class ResilienceConfiguratorUTest {
         assertEquals(40, (int) inputConfig.circuitBreakerThresholdInPercent);
         assertEquals(3600000, (int) inputConfig.circuitBreakerSleepWindowInMillis);
         assertEquals(2000, (int) inputConfig.executionTimeoutInMillis);
+        assertEquals(30, (int) inputConfig.threadPoolCoreSize);
+        assertEquals(25, (int) inputConfig.threadPoolQueueSizeRejectionThreshold);
     }
 
     @Test
@@ -64,6 +68,8 @@ public class ResilienceConfiguratorUTest {
         assertEquals(20, (int) inputConfig.circuitBreakerThresholdInPercent);
         assertEquals(1800000, (int) inputConfig.circuitBreakerSleepWindowInMillis);
         assertEquals(3000, (int) inputConfig.executionTimeoutInMillis);
+        assertEquals(10, (int) inputConfig.threadPoolCoreSize);
+        assertEquals(5, (int) inputConfig.threadPoolQueueSizeRejectionThreshold);
     }
 
 }

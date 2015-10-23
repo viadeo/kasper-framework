@@ -60,7 +60,7 @@ public class ResilienceInterceptorITest {
         queryHandler = mockedQueryHandler();
 
         configurer = mock(ResilienceConfigurator.class);
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
+        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000, 10, 5));
 
         final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
         chainRegistry.register(ResilienceInterceptorFactories.forQuery(
@@ -84,10 +84,22 @@ public class ResilienceInterceptorITest {
         }
     }
 
+//    @Test
+//    public void proceed_interception_with_a_disabled_circuit_breaker() throws Exception {
+//        // Given
+//        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(false, 20, 40, 40000, 1000));
+////        doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
+//        doReturn(QueryResponse.failure(new KasperReason(CoreReasonCode.SERVICE_UNAVAILABLE))).when(queryHandler).handle(anyQueryMessage());
+//        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+//        assertNotNull(response);
+//        assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+//        assertEquals(CoreReasonCode.INTERNAL_COMPONENT_ERROR, response.getReason().getCoreReasonCode());
+//    }
+
     @Test
     public void proceed_interception_with_circuit_breaker_open() throws Exception {
         // Given
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 500, 1000));
+        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 500, 1000, 10, 5));
         doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
 
         // When
@@ -112,7 +124,7 @@ public class ResilienceInterceptorITest {
     @Test
     public void proceed_interception_after_to_have_close_the_circuit() throws Exception {
         // Given
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 100, 1000));
+        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 100, 1000, 10, 5));
         when(queryHandler.handle(anyQueryMessage()))
                 .thenThrow(new NullPointerException("fake1"))
                 .thenThrow(new NullPointerException("fake2"))
