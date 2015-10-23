@@ -17,7 +17,6 @@ import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -126,15 +125,20 @@ public class KasperQueryGatewayITest {
 
     @Test
     public void retrieve_for_future_from_an_invalid_query_throws_exception() throws Exception {
-        // Given
-        queryGateway.register(new TestQueryHandler());
+        try {
+            // Given
+            queryGateway.register(new TestQueryHandler());
 
-        // Then
-        exception.expect(ExecutionException.class);
-        exception.expectCause(IsInstanceOf.<Throwable>instanceOf(JSR303ViolationException.class));
+            // When
+            Future<QueryResponse<QueryResult>> future = queryGateway.retrieveForFuture(new TestQuery(null), Contexts.empty());
+            future.get();
 
-        // When
-        Future<QueryResponse<QueryResult>> future = queryGateway.retrieveForFuture(new TestQuery(null), Contexts.empty());
-        future.get();
+            fail();
+        } catch (final Exception e) {
+            // Then
+            assertTrue(ExecutionException.class.isAssignableFrom(e.getClass()));
+            assertTrue(JSR303ViolationException.class.isAssignableFrom(e.getCause().getClass()));
+        }
+
     }
 }
