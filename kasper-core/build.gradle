@@ -38,6 +38,7 @@ dependencies {
     testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
+    testCompile libraries.HAMCREST
     testCompile libraries.JCACHE_EHCACHE
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.AWAITILITY
