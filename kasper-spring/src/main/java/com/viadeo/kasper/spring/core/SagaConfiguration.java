@@ -17,7 +17,6 @@ import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplier;
 import com.viadeo.kasper.core.component.event.saga.step.facet.FacetApplierRegistry;
 import com.viadeo.kasper.core.component.event.saga.step.facet.MeasuringFacetApplier;
 import com.viadeo.kasper.core.component.event.saga.step.facet.SchedulingFacetApplier;
-import com.viadeo.kasper.core.component.event.saga.step.quartz.MethodInvocationScheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
@@ -33,7 +32,7 @@ public class SagaConfiguration {
     @Bean(initMethod = "initialize", destroyMethod = "shutdown")
     public Scheduler stepScheduler(final ObjectMapper objectMapper, final ApplicationContext applicationContext, final SagaManager sagaManager) throws SchedulerException {
         final SchedulerFactory sf = new StdSchedulerFactory();
-        return new MethodInvocationScheduler(objectMapper, sf.getScheduler(), sagaManager);
+        return new MethodInvocationSpringScheduler(objectMapper, sf.getScheduler(), sagaManager);
     }
 
     @Bean

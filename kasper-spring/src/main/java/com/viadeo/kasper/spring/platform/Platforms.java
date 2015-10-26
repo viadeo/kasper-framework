@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.spring.platform;
 
-import com.viadeo.kasper.spring.core.AuthenticationConfiguration;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.spring.core.*;
 

@@ -19,6 +19,7 @@ import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.event.saga.TestFixture;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
+import com.viadeo.kasper.core.component.event.saga.factory.DefaultSagaFactoryProvider;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.step.Scheduler;
 import org.joda.time.DateTime;
