@@ -22,7 +22,7 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.Platforms;
+import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
@@ -75,15 +75,17 @@ public class KasperPlatformFixture implements
     
     private void initialize() {
         if( ! this.initialized) {
-            final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
-
+            final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(
+                    new KasperPlatformConfiguration()
+            );
             this.platform.set(
-                    Platforms.newDefaultBuilder(platformConfiguration)
-                            .withConfiguration(this.config)
+
+                    builder
                             .withEventBus(this.eventBus)
                             .withCommandGateway(
                                     new KasperCommandGateway(this.commandBus)
                             )
+                            .withConfiguration(config)
                             .addDomainBundle(this.domainBundle)
                             .build()
             );

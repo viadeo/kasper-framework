@@ -11,9 +11,12 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.id.IDBuilder;
+import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.id.TestFormats;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
@@ -116,7 +119,9 @@ public abstract class BaseHttpExposerTest {
 	
 	@After
 	public void cleanUp() throws Exception {
-		server.stop();
+        if (null != server) {
+            server.stop();
+        }
 	}
 
     protected static String getContextName() {
@@ -124,12 +129,13 @@ public abstract class BaseHttpExposerTest {
     }
 
     protected static Context getFullContext() {
+        final IDBuilder idBuilder = new SimpleIDBuilder(TestFormats.UUID, TestFormats.ID);
         return Contexts.builder()
                 .withSessionCorrelationId(UUID.randomUUID().toString())
                 .withFunnelCorrelationId(UUID.randomUUID().toString())
                 .withFunnelName("MyFunnel")
                 .withFunnelVersion("case_1")
-                .withUserId("42")
+                .withUserID(idBuilder.build("urn:viadeo:member:id:42"))
                 .withUserLang("us")
                 .withUserCountry("US")
                 .withApplicationId("TEST")

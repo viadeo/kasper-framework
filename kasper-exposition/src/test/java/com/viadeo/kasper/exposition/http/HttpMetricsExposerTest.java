@@ -45,27 +45,7 @@ public class HttpMetricsExposerTest extends BaseHttpExposerTest {
         final Meter meter = KasperMetrics.getMetricRegistry().meter("com.viadeo.kasper.test");
         meter.mark();
 
-        final String expectedOutput =
-                "{\"counters\":{\"com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.running\":"
-              + "{\"count\":0},\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.running\":{\"count\":0}},"
-              + "\"gauges\":{},\"histograms\":{},\"meters\":{\""
-              + "com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.submitted\":"
-              + "{\"count\":0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.submitted\":{\"count\":0,\"m15_rate\":0.0,\"m1_rate"
-              + "\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},\"com.viadeo.kasper.test\":{\"count\":1,\"m15_rate\""
-              + ":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.completed\":"
-              + "{\"count\":0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.completed\":"
-              + "{\"count\":0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"}},"
-              + "\"timers\":{\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.duration\":"
-              + "{\"count\":0,\"max\":0.0,\"mean\":0.0,\"min\":0.0,\"p50\":0.0,\"p75\":0.0,\"p95\":0.0,\"p98\":0.0,\"p99\":0.0,"
-              + "\"p999\":0.0,\"stddev\":0.0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"duration_units\":"
-              + "\"milliseconds\",\"rate_units\":\"calls/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.duration\":"
-              + "{\"count\":0,\"max\":0.0,\"mean\":0.0,\"min\":0.0,\"p50\":0.0,\"p75\":0.0,\"p95\":0.0,\"p98\":0.0,"
-              + "\"p99\":0.0,\"p999\":0.0,\"stddev\":0.0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,"
-              + "\"duration_units\":\"milliseconds\",\"rate_units\":\"calls/second\"}}}";
+        final String expectedOutput = "{\"counters\":{},\"gauges\":{},\"histograms\":{},\"meters\":{\"com.viadeo.kasper.test\":{\"count\":1,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"}},\"timers\":{}}";
 
         // When
         final ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);

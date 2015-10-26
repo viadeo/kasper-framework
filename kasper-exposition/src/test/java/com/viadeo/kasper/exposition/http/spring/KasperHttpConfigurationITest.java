@@ -9,8 +9,8 @@ package com.viadeo.kasper.exposition.http.spring;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.domain.sample.hello.HelloBundle;
-import com.viadeo.kasper.platform.Platforms;
-import com.viadeo.kasper.platform.builder.SpringPlatform;
+import com.viadeo.kasper.spring.platform.Platforms;
+import com.viadeo.kasper.spring.platform.SpringPlatform;
 import org.junit.After;
 import org.junit.Test;
 

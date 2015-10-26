@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor.authorization;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.api.annotation.XKasperAuthz.TargetId;
 import com.viadeo.kasper.api.context.Context;
@@ -16,10 +18,12 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.component.annotation.XKasperAuthz.RequiresPermissions;
@@ -31,16 +35,36 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
 
     private final TypeToken type;
     private final Class<? extends AuthorizationManager> defaultAuthorizationManagerClass;
-    private final ApplicationContext applicationContext;
+    private final Map<Class<? extends AuthorizationManager>, AuthorizationManager> authorizationManagers = Maps.newHashMap();
 
     public AuthorizationInterceptor(
             final TypeToken type,
             final Class<? extends AuthorizationManager> defaultAuthorizationManagerClass,
-            final ApplicationContext applicationContext
+            final AuthorizationManager authorizationManager
+    ) {
+        checkNotNull(authorizationManager);
+        this.type = checkNotNull(type);
+        this.defaultAuthorizationManagerClass = checkNotNull(defaultAuthorizationManagerClass);
+        this.authorizationManagers.put(authorizationManager.getClass(), authorizationManager);
+    }
+
+    public AuthorizationInterceptor(
+            final TypeToken type,
+            final Class<? extends AuthorizationManager> defaultAuthorizationManagerClass,
+            final List<AuthorizationManager> authorizationManagers
     ) {
         this.type = checkNotNull(type);
         this.defaultAuthorizationManagerClass = checkNotNull(defaultAuthorizationManagerClass);
-        this.applicationContext = checkNotNull(applicationContext);
+        this.authorizationManagers.putAll(Maps.<Class<? extends AuthorizationManager>, AuthorizationManager>uniqueIndex(
+                authorizationManagers,
+                new Function<AuthorizationManager, Class<? extends AuthorizationManager>>() {
+                    @Nullable
+                    @Override
+                    public Class<? extends AuthorizationManager> apply(@Nullable final AuthorizationManager authorizationManager) {
+                        return authorizationManager.getClass();
+                    }
+                }
+        ));
     }
 
     @Override
@@ -76,17 +100,15 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
     }
 
     private AuthorizationManager getAuthorizationManager(Class<? extends AuthorizationManager> managerClass) {
+
         if (managerClass.equals(AuthorizationManager.class)) {
+            managerClass = defaultAuthorizationManagerClass;
+        } else if (! this.authorizationManagers.containsKey(managerClass)) {
+            LOGGER.error("Unable to instantiate an AuthorizationManager (not declared) : ", managerClass);
             managerClass = defaultAuthorizationManagerClass;
         }
 
-        AuthorizationManager authorizationManager = null;
-        try {
-            authorizationManager = applicationContext.getBean(managerClass);
-        } catch (Exception e) {
-            LOGGER.error("Unable to instantiate an AuthorizationManager : ", e);
-        }
-        return authorizationManager;
+        return this.authorizationManagers.get(managerClass);
     }
 
     protected Optional<Object> getTargetedId(I c) throws KasperInvalidAuthorizationException, IllegalAccessException {
@@ -109,14 +131,14 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
     public static class Factory<I,O> implements InterceptorFactory<I,O> {
 
         private final Class<? extends AuthorizationManager> defaultAuthoriztionManagerClass;
-        private final ApplicationContext applicationContext;
+        final List<AuthorizationManager> authorizationManagers;
 
         public Factory(
                 final Class<? extends AuthorizationManager> defaultAuthorizationManagerClass,
-                final ApplicationContext applicationContext
+                final List<AuthorizationManager> authorizationManagers
         ) {
             this.defaultAuthoriztionManagerClass = checkNotNull(defaultAuthorizationManagerClass);
-            this.applicationContext = checkNotNull(applicationContext);
+            this.authorizationManagers = checkNotNull(authorizationManagers);
         }
 
         @Override
@@ -124,7 +146,7 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
             checkNotNull(type);
             return Optional.of(
                     InterceptorChain.makeChain(
-                            new AuthorizationInterceptor<I,O>(type, defaultAuthoriztionManagerClass, applicationContext)
+                            new AuthorizationInterceptor<I,O>(type, defaultAuthoriztionManagerClass, authorizationManagers)
                     )
             );
         }

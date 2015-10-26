@@ -1,4 +1,10 @@
 
+spring refacto :
+- add test AuthroizationInterceptorUTest for Spring (get the original one and put it into kasper-spring)
+- add Sagas tests without Spring
+
+
+
 
 urgent: full refactoring of the test domains of kasper-documentation
 
