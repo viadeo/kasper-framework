@@ -1,6 +1,6 @@
 # Kasper Releases #
 
-### Version 1.1.0-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.0-SNAPSHOT~~))
+### Version 1.1.0 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.0~~))
 
 * [Pull 339](https://github.com/viadeo/kasper-framework/pull/339) Added new implementation of EventListener allowing to listen different events.
 * [Pull 338](https://github.com/viadeo/kasper-framework/pull/338) Provide a stream that is required for monitoring our circuit-breaker
