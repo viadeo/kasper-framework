@@ -118,15 +118,8 @@ public class DefaultPlatform implements Platform {
         return new Builder();
     }
 
-    public static Builder builder(final DomainDescriptorFactory domainDescriptorFactory) {
-        return new Builder(domainDescriptorFactory);
-    }
-
-    public static Builder builder(
-            final DomainDescriptorFactory domainDescriptorFactory,
-            final RepositoryManager repositoryManager
-    ) {
-        return new Builder(domainDescriptorFactory, repositoryManager);
+    public static Builder builder(final RepositoryManager repositoryManager) {
+        return new Builder(repositoryManager);
     }
 
     public static Builder builder(final PlatformConfiguration platformConfiguration) {

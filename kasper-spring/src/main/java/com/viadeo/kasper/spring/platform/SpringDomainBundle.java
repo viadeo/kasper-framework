@@ -19,7 +19,6 @@ import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.platform.builder.PlatformContext;
-import com.viadeo.kasper.platform.builder.PlatformContextHelper;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
