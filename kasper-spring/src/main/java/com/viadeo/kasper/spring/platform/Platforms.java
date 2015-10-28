@@ -9,7 +9,7 @@ package com.viadeo.kasper.spring.platform;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.spring.core.*;
 
-// TOSO SPRING import com.viadeo.kasper.core.component.event.spring.KasperRabbitMQEventConfiguration;
+// TODO SPRING import com.viadeo.kasper.core.component.event.spring.KasperRabbitMQEventConfiguration;
 
 public final class Platforms {
 
@@ -18,7 +18,8 @@ public final class Platforms {
     public static SpringPlatform.Builder newSpringPlatformBuilder() {
         return new SpringPlatform.Builder()
                 .with(
-                          KasperObjectMapperConfiguration.class
+                          KasperPlatformConfiguration.class
+                        , KasperObjectMapperConfiguration.class
                         , KasperContextConfiguration.class
                         , KasperIDConfiguration.class
                         , KasperMetricsConfiguration.class

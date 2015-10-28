@@ -21,5 +21,7 @@ public class PlatformsITest {
         assertNotNull(platform.getCommandGateway());
         assertNotNull(platform.getQueryGateway());
         assertNotNull(platform.getEventBus());
+        assertNotNull(platform.getMeta());
+        assertNotNull(platform.getMetricRegistry());
     }
 }
