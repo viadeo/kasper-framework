@@ -25,6 +25,7 @@ import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DescriptorRegistry;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.platform.plugin.Plugin;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.DefaultLifecycleProcessor;
 
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -46,6 +48,9 @@ public class KasperPlatformConfiguration {
 
     @Autowired(required = false)
     List<DomainBundle> bundles;
+
+    @Autowired(required = false)
+    List<Plugin> plugins;
 
     /**
      * Register lifecycle processor (using spring smart lifecycle)
@@ -75,6 +80,14 @@ public class KasperPlatformConfiguration {
         if (extraComponents != null) {
             for (final ExtraComponent extraComponent : extraComponents) {
                 platformWirer.register(extraComponent);
+            }
+        }
+
+        if (plugins != null) {
+            List<Plugin> toWirer = Lists.newArrayList(plugins);
+            Collections.sort(toWirer, Plugin.REVERSED_COMPARATOR);
+            for (final Plugin plugin : toWirer) {
+                platformWirer.wire(plugin);
             }
         }
 
