@@ -45,7 +45,7 @@ public class ChangeBuddyForExistingHelloCommandHandler extends AutowiredEntityCo
          * Load the entity as we plan to modify it
          */
         try {
-            final Hello hello = repository.load(command.getId());
+            final Hello hello = repository.load(command.getId()).get();
 
             /**
              * Mutate the aggregate

@@ -7,10 +7,9 @@
 package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class DefaultRepositoryManagerUTest {
 
     private static class DummyConcept extends Concept { }
 
-    private static class DummyRepository extends Repository<Concept> {
+    private static class DummyRepository extends AutowiredRepository<KasperID,Concept> {
         @Override
         protected Optional<Concept> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
             throw new UnsupportedOperationException();
@@ -58,23 +57,10 @@ public class DefaultRepositoryManagerUTest {
         // Then throws an exception
     }
 
-    @Test(expected = KasperException.class)
-    public void register_withUninitializedRepository_shouldBeRegistered() {
-        // Given
-        final Repository repository = new DummyRepository();
-
-        // When
-        repositoryManager.register(repository);
-
-        // Then throws an exception
-
-    }
-
     @Test
     public void register_withRepository_shouldBeRegistered() {
         // Given
         final Repository repository = new DummyRepository();
-        repository.init();
 
         // When
         repositoryManager.register(repository);
@@ -88,7 +74,7 @@ public class DefaultRepositoryManagerUTest {
         // Given nothing
 
         // When
-        final Optional<ClientRepository<DummyConcept>> optional =
+        final Optional<Repository<KasperID,DummyConcept>> optional =
                 repositoryManager.getEntityRepository(DummyConcept.class);
 
         // Then
@@ -96,22 +82,21 @@ public class DefaultRepositoryManagerUTest {
         assertFalse(optional.isPresent());
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     @Test
     public void getEntityRepository_withAggregateOfARegisteredRepository_shouldReturnWrappedRepository() {
         // Given
         final Repository repository = new DummyRepository();
-        repository.init();
         repositoryManager.register(repository);
 
         // When
-        final Optional<ClientRepository<DummyConcept>> optional =
+        final Optional<DummyRepository> optional =
                 repositoryManager.getEntityRepository(repository.getAggregateClass());
 
         // Then
         assertNotNull(optional);
         assertTrue(optional.isPresent());
-        assertEquals(repository, optional.get().business());
+        assertEquals(repository, optional.get());
     }
 
 }

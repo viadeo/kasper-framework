@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class StepArguments {
 
     private final Map<Class, Integer> parameterTypes;
-    private final Class<? extends Event> eventClass;
+    private final Class eventClass;
     private final Boolean useEventMessage;
 
     // ------------------------------------------------------------------------
@@ -53,7 +53,7 @@ public class StepArguments {
                     final Type argumentType = type.getActualTypeArguments()[0];
 
                     if (argumentType instanceof Class) {
-                        this.eventClass = (Class<? extends Event>) argumentType;
+                        this.eventClass = (Class) argumentType;
                     } else {
                         this.eventClass = Event.class;
                     }
@@ -75,7 +75,7 @@ public class StepArguments {
             if ((Event.class.isAssignableFrom(parameterTypes[0]) && Context.class.isAssignableFrom(parameterTypes[1])) ||
                     (Event.class.isAssignableFrom(parameterTypes[1]) && Context.class.isAssignableFrom(parameterTypes[0]))) {
 
-                this.eventClass = (Class<? extends Event>) (Event.class.isAssignableFrom(parameterTypes[0]) ? parameterTypes[0] : parameterTypes[1]);
+                this.eventClass = (Class) (Event.class.isAssignableFrom(parameterTypes[0]) ? parameterTypes[0] : parameterTypes[1]);
                 this.useEventMessage = Boolean.FALSE;
 
                 int position = 0;
@@ -99,6 +99,7 @@ public class StepArguments {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Class<? extends Event> getEventClass() {
         return eventClass;
     }

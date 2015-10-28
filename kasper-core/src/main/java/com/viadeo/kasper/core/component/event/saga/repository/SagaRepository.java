@@ -15,7 +15,7 @@ import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceExce
  */
 public interface SagaRepository {
 
-    Optional<Saga> load(Class<? extends Saga> sagaClass, Object identifier) throws SagaPersistenceException;
+    <SAGA extends Saga> Optional<SAGA> load(Class<SAGA> sagaClass, Object identifier) throws SagaPersistenceException;
 
     void save(Object identifier, Saga saga) throws SagaPersistenceException;
 

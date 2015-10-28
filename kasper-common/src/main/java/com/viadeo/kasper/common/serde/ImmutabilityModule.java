@@ -111,6 +111,7 @@ public class ImmutabilityModule extends ParanamerModule {
          *
          * @param declaringClass the declaring class of the object
          */
+        @SuppressWarnings("unchecked")
         protected void checkClassDefinition(final Class<?> declaringClass) {
             final Constructor[] declaredConstructors = declaringClass.getDeclaredConstructors();
 
@@ -119,6 +120,7 @@ public class ImmutabilityModule extends ParanamerModule {
             }
 
             Constructor annotatedConstructor = null;
+
             for (final Constructor constructor : declaredConstructors) {
                 if (null != constructor.getAnnotation(JsonCreator.class)) {
                     if (null != annotatedConstructor) {

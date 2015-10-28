@@ -7,338 +7,101 @@
 package com.viadeo.kasper.core.component.command.repository;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.exception.KasperCommandException;
-import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
-import org.axonframework.eventhandling.EventBus;
-import org.axonframework.eventsourcing.AggregateDeletedException;
-import org.axonframework.eventstore.EventStore;
-import org.axonframework.repository.AggregateNotFoundException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-/**
- * 
- * Base Kasper repository implementation for an entity storage repository
- *
- * Decorates an Axon repository :
- * - load() and add() are redirected to the decorated repository
- * - the decorated repository will use an ActionRepositoryFacade
- *   in order to call doSave(), doDelete() and doLoad() before finally
- *   calling (this), in order to let doXXX() methods abstract for final
- *   implementation
- *
- * Add special methods :
- * - get()
- * - has() + abstract doHas()
- * - optional doUpdate()
- *
- * @param <AGR> Aggregate Root
- *
- */
-public abstract class Repository<AGR extends AggregateRoot> implements IRepository<AGR> {
+public interface Repository<ID extends KasperID, AGR extends AggregateRoot> {
 
     /**
-     * The Axon repository
+     * Generic parameter position of the AGR
      */
-    private DecoratedAxonRepository<AGR> axonRepository;
+    int ENTITY_PARAMETER_POSITION = 1;
 
     /**
-     * Temporary storage of event bus for lazy assignation
+     * @return the aggregate class supported by this repository
      */
-    private EventBus eventBus;
+    Class<AGR> getAggregateClass();
 
     /**
-     * Store initilization state
-     */
-    private boolean initialized = false;
-
-    /**
-     * The event store (optional)
-     */
-    private EventStore eventStore;
-
-    /**
-     * The aggregate class
-     */
-    private Class<AGR> aggregateClass;
-	
-	// ========================================================================
-
-    /**
-     * Initialize the repository
+     * Performs the actual saving of the aggregate.
      *
-     * @param force true to force initialization
+     * @param aggregate the aggregate to store
      */
-	public void init(final boolean force) {
-		if ( ! initialized || force) {
-            this.axonRepository = checkNotNull(this.getDecoratedRepository(getAggregateClass()));
-
-            if (null != eventBus) {
-                this.axonRepository.setEventBus(eventBus);
-            }
-
-            initialized = true;
-        }
-	}
-
-    @Override
-    public final void init() {
-        this.init(false);
-    }
+    void save(AGR aggregate);
 
     /**
-     * @param entityType the entity <code>Class</code>
-     * @return the default instance of the decorated repository
+     * Loads and initialized the aggregate with the given aggregateIdentifier.
+     *
+     * @param aggregateIdentifier the identifier of the aggregate to load
+     * @param expectedVersion     The expected version of the aggregate to load
+     * @return a fully initialized aggregate
      */
-    protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
-        final EntityStoreFacade<AGR> facade = new EntityStoreFacade<>(this);
-
-        if (null != this.eventStore) {
-            facade.setEventStore(this.eventStore);
-        }
-
- 		return new AxonRepository<>(facade, entityType);
-    }
-	
-	// ------------------------------------------------------------------------
+    Optional<AGR> load(ID aggregateIdentifier, Long expectedVersion);
 
     /**
-     * Lazy set the Axon repository
-     * @param eventBus an event bus
+     * Loads and initialized the aggregate with the given aggregateIdentifier.
+     *
+     * @param aggregateIdentifier the identifier of the aggregate to load
+     * @return a fully initialized aggregate
      */
-	public void setEventBus(final EventBus eventBus) {
-        if (null != this.axonRepository) {
-		    this.axonRepository.setEventBus(checkNotNull(eventBus));
-        } else {
-            this.eventBus = checkNotNull(eventBus);
-        }
-	}
+    Optional<AGR> load(ID aggregateIdentifier);
 
-    public void setEventStore(final EventStore eventStore) {
-        this.eventStore = checkNotNull(eventStore);
+    /**
+     * Removes the aggregate from the repository.
+     *
+     * @param aggregate the aggregate to delete
+     */
+    void delete(AGR aggregate);
 
-        if (null != this.axonRepository) {
-            final RepositoryFacade<AGR> facade =
-                    this.axonRepository.getRepositoryFacade();
+    /**
+     * Adds the given <code>aggregate</code> to the repository. The version of this aggregate must be <code>null</code>,
+     * indicating that it has not been previously persisted.
+     * <p/>
+     * This method will not force the repository to save the aggregate immediately. Instead, it is registered with the
+     * current UnitOfWork. To force storage of an aggregate, commit the current unit of work
+     * (<code>CurrentUnitOfWork.commit()</code>)
+     *
+     * @param aggregate The aggregate to add to the repository.
+     * @throws IllegalArgumentException if the given aggregate is not newly created. This means {@link
+     *                                  org.axonframework.domain.AggregateRoot#getVersion()} must return
+     *                                  <code>null</code>.
+     */
+    void add(AGR aggregate);
 
-            if (EntityStoreFacade.class.isAssignableFrom(facade.getClass())) {
-                ((EntityStoreFacade) facade).setEventStore(eventStore);
-            }
-        }
-
-    }
-
-    public Optional<EventStore> getEventStore() {
-        return Optional.fromNullable(this.eventStore);
-    }
-
-	// ========================================================================
-	// Redirect Axon.Repository calls to decored instance
-	// ========================================================================
-	
-	/**
-     * @param aggregateIdentifier the identifier of the aggregate
-     * @param expectedVersion the expected version
-	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
-	 */
-	@Override
-	public AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
-        init();
-		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
-	}
-
-	/**
-     * @param aggregateIdentifier the identifier of the aggregate
-	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
-	 */
-	@Override
-	public AGR load(final Object aggregateIdentifier) {
-        init();
-		return this.axonRepository.load(aggregateIdentifier);
-	}
-
- 	/**
-     * @param aggregate the aggregate
-	 * @see org.axonframework.repository.Repository#add(Object)
-	 */
-	@Override
-	public void add(final AGR aggregate) {
-        init();
-
-        /* All aggregates must have an ID */
-        if (null == aggregate.getIdentifier()) {
-            throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
-        }
-
-		this.axonRepository.add(aggregate);
-	}
-
-    // ------------------------------------------------------------------------
-    // Defines new additional public handlers for Kasper repositories
-    // ------------------------------------------------------------------------
+    /**
+     * Checks if an aggregate if exists
+     *
+     * @param id the identifier
+     * @return true if an aggregate exists with this id
+     */
+    boolean has(ID id);
 
     /**
      * Get an aggregate without planning further save on UOW commit
+     *
+     * Deprecated design : aggregates should only be loaded, with idea of change,
+     * other data must be obtained from a query and passed to the command
      *
      * @param aggregateIdentifier the aggregate identifier to fetch
      * @param expectedVersion the aggregate expected version to fetch
      * @return the fetched aggregate if any
      */
-    @Override
-    public AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        return this.doLoad((Object) aggregateIdentifier, expectedVersion);
-    }
+    Optional<AGR> get(ID aggregateIdentifier, Long expectedVersion);
 
     /**
      * Get an aggregate without planning further save on UOW commit
      *
-     * @param aggregateIdentifier the aggregate identifier to fetch
-     * @return the fetched aggregate if any
-     */
-    @Override
-    public AGR get(final KasperID aggregateIdentifier) {
-        return this.get(aggregateIdentifier, null);
-    }
-
-    /**
-     * (Optional) indicates existence of an aggregate in the repository
-     *
-     * @param id the aggregate id
-     * @return true if this aggregate exists
-     */
-    @Override
-    public boolean has(final KasperID id) {
-        return this.doHas(id);
-    }
-
-	// ========================================================================
-    // Decored Axon repository will finally call our methods for action
-    // through its ActionRepositoryFacade indirection
-    // ========================================================================
-	
-	/**
-	 * Load an aggregate from the repository
-	 * 
-	 * Convenient Axon wrapper for proper Kasper typing, ID type conformance checking
-     * and Optional management
-	 * 
-	 * @param aggregateIdentifier the aggregate identifier
-	 * @param expectedVersion the version of the aggregate to load
-	 * 
-	 * @return the aggregate
-	 */
-	protected final AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-		checkNotNull(aggregateIdentifier);
-		
-		if (KasperID.class.isAssignableFrom(aggregateIdentifier.getClass())) {
-			
-			final Optional<AGR> agr = this.doLoad((KasperID) aggregateIdentifier, expectedVersion);
-
-			if (agr.isPresent()) {
-
-                /* manages with deleted aggregates */
-                if (agr.get().isDeleted()) {
-                    throw new AggregateDeletedException(agr.get().getEntityId(), "Not found");
-                }
-
-				return agr.get();
-			}
-
-			throw new AggregateNotFoundException(aggregateIdentifier, "Not found aggregate"); // Axon
-			
-		} else {
-			throw new KasperException(String.format(
-                        "Unable to manage with identifier of this kind : %s - should be KasperID",
-                        aggregateIdentifier.getClass()
-            ));
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-    // Abstract handlers to be implemented by child classes
-    // ------------------------------------------------------------------------
-	
-	/**
-	 * loads an aggregate from the repository
-	 * 
-	 * @param aggregateIdentifier the aggregate identifier
-	 * @param expectedVersion the version of the aggregate to load or null
-	 * 
-	 * @return the (optional) aggregate
-	 */
-	protected abstract Optional<AGR> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion);
-	
-	/**
-	 * saves a new (create) or existing (update) aggregate to the repository
-     *
-     * in case of an update, the aggregate version will be set to null
-     *
-     * if you override doUpdate() this method will only be called on save
-	 * 
-	 * @param aggregate the aggregate to be saved on the repository
-	 */
-	protected abstract void doSave(final AGR aggregate);
-
- 	/**
-	 * updates an existing aggregate to the repository
-     *
-     * Overrides this method if you want to clearly separate saves and updates in two methods
-	 *
-	 * @param aggregate the aggregate to be saved on the repository
-	 */
-	protected void doUpdate(final AGR aggregate) {
-        this.doSave(aggregate);
-    }
-	
-	/**
-	 * deletes (or mark as deleted) an existing aggregate from the repository
-	 * 
-	 * @param aggregate the aggregate to be deleted from the repository
-	 */
-	protected abstract void doDelete(final AGR aggregate);
-
-    /**
-     * (Optional) indicates existence of an aggregate in the repository
+     * Deprecated design : aggregates should only be loaded, with idea of change,
+     * other data must be obtained from a query and passed to the command
      *
      * @param aggregateIdentifier the aggregate identifier
-     * @return true if an aggregate exists with this id
+     * @return the fetched aggregate if any
      */
-    protected boolean doHas(final KasperID aggregateIdentifier) {
-        throw new UnsupportedOperationException("has() operation not implemented");
-    }
+    Optional<AGR> get(ID aggregateIdentifier);
 
     /**
-     * Indicates the aggregate class managed by this repository
-     *
-     * @return the aggregate class
+     * @return the repository class
      */
-    public Class<AGR> getAggregateClass() {
-        if (aggregateClass == null) {
-            @SuppressWarnings("unchecked") // Safe
-            final Optional<Class<AGR>> entityType =
-                    (Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
-                            this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
-
-            if ( ! entityType.isPresent()) {
-                throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
-            }
-
-            this.aggregateClass = entityType.get();
-        }
-        return aggregateClass;
-    }
-
-    /**
-     * Indicates if the repository is initialized
-     *
-     * @return true if the repository is initialized, false otherwise
-     */
-    public boolean isInitialized() {
-        return initialized;
-    }
+    Class<?> getRepositoryClass();
 
 }

@@ -36,7 +36,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-@Ignore
 public class ResilienceInterceptorUTest {
 
     @Rule
@@ -91,7 +90,6 @@ public class ResilienceInterceptorUTest {
 
         configurer = mock(ResilienceConfigurator.class);
         when(configurer.configure(any(Query.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
-        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000));
 
         final MetricRegistry metricRegistry = new MetricRegistry();
         final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
@@ -111,7 +109,7 @@ public class ResilienceInterceptorUTest {
 
     @After
     public void tearDown() throws Exception {
-        for (Class aClass : new Class[] {Query.class, Query2.class}) {
+        for (Class aClass : new Class[] {Query.class/*, Query2.class*/}) {
             final HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(
                     HystrixCommandKey.Factory.asKey(aClass.getName())
             );
@@ -201,15 +199,7 @@ public class ResilienceInterceptorUTest {
         when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 0, 0, 100, 1000));
 
         // When
-        for (int i = 0; i <20; i++) {
-            final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
-            assertNotNull(response);
-            assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
-            assertTrue(response.getReason().hasMessage(String.format("Failed to execute request, <handler=%s>", QueryHandler.class.getName())));
-        }
-        Thread.sleep(500);
-
-        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query2(), Contexts.empty());
 
         // Then
         assertNotNull(response);

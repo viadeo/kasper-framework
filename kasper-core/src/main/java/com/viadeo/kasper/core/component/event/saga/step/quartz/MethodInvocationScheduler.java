@@ -254,6 +254,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             final Object identifier;
 
             try {
+                @SuppressWarnings("unchecked")
                 final Class<Saga> sagaIdentifierClass = (Class<Saga>) Class.forName(sagaIdentifierClassName);
                 identifier = mapper.readValue(sagaIdentifier, sagaIdentifierClass);
 
@@ -267,6 +268,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             }
 
             try {
+                @SuppressWarnings("unchecked")
                 final Class<Saga> sagaClass = (Class<Saga>) Class.forName(sagaClassName);
                 final Optional<SagaExecutor> sagaExecutor = sagaManager.get(sagaClass);
 
@@ -292,6 +294,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             }
         }
 
+        @SuppressWarnings("unchecked")
         private <E> E getFromSchedulerContext(final JobExecutionContext context, final String key) {
             try {
                 return (E) context.getScheduler().getContext().get(key);

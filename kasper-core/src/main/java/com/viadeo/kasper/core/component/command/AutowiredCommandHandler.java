@@ -6,11 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperCommandException;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -78,6 +81,21 @@ public abstract class AutowiredCommandHandler<C extends Command>
     @Override
     public void setCommandGateway(final CommandGateway commandGateway) {
         this.commandGateway = checkNotNull(commandGateway);
+    }
+
+    /**
+     * Get the related repository of the specified entity class
+     *
+     * @param entityClass the class of the entity
+     * @param <REPO> the type of repository
+     * @return the entity repository
+     */
+    public <REPO extends Repository> Optional<REPO> getRepositoryOf(final Class<? extends AggregateRoot> entityClass) {
+        if (null == repositoryManager) {
+            throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
+        }
+
+        return repositoryManager.getEntityRepository(entityClass);
     }
 
 }

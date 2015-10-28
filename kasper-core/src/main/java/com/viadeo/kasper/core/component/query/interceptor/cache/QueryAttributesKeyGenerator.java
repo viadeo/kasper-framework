@@ -119,6 +119,7 @@ public class QueryAttributesKeyGenerator<Q extends Query> implements QueryCacheK
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     Set<Field> collectFields(final Class<? extends Query> queryClass, final String... keys) {
         final FieldCacheKey cachedKey = new FieldCacheKey(queryClass, keys);
         Set<Field> fields = cache.get(cachedKey);

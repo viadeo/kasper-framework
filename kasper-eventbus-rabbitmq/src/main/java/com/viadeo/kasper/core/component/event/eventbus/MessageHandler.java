@@ -51,6 +51,7 @@ public class MessageHandler {
         } catch (Exception t) {
             metricRegistry.counter(HANDLE_MESSAGE_ERROR_METRIC).inc();
             LOGGER.warn("failed to handle event message by '{}'", eventListener.getClass().getName(), t);
+
             throw new MessageHandlerException(eventListener.getClass(), t);
         }
     }

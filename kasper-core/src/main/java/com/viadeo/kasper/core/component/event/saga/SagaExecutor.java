@@ -36,12 +36,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Manage the execution of saga's steps or methods. It is responsible
  * for redirecting published Events to the correct Saga instances. It will also manage the life cycle of
  * the Saga, based on these Events.
+ *
+ * @param <SAGA> the saga type
  */
-public class SagaExecutor {
+public class SagaExecutor<SAGA extends Saga> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaExecutor.class);
 
-    private final Class<? extends Saga> sagaClass;
+    private final Class<SAGA> sagaClass;
     private final SagaFactory factory;
     private final SagaRepository repository;
     private final Map<Class<?>, Step> steps;
@@ -49,7 +51,7 @@ public class SagaExecutor {
     // ------------------------------------------------------------------------
 
     public SagaExecutor(
-            final Class<? extends Saga> sagaClass,
+            final Class<SAGA> sagaClass,
             final Set<Step> steps,
             final SagaFactory factory,
             final SagaRepository repository
@@ -74,7 +76,7 @@ public class SagaExecutor {
             final Method method = sagaClass.getDeclaredMethod(methodName);
             method.setAccessible(Boolean.TRUE);
 
-            final Optional<Saga> optionalSaga = getSaga(sagaIdentifier);
+            final Optional<SAGA> optionalSaga = getSaga(sagaIdentifier);
 
             if ( ! optionalSaga.isPresent()) {
                 LOGGER.error(
@@ -128,7 +130,7 @@ public class SagaExecutor {
         }
 
         final Object sagaIdentifier = optionalSagaIdentifier.get();
-        final Optional<Saga> optionalSaga = getOrCreateSaga(step, sagaIdentifier);
+        final Optional<SAGA> optionalSaga = getOrCreateSaga(step, sagaIdentifier);
 
         if (optionalSaga.isPresent()) {
             final Saga saga = optionalSaga.get();
@@ -147,7 +149,7 @@ public class SagaExecutor {
 
     // ------------------------------------------------------------------------
 
-    protected Optional<Saga> getOrCreateSaga(final Step step, final Object sagaIdentifier) {
+    protected Optional<SAGA> getOrCreateSaga(final Step step, final Object sagaIdentifier) {
 
         if (Steps.StartStep.class.isAssignableFrom(step.getStepClass())) {
             try {
@@ -162,7 +164,7 @@ public class SagaExecutor {
                         e
                 );
             }
-            final Saga saga = factory.create(sagaIdentifier, sagaClass);
+            final SAGA saga = factory.create(sagaIdentifier, sagaClass);
             persistSaga(step, sagaIdentifier, saga);
             return Optional.of(saga);
         }
@@ -172,7 +174,7 @@ public class SagaExecutor {
 
     // ------------------------------------------------------------------------
 
-    public Optional<Saga> getSaga(final Object sagaIdentifier) {
+    public Optional<SAGA> getSaga(final Object sagaIdentifier) {
         try {
             return repository.load(this.sagaClass, sagaIdentifier);
 

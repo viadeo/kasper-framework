@@ -141,6 +141,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
         return handler.getInputClass();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<HANDLER> getHandlerClass() {
         return (Class<HANDLER>) handler.getHandlerClass();

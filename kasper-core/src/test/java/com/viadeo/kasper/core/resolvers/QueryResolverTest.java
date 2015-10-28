@@ -31,6 +31,7 @@ public class QueryResolverTest {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetDomain() {
         // Given

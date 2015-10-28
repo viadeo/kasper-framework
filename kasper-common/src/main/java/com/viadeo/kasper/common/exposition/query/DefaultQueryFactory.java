@@ -255,6 +255,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     private PropertyAdapter createPropertyAdapter(final Method mutator, final Method accessor,
                                                   final String name, final TypeToken<Object> propertyType) {
 

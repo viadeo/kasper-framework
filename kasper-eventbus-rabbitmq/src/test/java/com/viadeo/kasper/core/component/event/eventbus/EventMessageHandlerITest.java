@@ -85,10 +85,9 @@ public class EventMessageHandlerITest {
     public static final int TIMEOUT = 500;
 
     private static TestEventListener eventListenerWrapper;
-    private static final AutowiredEventListener<TestEvent> mockedEventListener = mock(AutowiredEventListener.class);
 
-//    @Rule
-//    public FreezeTimeRule freezeTimeRule = new FreezeTimeRule();
+    @SuppressWarnings("unchecked")
+    private static final AutowiredEventListener<TestEvent> mockedEventListener = mock(AutowiredEventListener.class);
 
     @Inject
     private AMQPCluster cluster;
@@ -175,6 +174,7 @@ public class EventMessageHandlerITest {
         assertEquals(0, getQueueSize(deadLetterQueueName));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void handle_withIgnoredResponse_isOk() throws InterruptedException {
         // Given

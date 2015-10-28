@@ -9,11 +9,11 @@ package com.viadeo.kasper.domain.sample.applications.command.repository;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.domain.sample.applications.command.model.entity.Application;
 
 @XKasperRepository(description = ApplicationRepository.DESCRIPTION)
-public class ApplicationRepository extends Repository<Application> {
+public class ApplicationRepository extends AutowiredRepository<KasperID,Application> {
 
 	public static final String DESCRIPTION = "The applications repository";
 

@@ -17,6 +17,7 @@ import com.viadeo.kasper.core.component.command.WirableCommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
@@ -35,6 +36,8 @@ import com.viadeo.kasper.platform.builder.BuilderContext;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import org.axonframework.eventstore.EventStore;
+import org.axonframework.eventstore.supporting.VolatileEventStore;
 
 import java.util.List;
 import java.util.Set;
@@ -44,6 +47,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class PlatformWirer {
 
+    private final EventStore eventStore;
     private final KasperEventBus eventBus;
     private final KasperCommandGateway commandGateway;
     private final KasperQueryGateway queryGateway;
@@ -74,6 +78,7 @@ public class PlatformWirer {
         this.domainDescriptorFactory = new DomainDescriptorFactory();
         this.extraComponents = Lists.newArrayList();
         this.registeredBundleNames = Sets.newHashSet();
+        this.eventStore = new VolatileEventStore();
     }
 
     public DomainDescriptor wire(DomainBundle bundle) {
@@ -91,8 +96,10 @@ public class PlatformWirer {
         );
 
         for (final Repository repository : bundle.getRepositories()) {
-            repository.init();
-            repository.setEventBus(eventBus);
+            if (repository instanceof WirableRepository) {
+                ((WirableRepository)repository).setEventBus(eventBus);
+                ((WirableRepository)repository).setEventStore(eventStore);
+            }
             repositoryManager.register(repository);
         }
 
@@ -132,7 +139,7 @@ public class PlatformWirer {
         }
 
         for (final Saga saga : bundle.getSagas()) {
-            final SagaExecutor executor = sagaManager.register(saga);
+            final SagaExecutor<Saga> executor = sagaManager.register(saga);
             eventBus.subscribe(new SagaWrapper(executor));
         }
 

@@ -42,7 +42,7 @@ public class SagaExecutorUTest {
         repository = mock(SagaRepository.class);
         startStep = spy(new Steps.StartStep(TestFixture.getMethod(TestFixture.TestSagaA.class, "handle", TestFixture.TestEvent.class), "getId", idReconciler));
         basicStep = spy(new Steps.BasicStep(TestFixture.getMethod(TestFixture.TestSagaA.class, "handle2", TestFixture.TestEvent2.class), "getId", idReconciler));
-        executor = new SagaExecutor(
+        executor = new SagaExecutor<>(
                 TestFixture.TestSagaA.class,
                 Sets.<Step>newHashSet(startStep, basicStep),
                 factory,
@@ -67,7 +67,7 @@ public class SagaExecutorUTest {
         TestFixture.TestSagaA saga = new TestFixture.TestSagaA();
         Context context = Contexts.empty();
         when(factory.create("2015", TestFixture.TestSagaA.class)).thenReturn(saga);
-        when(repository.load(TestFixture.TestSagaA.class, "2015")).thenReturn(Optional.<Saga>absent());
+        when(repository.load(TestFixture.TestSagaA.class, "2015")).thenReturn(Optional.<TestFixture.TestSagaA>absent());
 
         // When
         executor.execute(context, event);
@@ -83,7 +83,7 @@ public class SagaExecutorUTest {
         TestFixture.TestEvent2 event = new TestFixture.TestEvent2("2015");
         TestFixture.TestSagaA saga = new TestFixture.TestSagaA();
         Context context = Contexts.empty();
-        when(repository.load(TestFixture.TestSagaA.class, "2015")).thenReturn(Optional.<Saga>of(saga));
+        when(repository.load(TestFixture.TestSagaA.class, "2015")).thenReturn(Optional.<TestFixture.TestSagaA>of(saga));
 
         // When
         executor.execute(context, event);

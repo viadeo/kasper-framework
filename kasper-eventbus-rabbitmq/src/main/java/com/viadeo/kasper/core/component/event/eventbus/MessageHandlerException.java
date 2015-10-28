@@ -7,6 +7,7 @@ public class MessageHandlerException extends RuntimeException implements WithSou
 
     private final Optional<Class<EventListener>> optionalSource;
 
+    @SuppressWarnings("unchecked")
     public MessageHandlerException(Class<? extends EventListener> source, Throwable cause) {
         super(cause);
         this.optionalSource = Optional.fromNullable((Class<EventListener>)source);

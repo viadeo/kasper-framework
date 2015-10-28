@@ -25,8 +25,8 @@ public class EventDescriptor<EVENT extends Event> {
         this.deprecated = checkNotNull(deprecated);
     }
 
-    public Class<Event> getEventClass() {
-        return (Class<Event>) eventClass;
+    public Class<? extends Event> getEventClass() {
+        return eventClass;
     }
 
     public boolean isDeprecated() {

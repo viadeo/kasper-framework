@@ -27,11 +27,12 @@ public interface WirableQueryHandler<QUERY extends Query, RESULT extends QueryRe
      * Wires an event bus on this <code>QueryHandler</code> instance.
      * @param eventBus an event bus
      */
-    void setEventBus(final EventBus eventBus);
+    void setEventBus(EventBus eventBus);
 
     /**
      * Wires a query gateway on this <code>QueryHandler</code> instance.
      * @param queryGateway a query gateway
      */
-    void setQueryGateway(final QueryGateway queryGateway);
+    void setQueryGateway(QueryGateway queryGateway);
+
 }

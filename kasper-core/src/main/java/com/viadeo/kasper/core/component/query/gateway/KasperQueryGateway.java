@@ -118,7 +118,7 @@ public class KasperQueryGateway implements QueryGateway {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    public void register(final InterceptorFactory interceptorFactory) {
+    public void register(final InterceptorFactory<Query, QueryResponse<QueryResult>> interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 

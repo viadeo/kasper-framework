@@ -43,6 +43,7 @@ public class DefaultMessageListenerContainerManagerUTest {
     DefaultMessageListenerContainerManager containerManager;
 
 
+    @SuppressWarnings("unchecked")
     @Test
     public void register_twice_a_saga_manager_is_ok() {
         when(messageListenerContainerFactory.create(any(String.class), any(EventListener.class), any(MessageListener.class))).thenReturn(mock(MessageListenerContainer.class));

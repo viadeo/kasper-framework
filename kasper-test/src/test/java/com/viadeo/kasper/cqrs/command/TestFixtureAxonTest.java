@@ -12,12 +12,12 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
-import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
 import org.junit.Before;
@@ -33,13 +33,12 @@ import java.util.Map;
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
 import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
-import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 public class TestFixtureAxonTest {
 
     private FixtureConfiguration<TestAggregate> fixture;
-    private IRepository<TestAggregate> testRepository;
+    private Repository<KasperID,TestAggregate> testRepository;
 
     private static final String firstName = "Richard";
     private static final String lastName = "Stallman";
@@ -50,11 +49,11 @@ public class TestFixtureAxonTest {
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
             { new TestRepository() },
-            { new TestEventRepository(mock(EventStore.class)) }
+            { new TestEventRepository() }
         });
     }
 
-    public TestFixtureAxonTest(final IRepository<TestAggregate> testRepository) {
+    public TestFixtureAxonTest(final Repository<KasperID,TestAggregate> testRepository) {
         if (null != testRepository) {
             this.testRepository = testRepository;
         }
@@ -65,10 +64,11 @@ public class TestFixtureAxonTest {
     public void resetFixture() {
         this.fixture = Fixtures.newGivenWhenThenFixture(TestAggregate.class);
         fixture.setReportIllegalStateChange(true);
+        fixture.registerIgnoredField(AggregateRoot.class, "version");
 
-        if (Repository.class.isAssignableFrom(this.testRepository.getClass())) {
-            ((Repository) this.testRepository).setEventStore(fixture.getEventStore());
-            ((Repository) this.testRepository).setEventBus(fixture.getEventBus());
+        if (WirableRepository.class.isAssignableFrom(this.testRepository.getClass())) {
+            ((WirableRepository) this.testRepository).setEventStore(fixture.getEventStore());
+            ((WirableRepository) this.testRepository).setEventBus(fixture.getEventBus());
         }
 
         // Register the update handler
@@ -98,17 +98,18 @@ public class TestFixtureAxonTest {
         fixture
             .given()
             .when(
-                new TestCreateCommand(
-                    createId,
-                    firstName
-                ),
-                newContext()
+                    new TestCreateCommand(
+                            createId,
+                            firstName
+                    ),
+                    newContext()
             )
             .expectReturnValue(CommandResponse.ok())
+            .expectEvents(new TestCreatedEvent(createId), new TestFirstNameChangedEvent(firstName))
             .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                equalTo(new TestCreatedEvent(createId)),
-                equalTo(new TestFirstNameChangedEvent(firstName)),
-                andNoMore()
+                    equalTo(new TestCreatedEvent(createId)),
+                    equalTo(new TestFirstNameChangedEvent(firstName)),
+                    andNoMore()
             )));
     }
 
@@ -122,23 +123,23 @@ public class TestFixtureAxonTest {
 
         // When command is made, Then we expect creation and first name changing events
         fixture
-            .givenCommands(
-                new TestCreateCommand(
-                    aggregateId,
-                    firstName
+                .givenCommands(
+                        new TestCreateCommand(
+                                aggregateId,
+                                firstName
+                        )
                 )
-            )
-            .when(
-                new TestChangeLastNameCommand(
-                    aggregateId,
-                    lastName
-                ),
-                newContext()
-            )
-            .expectReturnValue(CommandResponse.ok())
-            .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                equalTo(new TestLastNameChangedEvent(lastName)),
-                andNoMore()
+                .when(
+                        new TestChangeLastNameCommand(
+                                aggregateId,
+                                lastName
+                        ),
+                        newContext()
+                )
+                .expectReturnValue(CommandResponse.ok())
+                .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                    equalTo(new TestLastNameChangedEvent(lastName)),
+                    andNoMore()
             )));
     }
 
@@ -150,7 +151,7 @@ public class TestFixtureAxonTest {
         /**
          * Non-event sourced repositories cannot handle "given" events
          */
-        if ( ! EventSourcedRepository.class.isAssignableFrom(this.testRepository.getClass())) {
+        if ( ! AutowiredEventSourcedRepository.class.isAssignableFrom(this.testRepository.getClass())) {
             return;
         }
 

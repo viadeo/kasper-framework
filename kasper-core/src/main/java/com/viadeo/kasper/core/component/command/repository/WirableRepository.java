@@ -6,17 +6,26 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.repository;
 
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import org.axonframework.eventhandling.EventBus;
+import org.axonframework.eventstore.EventStore;
 
 /**
- * Used to limit the allowed axon repository decorated by Kasper repositories
+ * A class implements this interface in order to have the capability to be auto wired with the platform components.
+ *
+ * @see Repository
  */
-interface DecoratedAxonRepository<AGR extends AggregateRoot>  extends org.axonframework.repository.Repository<AGR> {
+public interface WirableRepository {
 
-    // Used to limit the allowed axon repository decorated by Kasper repositories
+    /**
+     * Wires an event bus on this <code>Repository</code> instance.
+     * @param eventBus an event bus
+     */
     void setEventBus(EventBus eventBus);
 
-    RepositoryFacade<AGR> getRepositoryFacade();
+    /**
+     * Wires an event store on this <code>Repository</code> instance.
+     * @param eventStore an event bus
+     */
+    void setEventStore(EventStore eventStore);
 
 }

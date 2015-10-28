@@ -18,7 +18,7 @@ import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
@@ -35,6 +35,7 @@ import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQue
 import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedConcept;
 import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedRelation;
 
+@SuppressWarnings("unchecked")
 public class DefaultDocumentedElementInitializer implements DocumentedElementVisitor {
 
     private final DocumentedPlatform documentedPlatform;
@@ -169,7 +170,7 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
     @Override
     public void visit(final DocumentedRepository repository) {
         final RepositoryResolver resolver = new RepositoryResolver(new EntityResolver(new ConceptResolver(), new RelationResolver()));
-        final Class<? extends IRepository> referenceClass = repository.getReferenceClass();
+        final Class<? extends Repository> referenceClass = repository.getReferenceClass();
 
         repository.setLabel(resolver.getLabel(referenceClass));
         repository.setDescription(resolver.getDescription(referenceClass));

@@ -45,7 +45,7 @@ public class DefaultSpringSagaFactoryProvider implements SagaFactoryProvider {
     }
 
     @Override
-    public Optional<SagaFactory> get(final Class<? extends Saga> sagaClass) {
+    public <SAGA extends Saga> Optional<SagaFactory> get(final Class<SAGA> sagaClass) {
         return Optional.fromNullable(CACHE.get(sagaClass));
     }
 

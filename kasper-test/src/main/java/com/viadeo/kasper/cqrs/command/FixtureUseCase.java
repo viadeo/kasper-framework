@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,7 +34,8 @@ import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredEventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
@@ -47,7 +49,6 @@ import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactor
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.axonframework.eventhandling.annotation.EventHandler;
-import org.axonframework.eventstore.EventStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,9 +216,17 @@ public class FixtureUseCase {
             this.lastName = event.getLastName();
         }
 
+
+        @Override
+        public String toString() {
+            return Objects.toStringHelper(this)
+                    .add("firstName", firstName)
+                    .add("lastName", lastName)
+                    .toString();
+        }
     }
 
-    public static class TestRepository extends Repository<TestAggregate> {
+    public static class TestRepository extends AutowiredRepository<KasperID,TestAggregate> {
 
         private final Map<String, TestAggregate> store = Maps.newHashMap();
 
@@ -237,6 +246,7 @@ public class FixtureUseCase {
         @Override
         protected void doSave(TestAggregate aggregate) {
             store.put(key(aggregate.getEntityId(), aggregate.getVersion()), aggregate);
+            store.put(key(aggregate.getEntityId(), null), aggregate);
         }
 
         @Override
@@ -246,18 +256,13 @@ public class FixtureUseCase {
 
     }
 
-    public static class TestEventRepository extends EventSourcedRepository<TestAggregate> {
-        /* During tests, do not use constructor with event store */
-        public TestEventRepository() { }
-        public TestEventRepository(EventStore eventStore) {
-            super(eventStore);
-        }
-    }
+    public static class TestEventRepository extends AutowiredEventSourcedRepository<KasperID,TestAggregate> { }
 
     @XKasperCommandHandler( domain = TestDomain.class )
     public static class TestCreateCommandHandler
             extends AutowiredEntityCommandHandler<TestCreateCommand, TestAggregate> {
 
+        @SuppressWarnings("unchecked")
         public CommandResponse handle(final CommandMessage<TestCreateCommand> message) {
 
             final TestAggregate agr = new TestAggregate(message.getCommand().getIdToUse());
@@ -274,12 +279,13 @@ public class FixtureUseCase {
     public static class TestChangeLastNameCommandHandler
             extends AutowiredEntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
 
+        @SuppressWarnings("unchecked")
         public CommandResponse handle(final CommandMessage<TestChangeLastNameCommand> message) {
 
             final Optional<TestAggregate> agr =
                     this.getRepository().load(
                             message.getCommand().getId(),
-                            message.getCommand().getVersion()
+                            message.getCommand().getVersion().orNull()
                     );
 
             if (agr.isPresent()) {
@@ -466,7 +472,10 @@ public class FixtureUseCase {
                           new TestGetSomeDataQueryHandler(),
                           new TestCoreReasonCodeQueryHandler()
                 )
-                , Lists.<Repository>newArrayList(new TestRepository())
+                , Lists.<Repository>newArrayList(
+                        new TestRepository(),
+                        new TestEventRepository()
+                )
                 , Lists.<EventListener>newArrayList(
                         new TestCreatedEventListener(),
                         new TestFirstNameChangedEventListener(),

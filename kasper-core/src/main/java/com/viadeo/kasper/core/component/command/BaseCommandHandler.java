@@ -17,6 +17,8 @@ public abstract class BaseCommandHandler<COMMAND extends Command> implements Com
 
     private final Class<COMMAND> commandClass;
 
+    // ------------------------------------------------------------------------
+
     protected BaseCommandHandler() {
         @SuppressWarnings("unchecked")
         final Optional<Class<COMMAND>> commandClass =
@@ -35,6 +37,8 @@ public abstract class BaseCommandHandler<COMMAND extends Command> implements Com
 
         this.commandClass = commandClass.get();
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public CommandResponse handle(final CommandMessage<COMMAND> message) {
@@ -79,4 +83,5 @@ public abstract class BaseCommandHandler<COMMAND extends Command> implements Com
     public Class<? extends CommandHandler> getHandlerClass() {
         return this.getClass();
     }
+
 }

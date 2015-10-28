@@ -23,17 +23,18 @@ public interface WirableCommandHandler<COMMAND extends Command> extends CommandH
      * Wires an event bus on this <code>CommandHandler</code> instance.
      * @param eventBus an event bus
      */
-    void setEventBus(final EventBus eventBus);
+    void setEventBus(EventBus eventBus);
 
     /**
      * Wires a repository manager on this <code>CommandHandler</code> instance.
      * @param repositoryManager a repository manager
      */
-    void setRepositoryManager(final RepositoryManager repositoryManager);
+    void setRepositoryManager(RepositoryManager repositoryManager);
 
     /**
      * Wires a command gateway on this <code>CommandHandler</code> instance.
      * @param commandGateway a command gateway
      */
-    void setCommandGateway(final CommandGateway commandGateway);
+    void setCommandGateway(CommandGateway commandGateway);
+
 }

@@ -12,15 +12,16 @@ import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.DomainEvent;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperException;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
-import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.BaseEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import org.axonframework.commandhandling.CommandBus;
@@ -41,7 +42,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
 {
 
     public static <AGR extends AggregateRoot> KasperAggregateFixture<AGR> forRepository(
-            final Repository<AGR> repository,
+            final Repository<KasperID,AGR> repository,
             final Class<AGR> aggregateClass) {
         return new KasperAggregateFixture<>(repository, aggregateClass);
     }
@@ -49,22 +50,25 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
     // ------------------------------------------------------------------------
 
     private final GivenWhenThenTestFixture<AGR> fixture;
-    private final Repository<AGR> repository;
+    private final Repository<KasperID,AGR> repository;
     private final RepositoryManager repositoryManager;
 
     private boolean checkIllegalState = true;
 
-    private KasperAggregateFixture(final Repository<AGR> repository, final Class<AGR> aggregateClass) {
+    private KasperAggregateFixture(final Repository<KasperID,AGR> repository, final Class<AGR> aggregateClass) {
         Preconditions.checkNotNull(repository);
         Preconditions.checkNotNull(aggregateClass);
 
         this.fixture = new GivenWhenThenTestFixture<>(aggregateClass);
         this.fixture.setReportIllegalStateChange(checkIllegalState);
+        this.fixture.registerIgnoredField(AggregateRoot.class, "version");
 
         this.repository = repository;
-        this.repository.setEventStore(fixture.getEventStore());
-        this.repository.setEventBus(fixture.getEventBus());
-        this.repository.init();
+
+        if (WirableRepository.class.isAssignableFrom(this.repository.getClass())) {
+            ((WirableRepository) this.repository).setEventStore(fixture.getEventStore());
+            ((WirableRepository) this.repository).setEventBus(fixture.getEventBus());
+        }
 
         this.repositoryManager = new DefaultRepositoryManager();
         this.repositoryManager.register(repository);
@@ -86,7 +90,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         return this;
     }
 
-    public KasperAggregateFixture<AGR> registerCommandHandler(final CommandHandler commandHandler) {
+    public <COMMAND extends Command> KasperAggregateFixture<AGR> registerCommandHandler(final CommandHandler<COMMAND> commandHandler) {
         if (commandHandler instanceof AutowiredCommandHandler) {
             AutowiredCommandHandler autoWiringCommandHandler = (AutowiredCommandHandler) commandHandler;
             autoWiringCommandHandler.setEventBus(fixture.getEventBus());
@@ -95,7 +99,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
 
         fixture.registerCommandHandler(
                 commandHandler.getInputClass(),
-                new AxonCommandHandler(commandHandler)
+                new AxonCommandHandler<>(commandHandler)
         );
         return this;
     }
@@ -109,7 +113,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
 
     public KasperAggregateExecutor givenEvents(final DomainEvent... events) {
         if (events.length > 0) {
-            if ( ! EventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
+            if ( ! BaseEventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
                 throw new KasperException(
                         "Your repository is not event-sourced, you cannot use given(events)"
                 );
@@ -119,7 +123,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
     }
 
     public KasperAggregateExecutor givenEvents(final List<DomainEvent> events) {
-        if ( ! EventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
+        if ( ! BaseEventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
             throw new KasperException(
                     "Your repository is not event-sourced, you cannot use given(events)"
             );
@@ -165,7 +169,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         return fixture.getEventStore();
     }
 
-    public IRepository<AGR> repository() {
+    public Repository<KasperID,AGR> repository() {
         return repository;
     }
 

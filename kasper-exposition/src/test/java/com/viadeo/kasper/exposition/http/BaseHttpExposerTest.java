@@ -13,6 +13,8 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.id.IDBuilder;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
+import com.viadeo.kasper.api.id.Format;
+import com.viadeo.kasper.api.id.FormatAdapter;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
@@ -143,4 +145,12 @@ public abstract class BaseHttpExposerTest {
                 .withIpAddress("127.0.0.1")
                 .build();
     }
+
+    private static final Format DB_ID = new FormatAdapter("db-id", Integer.class) {
+        @SuppressWarnings("unchecked")
+        @Override
+        public <E> E parseIdentifier(String identifier) {
+            return (E) new Integer(identifier);
+        }
+    };
 }

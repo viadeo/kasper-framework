@@ -89,6 +89,7 @@ public class KasperIdModuleUTest {
         assertEquals(expectedKasperId, actualKasperId);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void serialize_fromIntegerKasperId_isOk() throws IOException {
         // Given
@@ -103,6 +104,7 @@ public class KasperIdModuleUTest {
         assertEquals("{\"id\":" + id + "}", json);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void deserialize_toIntegerKasperId_isOk() throws IOException {
         // Given
@@ -117,6 +119,7 @@ public class KasperIdModuleUTest {
         assertEquals(expectedKasperId, actualKasperId);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void serialize_fromLongKasperId_isOk() throws IOException {
         // Given
@@ -131,6 +134,7 @@ public class KasperIdModuleUTest {
         assertEquals("{\"id\":" + id + "}", json);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void deserialize_toLongKasperId_isOk() throws IOException {
         // Given
@@ -145,6 +149,7 @@ public class KasperIdModuleUTest {
         assertEquals(expectedKasperId, actualKasperId);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void serialize_fromStringKasperId_isOk() throws IOException {
         // Given
@@ -159,6 +164,7 @@ public class KasperIdModuleUTest {
         assertEquals("{\"id\":\"" + id + "\"}", json);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void deserialize_toStringKasperId_isOk() throws IOException {
         // Given
