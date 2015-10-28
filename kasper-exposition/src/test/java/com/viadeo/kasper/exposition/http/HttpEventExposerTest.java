@@ -110,8 +110,8 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     // ------------------------------------------------------------------------
 
     @Override
-    protected HttpEventExposerPlugin createExposerPlugin() {
-        return new HttpEventExposerPlugin();
+    protected HttpExposer getHttpExposer() {
+        return httpExposurePlugin.getEventExposer();
     }
 
     @Override
@@ -131,15 +131,10 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     }
 
     @Override
-    protected void buildPlatform(final PlatformConfiguration platformConfiguration,
-                                 final HttpExposerPlugin httpExposerPlugin,
+    protected DefaultPlatform.Builder platformBuilder(final PlatformConfiguration platformConfiguration,
                                  final DomainBundle domainBundle){
         eventBus = spy(platformConfiguration.eventBus());
-        new DefaultPlatform.Builder(platformConfiguration)
-                .withEventBus(eventBus)
-                .addPlugin(httpExposerPlugin)
-                .addDomainBundle(domainBundle)
-                .build();
+        return super.platformBuilder(platformConfiguration, domainBundle).withEventBus(eventBus);
     }
 
     // ------------------------------------------------------------------------
@@ -177,7 +172,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     }
 
     @Test
-    public void testNonListenedEvent() throws MalformedURLException, URISyntaxException, Exception {
+    public void testNonListenedEvent() throws Exception {
         // Given
         final Event event = new AccountUpdatedEvent();
 

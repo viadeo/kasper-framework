@@ -25,8 +25,8 @@ public class HelloITest {
     public void create_a_platform_with_hello_domain() throws Exception {
         SpringPlatform platform = Platforms.newSpringPlatformBuilder()
                 .addBundle(HelloBundle.class)
-                .build();
-        platform.start();
+                .build()
+                .start();
 
         try {
             CommandResponse commandResponse = platform.getCommandGateway().sendCommandAndWaitForAResponse(

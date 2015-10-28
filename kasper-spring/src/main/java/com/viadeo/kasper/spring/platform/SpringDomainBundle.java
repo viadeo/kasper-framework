@@ -18,7 +18,7 @@ import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -118,10 +118,10 @@ public class SpringDomainBundle extends DefaultDomainBundle {
     }
 
     @Override
-    public void configure(final BuilderContext context) {
+    public void configure(final PlatformContext context) {
         checkNotNull(context);
 
-        applicationContext.setParent(BuilderContextHelper.createApplicationContextFrom(context));
+        applicationContext.setParent(PlatformContextHelper.createApplicationContextFrom(context));
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
@@ -142,12 +142,12 @@ public class SpringDomainBundle extends DefaultDomainBundle {
     }
 
     protected void configureConfigPropertyPlaceHolder(final ConfigurableListableBeanFactory beanFactory,
-                                                      final BuilderContext context) {
+                                                      final PlatformContext context) {
         TypeSafeConfigPropertyPlaceholder configPropertyPlaceholder = new TypeSafeConfigPropertyPlaceholder(context.getConfiguration());
         configPropertyPlaceholder.postProcessBeanFactory(beanFactory);
     }
 
-    protected void doConfigure(final ConfigurableListableBeanFactory beanFactory, final BuilderContext context) {
+    protected void doConfigure(final ConfigurableListableBeanFactory beanFactory, final PlatformContext context) {
         /* empty */
     }
 

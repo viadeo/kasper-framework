@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
@@ -36,9 +37,26 @@ public interface Platform {
     KasperEventBus getEventBus();
 
     /**
+     * @return the metric registry used by the platform
+     */
+    MetricRegistry getMetricRegistry();
+
+    /**
      * @return the meta information of the platform
      */
     Meta getMeta();
+
+    /**
+     * Starts the platform
+     * @return the started platform
+     */
+    Platform start();
+
+    /**
+     * Stops the platform
+     * @return the stopped platform
+     */
+    Platform stop();
 
     // ========================================================================
 

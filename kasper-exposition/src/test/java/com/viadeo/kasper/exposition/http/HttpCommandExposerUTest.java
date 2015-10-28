@@ -80,7 +80,7 @@ public class HttpCommandExposerUTest {
 
         // When
         boolean exposable = exposer.isExposable(
-                new ExposureDescriptor<Command, Object>(
+                new ExposureDescriptor<Command, CommandHandler>(
                         ACommand.class,
                         CommandHandlerC.class
                 )
@@ -104,7 +104,7 @@ public class HttpCommandExposerUTest {
 
         // When
         boolean exposable = exposer.isExposable(
-                new ExposureDescriptor<Command, Object>(
+                new ExposureDescriptor<Command, CommandHandler>(
                         ACommand.class,
                         CommandHandlerB.class
                 )

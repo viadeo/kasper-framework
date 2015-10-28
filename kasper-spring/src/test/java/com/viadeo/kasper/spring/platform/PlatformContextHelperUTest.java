@@ -12,7 +12,8 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.platform.ExtraComponent;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.Meta;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
@@ -25,15 +26,15 @@ import java.util.concurrent.Executors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class BuilderContextHelperUTest {
+public class PlatformContextHelperUTest {
 
     @Test( expected = NullPointerException.class)
     public void createApplicationContextFrom_nullAsBuilderContext_shouldThrowException() {
         // Given
-        final BuilderContext builderContext = null;
+        final PlatformContext builderContext = null;
 
         // When
-        BuilderContextHelper.createApplicationContextFrom(builderContext);
+        PlatformContextHelper.createApplicationContextFrom(builderContext);
 
         // Then throws an exception
     }
@@ -43,17 +44,18 @@ public class BuilderContextHelperUTest {
         // Given
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final BuilderContext builderContext = new BuilderContext(
-            platformConfiguration.configuration(),
-            platformConfiguration.eventBus(),
-            platformConfiguration.commandGateway(),
-            platformConfiguration.queryGateway(),
-            platformConfiguration.metricRegistry(),
-            Lists.<ExtraComponent>newArrayList()
+        final PlatformContext builderContext = new PlatformContext(
+                platformConfiguration.configuration(),
+                platformConfiguration.eventBus(),
+                platformConfiguration.commandGateway(),
+                platformConfiguration.queryGateway(),
+                platformConfiguration.metricRegistry(),
+                Lists.<ExtraComponent>newArrayList(),
+                Meta.UNKNOWN
         );
 
         // When
-        final ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
+        final ApplicationContext applicationContext = PlatformContextHelper.createApplicationContextFrom(builderContext);
 
         // Then
         assertNotNull(applicationContext);
@@ -75,17 +77,18 @@ public class BuilderContextHelperUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final BuilderContext builderContext = new BuilderContext(
-            platformConfiguration.configuration(),
-            platformConfiguration.eventBus(),
-            platformConfiguration.commandGateway(),
-            platformConfiguration.queryGateway(),
-            platformConfiguration.metricRegistry(),
-            extraComponents
+        final PlatformContext builderContext = new PlatformContext(
+                platformConfiguration.configuration(),
+                platformConfiguration.eventBus(),
+                platformConfiguration.commandGateway(),
+                platformConfiguration.queryGateway(),
+                platformConfiguration.metricRegistry(),
+                extraComponents,
+                Meta.UNKNOWN
         );
 
         // When
-        final ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
+        final ApplicationContext applicationContext = PlatformContextHelper.createApplicationContextFrom(builderContext);
 
         // Then
         assertNotNull(applicationContext);
@@ -108,17 +111,18 @@ public class BuilderContextHelperUTest {
 
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-        final BuilderContext builderContext = new BuilderContext(
-            platformConfiguration.configuration(),
-            platformConfiguration.eventBus(),
-            platformConfiguration.commandGateway(),
-            platformConfiguration.queryGateway(),
-            platformConfiguration.metricRegistry(),
-            extraComponents
+        final PlatformContext builderContext = new PlatformContext(
+                platformConfiguration.configuration(),
+                platformConfiguration.eventBus(),
+                platformConfiguration.commandGateway(),
+                platformConfiguration.queryGateway(),
+                platformConfiguration.metricRegistry(),
+                extraComponents,
+                Meta.UNKNOWN
         );
 
         // When
-        ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
+        ApplicationContext applicationContext = PlatformContextHelper.createApplicationContextFrom(builderContext);
 
         // Then
         assertNotNull(applicationContext);

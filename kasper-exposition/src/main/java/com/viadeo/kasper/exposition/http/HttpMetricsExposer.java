@@ -55,6 +55,9 @@ public class HttpMetricsExposer extends HttpServlet {
         KasperMetricsOutput() { }
     }
 
+    private static final TimeUnit DEFAULT_RATE_UNIT = TimeUnit.SECONDS;
+    private static final TimeUnit DEFAULT_DURATION_UNIT = TimeUnit.MILLISECONDS;
+
     private static final KasperMetricsFilter kasperMetricsFilter = new KasperMetricsFilter();
 
     private final MetricRegistry metrics;
@@ -63,6 +66,11 @@ public class HttpMetricsExposer extends HttpServlet {
     private final TimeUnit durationUnit;
 
     // ------------------------------------------------------------------------
+
+    public HttpMetricsExposer(final MetricRegistry metrics, final ObjectMapper mapper) {
+        this(metrics, mapper, DEFAULT_RATE_UNIT, DEFAULT_DURATION_UNIT);
+
+    }
 
     public HttpMetricsExposer(final MetricRegistry metrics, final ObjectMapper mapper, final TimeUnit rateUnit, final TimeUnit durationUnit) {
         this.mapper = checkNotNull(mapper);

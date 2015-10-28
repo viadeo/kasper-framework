@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.spring.platform;
+package com.viadeo.kasper.spring.core;
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +41,6 @@ public class KasperObjectMapperConfiguration {
 
         return module;
     }
-
 
     @Bean
     public Module idModule(final IDBuilder idBuilder) {

@@ -178,6 +178,32 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         }
     }
 
+    public static class ContextCheckResult implements QueryResult {
+        private static final long serialVersionUID = 6219709753203593506L;
+    }
+
+    public static class ContextCheckQuery implements Query {
+        private static final long serialVersionUID = 674422094842929150L;
+
+        private String contextName;
+
+        public ContextCheckQuery(final String contextName) {
+            this.contextName = contextName;
+        }
+
+        public String getContextName() {
+            return this.contextName;
+        }
+    }
+
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    public static class ContextCheckQueryHandler extends AutowiredQueryHandler<ContextCheckQuery, ContextCheckResult> {
+        @Override
+        public QueryResponse<ContextCheckResult> handle(final QueryMessage<ContextCheckQuery> message) {
+            return QueryResponse.of(new ContextCheckResult());
+        }
+    }
+
     // ------------------------------------------------------------------------
     private boolean usePostForQueries;
 
@@ -191,15 +217,15 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     }
 
     @Override
-    protected void customize(KasperClientBuilder clientBuilder) {
-        clientBuilder.usePostForQueries(usePostForQueries);
+    protected KasperClientBuilder clientBuilder() throws MalformedURLException {
+        return super.clientBuilder().usePostForQueries(usePostForQueries);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    protected HttpQueryExposerPlugin createExposerPlugin() {
-        return new HttpQueryExposerPlugin();
+    protected HttpExposer getHttpExposer() {
+        return httpExposurePlugin.getQueryExposer();
     }
 
     @Override
@@ -209,7 +235,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
                         new SomeQueryHandler(),
                         new SomeCollectionQueryHandler(),
                         new NeedValidationWithAliasQueryHandler(),
-                        new UnexposedQueryHandler()
+                        new UnexposedQueryHandler(),
+                        new ContextCheckQueryHandler()
                 )
                 .build();
     }
@@ -341,7 +368,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     }
 
     @Test
-    public void testPostQuery() throws MalformedURLException, URISyntaxException, JsonProcessingException {
+    public void testQuery() throws MalformedURLException, URISyntaxException, JsonProcessingException {
         // Given
         final SomeQuery query = new SomeQuery();
         query.doThrowSomeException = false;
@@ -358,6 +385,19 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testQueryWithFullContext() {
+        // Given
+        final ContextCheckQuery query = new ContextCheckQuery(getContextName());
+
+        // When
+        final QueryResponse<ContextCheckResult> actual = client().query(
+                getFullContext(), query, ContextCheckResult.class);
+
+        // Then
+        assertTrue(actual.isOK());
     }
 
     @Test

@@ -7,7 +7,9 @@
 package com.viadeo.kasper.platform;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.CommandHandler;
@@ -32,15 +34,15 @@ import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.WirableQueryHandler;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.platform.builder.BuilderContext;
+import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.platform.plugin.Plugin;
 import org.axonframework.eventstore.EventStore;
 import org.axonframework.eventstore.supporting.VolatileEventStore;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -55,9 +57,14 @@ public class PlatformWirer {
     private final RepositoryManager repositoryManager;
     private final DomainDescriptorFactory domainDescriptorFactory;
     private final List<ExtraComponent> extraComponents;
+
     private final Config config;
     private final MetricRegistry metricRegistry;
     private final Set<String> registeredBundleNames;
+    private final Map<String,Plugin> registeredPlugins;
+    private final Meta meta;
+
+    // ------------------------------------------------------------------------
 
     public PlatformWirer(
             final Config config,
@@ -66,7 +73,8 @@ public class PlatformWirer {
             final KasperCommandGateway commandGateway,
             final KasperQueryGateway queryGateway,
             final SagaManager sagaManager,
-            final RepositoryManager repositoryManager
+            final RepositoryManager repositoryManager,
+            final Meta meta
     ) {
         this.config = checkNotNull(config);
         this.metricRegistry = checkNotNull(metricRegistry);
@@ -78,20 +86,41 @@ public class PlatformWirer {
         this.domainDescriptorFactory = new DomainDescriptorFactory();
         this.extraComponents = Lists.newArrayList();
         this.registeredBundleNames = Sets.newHashSet();
+        this.registeredPlugins = Maps.newHashMap();
+        this.meta = checkNotNull(meta);
         this.eventStore = new VolatileEventStore();
     }
 
-    public DomainDescriptor wire(DomainBundle bundle) {
-        checkState(!registeredBundleNames.contains(bundle.getName()), "Bundle name already wired : <name=%s>", bundle.getName());
+    // ------------------------------------------------------------------------
 
+    public void wire(final Plugin plugin) {
+        checkState( ! registeredPlugins.containsKey(plugin.getName()), "Plugin name already wired : <name=%s>", plugin.getName());
+        registeredPlugins.put(plugin.getName(), plugin);
+        plugin.initialize(
+                new PlatformContext(
+                    config,
+                    eventBus,
+                    commandGateway,
+                    queryGateway,
+                    metricRegistry,
+                    extraComponents,
+                    meta
+                )
+        );
+        firePluginRegistered(plugin);
+    }
+
+    public DomainDescriptor wire(final DomainBundle bundle) {
+        checkState( ! registeredBundleNames.contains(bundle.getName()), "Bundle name already wired : <name=%s>", bundle.getName());
         bundle.configure(
-                new BuilderContext(
+                new PlatformContext(
                         config,
                         eventBus,
                         commandGateway,
                         queryGateway,
                         metricRegistry,
-                        extraComponents
+                        extraComponents,
+                        meta
                 )
         );
 
@@ -156,22 +185,49 @@ public class PlatformWirer {
 
         registeredBundleNames.add(bundle.getName());
 
-        return domainDescriptorFactory.createFrom(bundle);
+        DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
+
+        fireDomainBundleRegistered(domainDescriptor);
+
+        return domainDescriptor;
     }
 
-    public void wire(CommandInterceptorFactory factory) {
+    public void wire(final CommandInterceptorFactory factory) {
         commandGateway.register(factory);
     }
-    public void wire(QueryInterceptorFactory factory) {
+
+    public void wire(final QueryInterceptorFactory factory) {
         queryGateway.register(factory);
     }
 
-    public void wire(EventInterceptorFactory factory) {
+    public void wire(final EventInterceptorFactory factory) {
         eventBus.register(factory);
     }
 
-    public void register(ExtraComponent extraComponent) {
+    public void register(final ExtraComponent extraComponent) {
         checkNotNull(extraComponent);
         extraComponents.add(extraComponent);
     }
+
+    @VisibleForTesting
+    protected Collection<Plugin> sortRegisteredPlugins() {
+        final List<Plugin> plugins = Lists.newArrayList(registeredPlugins.values());
+        Collections.sort(plugins, Plugin.COMPARATOR);
+        return plugins;
+    }
+
+    private void fireDomainBundleRegistered(final DomainDescriptor domainDescriptor) {
+        checkNotNull(domainDescriptor);
+        for (final Plugin plugin : sortRegisteredPlugins()) {
+            plugin.onDomainRegistered(domainDescriptor);
+        }
+    }
+
+    private void firePluginRegistered(final Plugin registeredPlugin) {
+        checkNotNull(registeredPlugin);
+        for (final Plugin plugin : sortRegisteredPlugins()) {
+            plugin.onPluginRegistered(registeredPlugin);
+        }
+    }
+
 }

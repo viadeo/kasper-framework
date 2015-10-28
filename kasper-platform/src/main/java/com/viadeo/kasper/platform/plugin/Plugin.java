@@ -6,9 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.platform.plugin;
 
-import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
+import com.viadeo.kasper.platform.PlatformAware;
+import com.viadeo.kasper.platform.builder.PlatformContext;
+
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * The Plugin interface represents an extension way to the platform useful to add new functionality like : documentation,
@@ -16,15 +18,47 @@ import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
  *
  * Note that the plugin will be initialized after the components is wired during the construction of the platform.
  */
-public interface Plugin {
+public interface Plugin extends PlatformAware {
+
+    static final Comparator<Plugin> COMPARATOR = new Comparator<Plugin>() {
+        @Override
+        public int compare(final Plugin o1, final Plugin o2) {
+            return Integer.compare(o1.getPhase(), o2.getPhase());
+        }
+    };
+
+    static final Comparator<Plugin> REVERSED_COMPARATOR = new Comparator<Plugin>() {
+        @Override
+        public int compare(final Plugin o1, final Plugin o2) {
+            return -1 * Integer.compare(o1.getPhase(), o2.getPhase());
+        }
+    };
+
+    // ------------------------------------------------------------------------
 
     /**
      * Initialize the plugin
      *
-     * @param platform the newly created platform
-     * @param metricRegistry the metric registry used by the platform
-     * @param domainDescriptors the domain descriptors of each registered domain bundle on the platform
+     * @param platform the platform context
      */
-    void initialize(Platform platform, MetricRegistry metricRegistry, DomainDescriptor... domainDescriptors);
+    void initialize(PlatformContext platform);
+
+    /**
+     * @return the name of the plugin
+     */
+    String getName();
+
+    /**
+     * @return the phase value of this object.
+     */
+    int getPhase();
+
+    /**
+     * Return the bean instances that match the given object type
+     * @param clazz the class or interface to match
+     * @param <E> the object type
+     * @return a list with the matching beans
+     */
+    <E> List<E> get(Class<E> clazz);
 
 }

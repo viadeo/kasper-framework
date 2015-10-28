@@ -160,4 +160,5 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     public DomainDescriptorFactory domainDescriptorFactory() {
         return domainDescriptorFactory;
     }
+
 }

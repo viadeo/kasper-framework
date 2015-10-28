@@ -20,7 +20,6 @@ public class KasperMetricsConfiguration {
         return new MetricRegistry();
     }
 
-
     /**
      * This should probably removed from the context...
      *
@@ -30,7 +29,6 @@ public class KasperMetricsConfiguration {
     public DomainHelper domainHelper() {
         return new DomainHelper();
     }
-
 
     /**
      * Instantiate the central metric registry
