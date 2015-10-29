@@ -14,6 +14,7 @@ import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
+import com.viadeo.kasper.core.id.TestFormats;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
@@ -260,8 +261,7 @@ public class AMQPClusterITest {
 
         @Bean
         public IDBuilder idBuilder() {
-            return new SimpleIDBuilder(TestFormats.DB_ID,
-                    TestFormats.UUID);
+            return new SimpleIDBuilder(TestFormats.UUID);
         }
 
         @Bean

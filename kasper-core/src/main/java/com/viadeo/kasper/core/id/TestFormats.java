@@ -8,18 +8,13 @@ package com.viadeo.kasper.core.id;
 
 import com.viadeo.kasper.api.id.Format;
 import com.viadeo.kasper.api.id.FormatAdapter;
+import com.viadeo.kasper.api.id.UUIDFormat;
 
 public final class TestFormats {
 
     private TestFormats() {}
 
-    public static final Format UUID = new FormatAdapter("uuid", java.util.UUID.class) {
-        @SuppressWarnings("unchecked")
-        @Override
-        public <E> E parseIdentifier(String identifier) {
-            return (E) java.util.UUID.fromString(identifier);
-        }
-    };
+    public static final Format UUID = new UUIDFormat();
 
     public static final Format ID = new FormatAdapter("id", Integer.class) {
         @SuppressWarnings("unchecked")

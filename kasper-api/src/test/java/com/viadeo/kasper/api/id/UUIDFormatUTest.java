@@ -6,17 +6,22 @@
 // ============================================================================
 package com.viadeo.kasper.api.id;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.util.UUID;
 
-public class UuidFormat extends FormatAdapter {
+public class UUIDFormatUTest {
 
-    public UuidFormat() {
-        super("uuid", UUID.class);
-    }
+    @Test
+    public void parseIdentifier_fromAStringifyUUID_isOk() {
+        // Given
+        UUID givenUuid = UUID.randomUUID();
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <E> E parseIdentifier(String identifier) {
-        return (E) UUID.fromString(identifier);
+        // When
+        UUID actualUuid = new UUIDFormat().parseIdentifier(givenUuid.toString());
+
+        // Then
+        Assert.assertEquals(givenUuid, actualUuid);
     }
 }

@@ -8,6 +8,7 @@ import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
+import com.viadeo.kasper.core.id.TestFormats;
 import org.axonframework.domain.GenericDomainEventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.io.EventMessageType;
@@ -55,7 +56,7 @@ public class EventBusMessageConverterUTest {
 
     @Before
     public void setUp() throws Exception {
-        converter = new EventBusMessageConverter(new DefaultContextHelper(new SimpleIDBuilder(TestFormats.DB_ID,
+        converter = new EventBusMessageConverter(new DefaultContextHelper(new SimpleIDBuilder(TestFormats.ID,
                 TestFormats.UUID)), serializer);
         timestamp = new DateTime("2012-10-12");
         properties = ImmutableMap.<String, Object>builder()

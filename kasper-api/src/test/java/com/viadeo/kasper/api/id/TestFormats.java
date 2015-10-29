@@ -12,11 +12,5 @@ public final class TestFormats {
         }
     };
 
-    public static final Format UUID = new FormatAdapter("uuid", java.util.UUID.class) {
-        @SuppressWarnings("unchecked")
-        @Override
-        public <E> E parseIdentifier(String identifier) {
-            return (E) java.util.UUID.fromString(identifier);
-        }
-    };
+    public static final Format UUID = new UUIDFormat();
 }
