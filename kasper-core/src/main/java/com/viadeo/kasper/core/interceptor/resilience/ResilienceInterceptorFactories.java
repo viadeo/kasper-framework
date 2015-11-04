@@ -99,6 +99,9 @@ public class ResilienceInterceptorFactories {
         if (command.isCircuitBreakerOpen()) {
             message = String.format("Circuit-breaker is open, <handler=%s>", type.getRawType().getName());
             coreReasonCode = CoreReasonCode.SERVICE_UNAVAILABLE;
+        } else if (command.isResponseRejected()) {
+            message = String.format("Rejected request, <handler=%s>", type.getRawType().getName());
+            coreReasonCode = CoreReasonCode.SERVICE_UNAVAILABLE;
         } else if (command.isFailedExecution()) {
             message = String.format("Failed to execute request, <handler=%s>", type.getRawType().getName());
             coreReasonCode = CoreReasonCode.INTERNAL_COMPONENT_ERROR;

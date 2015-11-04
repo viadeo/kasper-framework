@@ -7,8 +7,7 @@
 package com.viadeo.kasper.core.interceptor.resilience;
 
 import com.codahale.metrics.MetricRegistry;
-import com.netflix.hystrix.HystrixCircuitBreaker;
-import com.netflix.hystrix.HystrixCommandKey;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Contexts;
@@ -24,6 +23,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Executors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -52,6 +59,8 @@ public class ResilienceInterceptorITest {
     }
 
     private static class Query implements com.viadeo.kasper.api.component.query.Query { }
+    private static class Query2 implements com.viadeo.kasper.api.component.query.Query { }
+    private static class Query3 implements com.viadeo.kasper.api.component.query.Query { }
 
     // ------------------------------------------------------------------------
 
@@ -60,7 +69,6 @@ public class ResilienceInterceptorITest {
         queryHandler = mockedQueryHandler();
 
         configurer = mock(ResilienceConfigurator.class);
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000, 10, 5));
 
         final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
         chainRegistry.register(ResilienceInterceptorFactories.forQuery(
@@ -74,37 +82,64 @@ public class ResilienceInterceptorITest {
         ).get();
 
         KasperMetrics.setMetricRegistry(new MetricRegistry());
-
-        final HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(
-                HystrixCommandKey.Factory.asKey(Query.class.getName())
-        );
-
-        if (circuitBreaker != null) {
-            circuitBreaker.markSuccess();
-        }
     }
 
-//    @Test
-//    public void proceed_interception_with_a_disabled_circuit_breaker() throws Exception {
-//        // Given
-//        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(false, 20, 40, 40000, 1000));
-////        doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
-//        doReturn(QueryResponse.failure(new KasperReason(CoreReasonCode.SERVICE_UNAVAILABLE))).when(queryHandler).handle(anyQueryMessage());
-//        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
-//        assertNotNull(response);
-//        assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
-//        assertEquals(CoreReasonCode.INTERNAL_COMPONENT_ERROR, response.getReason().getCoreReasonCode());
-//    }
+    @Test
+    public void proceed_interception_without_sufficient_resources() throws Exception {
+        // Given
+        reset(queryHandler, configurer);
+        when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(false, 2, 40, 500, 1000, 1, 1));
+        when(queryHandler.handle(anyQueryMessage())).thenAnswer(
+                new Answer<QueryResponse>() {
+                    @Override
+                    public QueryResponse answer(InvocationOnMock invocation) throws Throwable {
+                        System.err.println("sleeping..");
+                        Thread.sleep(100);
+                        return QueryResponse.of(mock(QueryResult.class));
+                    }
+                }
+        );
+        int nThreads = 2;
+
+        // When
+        CompletionService<QueryResponse<QueryResult>> executor = new ExecutorCompletionService<>(Executors.newFixedThreadPool(nThreads));
+
+        Callable<QueryResponse<QueryResult>> task = new Callable<QueryResponse<QueryResult>>() {
+            @Override
+            public QueryResponse<QueryResult> call() throws Exception {
+                return interceptorChain.next(new Query2(), Contexts.empty());
+            }
+        };
+
+        for (int i = 0; i < nThreads; i++) {
+            executor.submit(task);
+        }
+
+        List<QueryResponse<QueryResult>> responseNotOk = Lists.newArrayList();
+        for (int i = 0; i < nThreads; i++) {
+            QueryResponse<QueryResult> response = executor.take().get();
+            if (!response.isOK()) {
+                responseNotOk.add(response);
+            }
+        }
+
+        // Then
+        assertTrue(responseNotOk.size() >= 1);
+        QueryResponse<QueryResult> response = responseNotOk.get(0);
+        assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
+        assertEquals(response.getReason().getException().get().getMessage(), CoreReasonCode.SERVICE_UNAVAILABLE, response.getReason().getCoreReasonCode());
+        assertTrue(response.getReason().hasMessage(String.format("Rejected request, <handler=%s>", QueryHandler.class.getName())));
+    }
 
     @Test
     public void proceed_interception_with_circuit_breaker_open() throws Exception {
         // Given
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 500, 1000, 10, 5));
+        when(configurer.configure(any(Query3.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 500, 1000, 10, 5));
         doThrow(new NullPointerException("fake")).when(queryHandler).handle(anyQueryMessage());
 
         // When
         for (int i = 0; i <2; i++) {
-            final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+            final QueryResponse<QueryResult> response = interceptorChain.next(new Query3(), Contexts.empty());
             assertNotNull(response);
             assertEquals(KasperResponse.Status.FAILURE, response.getStatus());
             assertEquals(CoreReasonCode.INTERNAL_COMPONENT_ERROR, response.getReason().getCoreReasonCode());
@@ -112,7 +147,7 @@ public class ResilienceInterceptorITest {
         }
         Thread.sleep(500);
 
-        final QueryResponse<QueryResult> response = interceptorChain.next(new Query(), Contexts.empty());
+        final QueryResponse<QueryResult> response = interceptorChain.next(new Query3(), Contexts.empty());
 
         // Then
         assertNotNull(response);
@@ -124,7 +159,7 @@ public class ResilienceInterceptorITest {
     @Test
     public void proceed_interception_after_to_have_close_the_circuit() throws Exception {
         // Given
-        when(configurer.configure(any())).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 100, 1000, 10, 5));
+        when(configurer.configure(any(Query.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 2, 40, 100, 1000, 10, 5));
         when(queryHandler.handle(anyQueryMessage()))
                 .thenThrow(new NullPointerException("fake1"))
                 .thenThrow(new NullPointerException("fake2"))

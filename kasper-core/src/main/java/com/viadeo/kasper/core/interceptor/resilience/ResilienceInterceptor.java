@@ -107,7 +107,7 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
         return HystrixCommand.Setter
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupName))
                 .andCommandKey(HystrixCommandKey.Factory.asKey(inputName))
-                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey(input.getClass().getPackage().getName()))
+                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey(input.getClass().getName()))
 
                 //TODO review values for the following thread pool properties in order to avoid to get a RejectedExecutionException
                 .andThreadPoolPropertiesDefaults(
