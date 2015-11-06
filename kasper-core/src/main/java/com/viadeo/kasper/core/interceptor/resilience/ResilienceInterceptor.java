@@ -39,7 +39,7 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
     ) {
         this.policy = checkNotNull(policy);
         this.configurer = checkNotNull(configurer);
-        registerMetricsPublisherOnHystrix(checkNotNull(metricRegistry), HystrixPlugins.getInstance());
+        registerMetricsPublisherOnHystrix(checkNotNull(metricRegistry), HystrixPlugins.getInstance(), configurer);
     }
 
     // ------------------------------------------------------------------------
@@ -136,9 +136,10 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
     @VisibleForTesting
     protected static void registerMetricsPublisherOnHystrix(
             final MetricRegistry metricRegistry,
-            final HystrixPlugins hystrixPlugins
+            final HystrixPlugins hystrixPlugins,
+            final ResilienceConfigurator configurer
     ) {
-        if ( ( ! metricInitialized) && (null != metricRegistry)) {
+        if ( ! metricInitialized && null != metricRegistry && configurer.isHystrixMetricEnable() ) {
             hystrixPlugins.registerMetricsPublisher(new HystrixCodaHaleMetricsPublisher(metricRegistry));
             metricInitialized = true;
         }
