@@ -179,8 +179,7 @@ public class HttpExposurePlugin extends PluginAdapter {
         return Integer.MAX_VALUE;
     }
 
-    @VisibleForTesting
-    protected Server getServer() {
+    public Server getServer() {
         return server;
     }
 

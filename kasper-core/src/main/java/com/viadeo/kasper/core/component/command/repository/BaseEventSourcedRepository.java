@@ -43,7 +43,7 @@ public abstract class BaseEventSourcedRepository<ID extends KasperID,AGR extends
 
     @SuppressWarnings("unchecked")
     @Override
-    protected AxonEventSourcedRepository<ID,AGR> getAxonRepository() {
+    public AxonEventSourcedRepository<ID,AGR> getAxonRepository() {
         return (AxonEventSourcedRepository<ID, AGR>) super.getAxonRepository();
     }
 

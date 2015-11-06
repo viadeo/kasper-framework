@@ -21,7 +21,7 @@ import org.axonframework.repository.AggregateNotFoundException;
 
 import static com.google.common.base.Preconditions.checkState;
 
-abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot> implements Repository<ID, AGR> {
+public abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot> implements Repository<ID, AGR> {
 
     private AxonRepositoryFacade<AGR> axonRepository;
 
@@ -59,7 +59,7 @@ abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot
 
     // ------------------------------------------------------------------------
 
-    protected AxonRepositoryFacade<AGR> getAxonRepository() {
+    public AxonRepositoryFacade<AGR> getAxonRepository() {
         if (null == axonRepository) {
             this.axonRepository = createAxonRepository(metricRegistry, this);
         }

@@ -37,7 +37,7 @@ public abstract class BaseRepository<ID extends KasperID, AGR extends AggregateR
 
     @SuppressWarnings("unchecked")
     @Override
-    protected AxonRepository<ID,AGR> getAxonRepository() {
+    public AxonRepository<ID,AGR> getAxonRepository() {
         return (AxonRepository<ID,AGR>) super.getAxonRepository();
     }
 

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import( {
-        KasperEventBusConfiguration.class,
+//        KasperEventBusConfiguration.class,
         RabbitMQEventBusConfiguration.class,
 //        SagaConfiguration.class,
         RabbitMQConfiguration.class
