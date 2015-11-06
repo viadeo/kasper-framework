@@ -38,6 +38,12 @@ public class ResilienceConfigurator {
 
     // ------------------------------------------------------------------------
 
+    public boolean isHystrixMetricEnable() {
+        return getBooleanOr(config, "runtime.hystrix.metricsPublisher.enable", Boolean.TRUE);
+    }
+
+    // ------------------------------------------------------------------------
+
     public InputConfig configure(final Object input) {
         checkNotNull(input);
 

@@ -86,11 +86,14 @@ public class ResilienceInterceptorUTest {
 
     @Before
     public void setUp() throws Exception {
+        ResilienceInterceptor.metricInitialized = true;
+
         queryHandler = mockedQueryHandler();
 
         configurer = mock(ResilienceConfigurator.class);
         when(configurer.configure(any(Query.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000, 10, 5));
         when(configurer.configure(any(Query2.class))).thenReturn(new ResilienceConfigurator.InputConfig(true, 20, 40, 40000, 1000, 10, 5));
+        when(configurer.isHystrixMetricEnable()).thenReturn(Boolean.TRUE);
 
         final MetricRegistry metricRegistry = new MetricRegistry();
         final InterceptorChainRegistry<com.viadeo.kasper.api.component.query.Query, QueryResponse<QueryResult>> chainRegistry = new InterceptorChainRegistry<>();
@@ -220,10 +223,31 @@ public class ResilienceInterceptorUTest {
         final HystrixPlugins hystrixPlugins = spy(hp);
 
         // When
-        ResilienceInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins);
+        ResilienceInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins, configurer);
 
         // Then
         verify(hystrixPlugins, atMost(1)).registerMetricsPublisher(any(HystrixMetricsPublisher.class));
+    }
+
+//    @Ignore
+    @Test
+    public void do_not_register_a_metrics_publisher_on_hystrix_when_it_is_disabled() throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+        // Given
+        ResilienceInterceptor.metricInitialized = false;
+
+        ResilienceConfigurator configurator = mock(ResilienceConfigurator.class);
+        when(configurator.isHystrixMetricEnable()).thenReturn(Boolean.FALSE);
+
+        final Constructor<?> constructor = HystrixPlugins.class.getDeclaredConstructor();
+        constructor.setAccessible(Boolean.TRUE);
+        final HystrixPlugins hp = (HystrixPlugins) constructor.newInstance();
+        final HystrixPlugins hystrixPlugins = spy(hp);
+
+        // When
+        ResilienceInterceptor.registerMetricsPublisherOnHystrix(new MetricRegistry(), hystrixPlugins, configurator);
+
+        // Then
+        verify(hystrixPlugins, never()).registerMetricsPublisher(any(HystrixMetricsPublisher.class));
     }
 
 }
