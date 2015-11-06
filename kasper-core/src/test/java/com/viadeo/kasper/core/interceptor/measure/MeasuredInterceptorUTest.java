@@ -77,7 +77,6 @@ public class MeasuredInterceptorUTest {
 
         // Then
         assertNotNull(input);
-        verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests");
         verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
         verifyNoMoreInteractions(metricRegistry);
     }
@@ -90,7 +89,6 @@ public class MeasuredInterceptorUTest {
 
         // Then
         assertNotNull(input);
-        verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests");
         verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.gateway.commandgateway.errors");
         verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
         verifyNoMoreInteractions(metricRegistry);

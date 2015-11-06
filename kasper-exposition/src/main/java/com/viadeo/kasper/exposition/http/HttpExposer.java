@@ -112,9 +112,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         // HTTP command/query exposer global requests time
         final Timer.Context timerGlobalRequest = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
 
-        // This request time
-        Timer.Context timerRequest = null;
-
         // This request serialization time
         Timer.Context timerRequestSerialization = null;
 
@@ -133,10 +130,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             /* 2) Extract the input and payload from request */
             input = extractInput(httpRequest, requestToObject, payload);
-
-            timerRequest = getMetricRegistry().timer(
-                    name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, input.getClass(), "requests-time")
-            ).time();
 
             /* 3) Extract the context from request */
             final Context context = extractContext(httpRequest, kasperCorrelationUUID);
@@ -264,21 +257,17 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         } finally {
 
+            String durationInMillis = "";
             if(null != timerGlobalRequest)
             {
                 timerGlobalRequest.stop();
+                long duration = timerGlobalRequest.stop();
+                durationInMillis = String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS));
             }
 
             if(null != timerRequestSerialization)
             {
                 timerRequestSerialization.stop();
-            }
-
-            String durationInMillis = "";
-            if(null != timerRequest)
-            {
-                long duration = timerRequest.stop();
-                durationInMillis = String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS));
             }
 
             MDC.put("duration", durationInMillis);

@@ -82,10 +82,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
         final MetricNames inputMetricNames = getOrInstantiateInputMetricNames();
         final MetricNames domainMetricNames = getOrInstantiateDomainMetricNames();
 
-        metricRegistry.meter(inputMetricNames.requests).mark();
-        metricRegistry.meter(domainMetricNames.requests).mark();
         metricRegistry.meter(KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, getInputClass(), "requests")).mark();
-        metricRegistry.meter(globalMetricNames.requests).mark();
 
         final Timer.Context inputTimer = metricRegistry.timer(inputMetricNames.requestsTime).time();
         final Timer.Context domainTimer = metricRegistry.timer(domainMetricNames.requestsTime).time();

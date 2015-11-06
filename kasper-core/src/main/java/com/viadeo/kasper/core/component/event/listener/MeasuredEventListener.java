@@ -63,17 +63,17 @@ public class MeasuredEventListener
 
     @Override
     protected MetricNames instantiateGlobalMetricNames(Class<?> componentClass) {
-        return MetricNames.of(componentClass, "errors", "handles", "handle-time");
+        return MetricNames.of(componentClass, "errors", "handle-time");
     }
 
     @Override
     protected MetricNames instantiateInputMetricNames() {
-        return MetricNames.of(handler.getHandlerClass(), "errors", "handles", "handle-time");
+        return MetricNames.of(handler.getHandlerClass(), "errors", "handle-time");
     }
 
     @Override
     protected MetricNames instantiateDomainMetricNames() {
-        return MetricNames.byDomainOf(handler.getHandlerClass(), "errors", "handles", "handle-time");
+        return MetricNames.byDomainOf(handler.getHandlerClass(), "errors", "handle-time");
     }
 
 }
