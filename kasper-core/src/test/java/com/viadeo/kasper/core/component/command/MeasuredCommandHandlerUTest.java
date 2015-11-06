@@ -81,10 +81,10 @@ public class MeasuredCommandHandlerUTest {
 
         // Then
         assertNotNull(response);
-        verify(metricRegistry).meter("unknown.command.testcommand.requests");
-        verify(metricRegistry).meter("unknown.command.requests");
-        verify(metricRegistry).meter("client.unknown.command.requests");
         verify(metricRegistry).timer("unknown.command.testcommand.requests-handle-time");
+        verify(metricRegistry).timer("unknown.command.requests-handle-time");
+        verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
+        verify(metricRegistry).meter("client.unknown.command.requests");
 
     }
 
@@ -101,10 +101,10 @@ public class MeasuredCommandHandlerUTest {
 
         // Then
         assertNotNull(response);
-        verify(metricRegistry).meter("unknown.command.testcommand.requests");
-        verify(metricRegistry).meter("unknown.command.requests");
-        verify(metricRegistry).meter("client.unknown.command.requests");
         verify(metricRegistry).timer("unknown.command.testcommand.requests-handle-time");
+        verify(metricRegistry).timer("unknown.command.requests-handle-time");
+        verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
+        verify(metricRegistry).meter("client.unknown.command.requests");
     }
 
     @Test
@@ -120,10 +120,10 @@ public class MeasuredCommandHandlerUTest {
 
         // Then
         assertNotNull(response);
-        verify(metricRegistry).meter("unknown.command.testcommand.requests");
-        verify(metricRegistry).meter("unknown.command.requests");
-        verify(metricRegistry).meter("client.unknown.command.requests");
         verify(metricRegistry).timer("unknown.command.testcommand.requests-handle-time");
+        verify(metricRegistry).timer("unknown.command.requests-handle-time");
+        verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
+        verify(metricRegistry).meter("client.unknown.command.requests");
     }
 
     @Test
@@ -139,10 +139,10 @@ public class MeasuredCommandHandlerUTest {
 
         // Then
         assertNotNull(response);
-        verify(metricRegistry).meter("unknown.command.testcommand.requests");
-        verify(metricRegistry).meter("unknown.command.requests");
-        verify(metricRegistry).meter("client.unknown.command.requests");
         verify(metricRegistry).timer("unknown.command.testcommand.requests-handle-time");
+        verify(metricRegistry).timer("unknown.command.requests-handle-time");
+        verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
+        verify(metricRegistry).meter("client.unknown.command.requests");
         verify(metricRegistry).meter("unknown.command.testcommand.errors");
         verify(metricRegistry).meter("unknown.command.errors");
         verify(metricRegistry).meter("client.unknown.command.errors");
@@ -170,10 +170,10 @@ public class MeasuredCommandHandlerUTest {
             handler.handle(new CommandMessage<Command>(Contexts.empty(), mock(TestCommand.class)));
         } finally {
             // Then
-            verify(metricRegistry).meter("unknown.command.testcommand.requests");
-            verify(metricRegistry).meter("unknown.command.requests");
-            verify(metricRegistry).meter("client.unknown.command.requests");
             verify(metricRegistry).timer("unknown.command.testcommand.requests-handle-time");
+            verify(metricRegistry).timer("unknown.command.requests-handle-time");
+            verify(metricRegistry).timer("com.viadeo.kasper.core.component.command.gateway.commandgateway.requests-handle-time");
+            verify(metricRegistry).meter("client.unknown.command.requests");
             verify(metricRegistry).meter("unknown.command.testcommand.errors");
             verify(metricRegistry).meter("unknown.command.errors");
             verify(metricRegistry).meter("client.unknown.command.errors");
