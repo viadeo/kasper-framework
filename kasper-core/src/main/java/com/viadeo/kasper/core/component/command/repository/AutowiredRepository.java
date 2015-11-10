@@ -40,7 +40,4 @@ public abstract class AutowiredRepository<ID extends KasperID, AGR extends Aggre
         this.eventStore.init(eventStore);
     }
 
-    // FIXME remove as soon as this method
-    public void init() {}
-
 }
