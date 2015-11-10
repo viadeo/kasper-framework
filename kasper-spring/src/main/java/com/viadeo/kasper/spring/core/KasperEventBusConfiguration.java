@@ -10,10 +10,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 @Configuration
-//@Import(SagaConfiguration.class)
 public class KasperEventBusConfiguration {
 
     @Bean
