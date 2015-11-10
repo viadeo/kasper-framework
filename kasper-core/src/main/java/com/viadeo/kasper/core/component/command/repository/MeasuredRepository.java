@@ -201,4 +201,8 @@ public class MeasuredRepository<ID extends KasperID, AGR extends AggregateRoot>
         return repository.getRepositoryClass();
     }
 
+    @Override
+    public void checkAggregateIdentifier(ID aggregateIdentifier) {
+        repository.checkAggregateIdentifier(aggregateIdentifier);
+    }
 }

@@ -86,7 +86,7 @@ public class AxonRepository<ID extends KasperID, AGR extends AggregateRoot>
     @SuppressWarnings("unchecked")
     @Override
     protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-        checkNotNull(aggregateIdentifier);
+        repository.checkAggregateIdentifier((ID) aggregateIdentifier);
 
         final Optional<AGR> optionalAggregate = repository.doLoad((ID) aggregateIdentifier, expectedVersion);
 

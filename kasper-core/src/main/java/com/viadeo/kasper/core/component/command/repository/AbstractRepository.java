@@ -19,6 +19,7 @@ import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventstore.EventStore;
 import org.axonframework.repository.AggregateNotFoundException;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public abstract class AbstractRepository<ID extends KasperID, AGR extends AggregateRoot> implements Repository<ID, AGR> {
@@ -157,6 +158,7 @@ public abstract class AbstractRepository<ID extends KasperID, AGR extends Aggreg
 
     @Override
     public boolean has(final ID id) {
+        checkAggregateIdentifier(id);
         return doHas(id);
     }
 
@@ -207,6 +209,10 @@ public abstract class AbstractRepository<ID extends KasperID, AGR extends Aggreg
     @Override
     public Class<?> getRepositoryClass() {
         return getClass();
+    }
+
+    public void checkAggregateIdentifier(final ID aggregateIdentifier) {
+        checkNotNull(aggregateIdentifier);
     }
 
     // ------------------------------------------------------------------------
