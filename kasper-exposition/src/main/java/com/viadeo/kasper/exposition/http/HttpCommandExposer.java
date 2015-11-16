@@ -33,11 +33,10 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
+public class HttpCommandExposer extends HttpExposer<Command, CommandHandler, CommandResponse> {
 
     private static final long serialVersionUID = 8444284922303895624L;
 
-    private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
     private final transient CommandGateway commandGateway;
 
     private final ObjectToHttpServletResponse objectToHttpResponse;
@@ -61,9 +60,8 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
-        super(contextDeserializer, meta);
+        super(contextDeserializer, meta, descriptors);
         this.commandGateway = checkNotNull(commandGateway);
-        this.descriptors = checkNotNull(descriptors);
 
         this.httpRequestToObject = new HttpServletRequestToObject.JsonToObjectMapper(mapper);
         this.objectToHttpResponse = new ObjectToHttpServletResponse(mapper);
@@ -75,7 +73,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final ExposureDescriptor<Command,CommandHandler> descriptor : descriptors) {
+        for (final ExposureDescriptor<Command,CommandHandler> descriptor : getDescriptors()) {
             expose(descriptor);
         }
 
@@ -153,6 +151,9 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
             }
             if (response.getAccessToken().isPresent()) {
                 httpResponse.addHeader(HttpContextHeaders.HEADER_ACCESS_TOKEN.toHeaderName(), response.getAccessToken().get());
+            }
+            if (response.getAuthenticationToken().isPresent()) {
+                httpResponse.addHeader(HttpContextHeaders.HEADER_AUTHENTICATION_TOKEN.toHeaderName(), response.getAuthenticationToken().get().toString());
             }
         }
         super.sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);

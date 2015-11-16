@@ -6,55 +6,79 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.repository;
 
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.eventstore.EventStore;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * Decored axon event sourced repository
- *
- * Delegates actions to a Kasper repository through an action facade
- */
-class AxonEventSourcedRepository<AGR extends AggregateRoot>
+public class AxonEventSourcedRepository<ID extends KasperID, AGR extends AggregateRoot>
         extends EventSourcingRepository<AGR>
-        implements DecoratedAxonRepository<AGR> {
+        implements AxonRepositoryFacade<AGR>
+{
+    private final AbstractRepository<ID,AGR> repository;
 
-    private final RepositoryFacade<AGR> repositoryFacade;
+    // ------------------------------------------------------------------------
 
-    // --------------------------------------------------------------------
-
-    AxonEventSourcedRepository(final RepositoryFacade<AGR> repositoryFacade,
-                               final Class<AGR> aggregateType,
-                               final EventStore eventStore) {
-        super(checkNotNull(aggregateType), checkNotNull(eventStore));
-        this.repositoryFacade = checkNotNull(repositoryFacade);
-    }
-
-    @Override
-    public RepositoryFacade<AGR> getRepositoryFacade() {
-        return this.repositoryFacade;
-    }
-
-    // --------------------------------------------------------------------
-
-    @Override
-    protected void doSaveWithLock(final AGR aggregate) {
-        this.repositoryFacade.doSave(aggregate);
-    }
-
-    @Override
-    protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-        return this.repositoryFacade.doLoad(aggregateIdentifier, expectedVersion);
-    }
-
-    @Override
-    protected void doDeleteWithLock(final AGR aggregate) {
-        this.repositoryFacade.doDelete(aggregate);
+    public AxonEventSourcedRepository(final AbstractRepository<ID, AGR> repository, final EventStore eventStore) {
+        super(repository.getAggregateClass(), eventStore);
+        this.repository = checkNotNull(repository);
     }
 
     // ------------------------------------------------------------------------
+
+    @Override
+    public void save(final AGR aggregate) {
+        checkNotNull(aggregate);
+        repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
+
+        if ((null != aggregate.getVersion()) && (aggregate.getVersion() > 0L)) {
+            aggregate.setVersion(aggregate.getVersion() + 1L);
+            repository.doUpdate(aggregate);
+        } else {
+            aggregate.setVersion(1L);
+            repository.doSave(aggregate);
+        }
+    }
+
+    @Override
+    public void update(final AGR aggregate) {
+        checkNotNull(aggregate);
+        repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
+
+        if (null != aggregate.getVersion()) {
+            aggregate.setVersion(aggregate.getVersion() + 1L);
+        }
+
+        repository.doUpdate(aggregate);
+    }
+
+    @Override
+    public void delete(final AGR aggregate) {
+        checkNotNull(aggregate);
+        repository.eventStore.appendEvents(aggregate.getClass().getSimpleName(), aggregate.getUncommittedEvents());
+
+        if (null != aggregate.getVersion()) {
+            aggregate.setVersion(aggregate.getVersion() + 1L);
+        }
+
+        repository.doDelete(aggregate);
+    }
+
+    @Override
+    public AGR get(final Object aggregateIdentifier, Long expectedVersion) {
+        final AGR agr = doLoad(aggregateIdentifier, expectedVersion);
+        if (null != agr &&  null != agr.getVersion()) {
+            agr.setVersion(0L);
+        }
+        return agr;
+    }
+
+    @Override
+    public AGR get(final Object aggregateIdentifier) {
+        return get(aggregateIdentifier, null);
+    }
 
     public void doRealSaveWithLock(final AGR aggregate) {
         super.doSaveWithLock(aggregate);

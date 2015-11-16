@@ -20,7 +20,7 @@ import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.Relation;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
@@ -68,7 +68,7 @@ public class DomainDescriptorFactoryUTest {
         }
     }
 
-    public static class TestRepository extends Repository<TestConcept> {
+    public static class TestRepository extends AutowiredRepository<KasperID,TestConcept> {
         @Override
         protected Optional<TestConcept> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
             return Optional.absent();

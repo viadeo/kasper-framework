@@ -12,11 +12,11 @@ import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.common.tools.ReflectionGenericsResolver;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.repository.Repository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RepositoryResolver extends AbstractResolver<IRepository> {
+public class RepositoryResolver extends AbstractResolver<Repository> {
 
     private EntityResolver entityResolver;
 
@@ -39,7 +39,7 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IRepository> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Repository> clazz) {
 
         if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
@@ -59,7 +59,7 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(final Class<? extends IRepository> clazz) {
+    public String getDescription(final Class<? extends Repository> clazz) {
         final XKasperRepository annotation =
                 checkNotNull(clazz).getAnnotation(XKasperRepository.class);
 
@@ -80,20 +80,21 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
     }
 
     @Override
-    public String getLabel(final Class<? extends IRepository> clazz) {
+    public String getLabel(final Class<? extends Repository> clazz) {
         return checkNotNull(clazz).getSimpleName().replace("Repository", "");
     }
 
     // ------------------------------------------------------------------------
 
-    public Class<? extends AggregateRoot> getStoredEntityClass(final Class<? extends IRepository> clazz) {
+    @SuppressWarnings("unchecked")
+    public Class<? extends AggregateRoot> getStoredEntityClass(final Class<? extends Repository> clazz) {
         @SuppressWarnings("unchecked")
         final Optional<Class<? extends AggregateRoot>> agr =
                 (Optional<Class<? extends AggregateRoot>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
                                 clazz,
-                                IRepository.class,
-                                IRepository.ENTITY_PARAMETER_POSITION
+                                Repository.class,
+                                Repository.ENTITY_PARAMETER_POSITION
                         );
 
         if ( ! agr.isPresent()) {

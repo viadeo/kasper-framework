@@ -113,7 +113,7 @@ public class ResilienceInterceptorUTest {
 
     @After
     public void tearDown() throws Exception {
-        for (Class aClass : new Class[] {Query.class, Query2.class}) {
+        for (Class aClass : new Class[] {Query.class/*, Query2.class*/}) {
             final HystrixCircuitBreaker circuitBreaker = HystrixCircuitBreaker.Factory.getInstance(
                     HystrixCommandKey.Factory.asKey(aClass.getName())
             );
@@ -229,7 +229,6 @@ public class ResilienceInterceptorUTest {
         verify(hystrixPlugins, atMost(1)).registerMetricsPublisher(any(HystrixMetricsPublisher.class));
     }
 
-//    @Ignore
     @Test
     public void do_not_register_a_metrics_publisher_on_hystrix_when_it_is_disabled() throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         // Given

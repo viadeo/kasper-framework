@@ -170,9 +170,10 @@ public final class DefaultTypeAdapters {
 			final Class rawClass = typeToken.getRawType();
 
 			if (rawClass.isArray()) {
-				final TypeAdapter elementAdapter = adapterFactory
+                @SuppressWarnings({ "unchecked" })
+                final TypeAdapter elementAdapter = adapterFactory
 						.create(
-                            TypeToken.of(rawClass.getComponentType())
+                                TypeToken.of(rawClass.getComponentType())
                         );
 
 				@SuppressWarnings({ "unchecked" })
@@ -203,6 +204,8 @@ public final class DefaultTypeAdapters {
                             typeToken.getType(),
                             Collection.class, 0
                         ).get();
+
+                @SuppressWarnings({ "unchecked" })
 				final TypeAdapter elementAdapter = adapterFactory.create(TypeToken.of(elementType));
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -47,6 +47,7 @@ public final class Context implements Serializable {
     public static final String SESSION_CID_SHORTNAME = "corrSessionId";
     public static final String SECURITY_TOKEN_SHORTNAME = "authToken";
     public static final String ACCESS_TOKEN_SHORTNAME = "accessToken";
+    public static final String AUTHENTICATION_TOKEN_SHORTNAME = "authenticationToken";
     public static final String IP_ADDRESS_SHORTNAME = "ipAddress";
     public static final String TAGS_SHORTNAME = "tags";
     public static final String SERVER_NAME = "serverName";
@@ -113,6 +114,8 @@ public final class Context implements Serializable {
     public Optional<String> getAccessToken() {
         return getGenericProperty(ACCESS_TOKEN_SHORTNAME);
     }
+
+    public <TOKEN extends Serializable> Optional<TOKEN> getAuthenticationToken() {return getGenericProperty(AUTHENTICATION_TOKEN_SHORTNAME); }
 
     /**
      * @return the associated ID of the current user
@@ -391,6 +394,10 @@ public final class Context implements Serializable {
 
         public Builder withSecurityToken(final String token) {
             return with(SECURITY_TOKEN_SHORTNAME, token);
+        }
+
+        public Builder withAuthenticationToken(final Serializable token) {
+            return with(AUTHENTICATION_TOKEN_SHORTNAME, token);
         }
 
         public Builder withApplicationId(final String applicationId) {

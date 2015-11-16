@@ -38,6 +38,7 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Class<? extends QueryResult> getElementClass(final Class<? extends CollectionQueryResult> clazz) {
 
         if (cacheElements.containsKey(clazz)) {

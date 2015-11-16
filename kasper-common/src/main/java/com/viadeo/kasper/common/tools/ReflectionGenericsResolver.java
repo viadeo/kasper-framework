@@ -20,6 +20,7 @@ import java.util.*;
  * @author Mglcel &lt;ldiasdasilva@viadeoteam.com&gt;
  *
  */
+@SuppressWarnings("unchecked")
 public final class ReflectionGenericsResolver {
 
 	private ReflectionGenericsResolver() { /* singleton */ }
@@ -63,7 +64,7 @@ public final class ReflectionGenericsResolver {
 	 *
 	 * @return the (optional) type of the resolved parameter at specific position
      */
- 	@SuppressWarnings("rawtypes")
+ 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Optional<? extends Class> getParameterTypeFromClass(final Field runtimeField,
                                                                       final Type targetType,
 			                                                          final Integer nbParameter) {

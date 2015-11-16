@@ -4,6 +4,7 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.core.component.Handler;
 import com.viadeo.kasper.platform.Meta;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +20,11 @@ import static org.mockito.Mockito.mock;
 
 public class HttpExposerUTest {
 
-    private HttpExposer<Object,KasperResponse> exposer;
+    private HttpExposer<Object,Handler, KasperResponse> exposer;
 
     @Before
     public void setUp() throws Exception {
-        exposer = new HttpExposer<Object, KasperResponse>(mock(HttpContextDeserializer.class), mock(Meta.class)) {
+        exposer = new HttpExposer<Object, Handler, KasperResponse>(mock(HttpContextDeserializer.class), mock(Meta.class)) {
 
             @Override
             protected KasperResponse createErrorResponse(CoreReasonCode code, List<String> reasons) {

@@ -30,7 +30,7 @@ public interface Scheduler {
 
     /**
      * indicates if the scheduler is initialized
-     * @return
+     * @return true if the scheduler is initialized, false otherwise
      */
     boolean isInitialized();
 

@@ -9,7 +9,7 @@ package com.viadeo.kasper.domain.sample.hello.command.repository;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.domain.sample.hello.command.entity.Hello;
 import com.viadeo.kasper.domain.sample.hello.common.db.HelloMessagesByBuddyBusinessIndexStore;
 import com.viadeo.kasper.domain.sample.hello.common.db.HelloMessagesIndexStore;
@@ -44,7 +44,7 @@ import com.viadeo.kasper.domain.sample.hello.common.db.KeyValueStore;
  *
  */
 @XKasperRepository(description = "Store Hello entities")
-public class HelloRepository extends Repository<Hello> {
+public class HelloRepository extends AutowiredRepository<KasperID,Hello> {
 
     /**
      * The entity store used to store aggregates
@@ -77,7 +77,7 @@ public class HelloRepository extends Repository<Hello> {
      * Does not manage with version here in this sample
      */
     @Override
-    protected Optional<Hello> doLoad(final KasperID aggregateIdentifier,
+    public Optional<Hello> doLoad(final KasperID aggregateIdentifier,
                                      final Long expectedVersion) {
 
         final Optional<Hello> hello = store.get(aggregateIdentifier);

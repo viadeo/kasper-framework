@@ -9,11 +9,12 @@ package com.viadeo.kasper.domain.sample.root.command.repository;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.annotation.XKasperRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.domain.sample.root.command.model.entity.Member_connectedTo_Member;
 
+@SuppressWarnings("deprecation")
 @XKasperRepository
-public class MemberConnectionsRepository extends Repository<Member_connectedTo_Member> {
+public class MemberConnectionsRepository extends AutowiredRepository<KasperID,Member_connectedTo_Member> {
 
     @Override
     protected Optional<Member_connectedTo_Member> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {

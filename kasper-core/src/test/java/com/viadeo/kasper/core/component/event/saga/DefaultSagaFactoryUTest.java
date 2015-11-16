@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.context.support.GenericApplicationContext;
 
 import java.util.UUID;
 
@@ -28,13 +27,11 @@ public class DefaultSagaFactoryUTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    public GenericApplicationContext applicationContext;
     public DefaultSagaFactory factory;
 
     @Before
     public void setUp() throws Exception {
-        applicationContext = new GenericApplicationContext();
-        factory = new DefaultSagaFactory(applicationContext);
+        factory = new DefaultSagaFactory();
     }
 
     @Test
@@ -55,11 +52,10 @@ public class DefaultSagaFactoryUTest {
         assertNotNull(instance);
     }
 
-    @Test
+    @Test(expected = SagaInstantiationException.class)
     public void create_withParametersInConstructor_isOk() {
         // Given
         CommandGateway commandGateway = mock(CommandGateway.class);
-        applicationContext.getBeanFactory().registerSingleton("commandGateway", commandGateway);
 
         // When
         SagaWithParameterInConstructor instance = factory.create(UUID.randomUUID().toString(), SagaWithParameterInConstructor.class);

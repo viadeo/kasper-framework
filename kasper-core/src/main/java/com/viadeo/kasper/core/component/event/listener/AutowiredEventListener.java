@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkState;
  */
 public abstract class AutowiredEventListener<E extends Event>
     extends BaseEventListener<E>
-    implements EventListener<E>, WirableEventListener<E>
+    implements WirableEventListener<E>
 {
 
     private EventBus eventBus;

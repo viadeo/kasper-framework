@@ -7,11 +7,9 @@
 package com.viadeo.kasper.exposition.http.jetty;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.common.collect.ImmutableMap;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
@@ -34,12 +32,9 @@ import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.doc.DocumentationPlugin;
-import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
-import com.viadeo.kasper.exposition.http.HttpEventExposerPlugin;
-import com.viadeo.kasper.exposition.http.HttpQueryExposerPlugin;
-import com.viadeo.kasper.exposition.http.jetty.resource.KasperDocResource;
+import com.viadeo.kasper.exposition.http.HttpExposurePlugin;
+import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.builder.DefaultPlatform;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
@@ -57,19 +52,18 @@ import static org.junit.Assert.*;
 */
 public class ServerITest {
 
-    private static Server server = createServer();
-
+    private static Platform platform = createPlatform();
 
     @ClassRule
     public static ExternalResource resource = new ExternalResource() {
         @Override
         protected void before() throws Throwable {
-            server.start();
+            platform.start();
         }
 
         @Override
         protected void after() {
-            server.stop();
+            platform.stop();
         }
     };
 
@@ -162,18 +156,17 @@ public class ServerITest {
     }
 
     private String getServerUri() {
-        return "http://localhost:" + server.getPort();
+        return "http://localhost:8080";
     }
 
     private String getAdminServerUri() {
-        return "http://localhost:" + server.getAdminPort();
+        return "http://localhost:9090";
     }
 
-    private static Server createServer() {
-
+    private static Platform createPlatform() {
         ImmutableMap<String, Object> httpConfig = ImmutableMap.<String, Object>builder()
-                .put("port", 0)
-                .put("adminPort", 0)
+                .put("port", 8080)
+                .put("adminPort", 9090)
                 .put("bindHost", "127.0.0.1")
                 .put("maxThreads", 140)
                 .put("maxIdleTime", "200s")
@@ -204,18 +197,14 @@ public class ServerITest {
                 .withValue("kasper.boot.scanPrefixes", ConfigValueFactory.fromAnyRef(Arrays.asList("com.viadeo.platform.http")))
                 .withValue("runtime.spring.domains", ConfigValueFactory.fromAnyRef(Arrays.asList("com.viadeo.platform.http.JettyHttpServerTest.FoobarConfiguration")));
 
-        HttpCommandExposerPlugin httpCommandExposerPlugin = new HttpCommandExposerPlugin();
-        HttpQueryExposerPlugin httpQueryExposerPlugin = new HttpQueryExposerPlugin();
-        HttpEventExposerPlugin httpEventExposerPlugin = new HttpEventExposerPlugin();
+        HttpExposurePlugin httpExposurePlugin = new HttpExposurePlugin();
         DocumentationPlugin documentationPlugin = new DocumentationPlugin();
         MetricRegistry metricRegistry = new MetricRegistry();
 
-        new DefaultPlatform.Builder(new KasperPlatformConfiguration(metricRegistry))
+        return new DefaultPlatform.Builder(new KasperPlatformConfiguration(metricRegistry))
                 .withEventBus(new KasperEventBus(metricRegistry))
                 .withConfiguration(config)
-                .addPlugin(httpCommandExposerPlugin)
-                .addPlugin(httpQueryExposerPlugin)
-                .addPlugin(httpEventExposerPlugin)
+                .addPlugin(httpExposurePlugin)
                 .addPlugin(documentationPlugin)
                 .addDomainBundle(
                         new DomainBundle.Builder(new Foobar())
@@ -225,19 +214,6 @@ public class ServerITest {
                                 .build()
                 )
                 .build();
-
-        DefaultResourceConfig resourceConfig = new DefaultResourceConfig();
-        resourceConfig.getSingletons().add(new KasperDocResource(documentationPlugin.getDocumentedPlatform()));
-
-        return new Server(
-                new ServerConfiguration(config.getConfig("runtime.http"))
-                , httpQueryExposerPlugin.getHttpExposer()
-                , httpCommandExposerPlugin.getHttpExposer()
-                , httpEventExposerPlugin.getHttpExposer()
-                , resourceConfig
-                , new HealthCheckRegistry()
-                , KasperMetrics.getMetricRegistry()
-        );
     }
 
 

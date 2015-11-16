@@ -6,18 +6,16 @@
 // ============================================================================
 package com.viadeo.kasper.platform.plugin.metrics;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
-import com.viadeo.kasper.platform.plugin.Plugin;
+import com.viadeo.kasper.platform.builder.PlatformContext;
+import com.viadeo.kasper.platform.plugin.PluginAdapter;
 
 import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class MetricsPlugin implements Plugin {
+public class MetricsPlugin extends PluginAdapter {
 
     private final List<ReporterInitializer> reporterInitializers;
 
@@ -31,12 +29,9 @@ public class MetricsPlugin implements Plugin {
     // ------------------------------------------------------------------------
 
     @Override
-    public void initialize(final Platform platform,
-                           final MetricRegistry metricRegistry,
-                           final DomainDescriptor... domainDescriptors) {
+    public void initialize(final PlatformContext platformContext) {
         for (final ReporterInitializer reporterInitializer : reporterInitializers) {
-            reporterInitializer.initialize(metricRegistry);
+            reporterInitializer.initialize(platformContext.getMetricRegistry());
         }
     }
-
 }

@@ -26,13 +26,10 @@ import javax.validation.constraints.NotNull;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class KasperQueryGatewayITest {
 
@@ -128,15 +125,20 @@ public class KasperQueryGatewayITest {
 
     @Test
     public void retrieve_for_future_from_an_invalid_query_throws_exception() throws Exception {
-        // Given
-        queryGateway.register(new TestQueryHandler());
+        try {
+            // Given
+            queryGateway.register(new TestQueryHandler());
 
-        // Then
-        exception.expect(ExecutionException.class);
-        exception.expectCause(isA(JSR303ViolationException.class));
+            // When
+            Future<QueryResponse<QueryResult>> future = queryGateway.retrieveForFuture(new TestQuery(null), Contexts.empty());
+            future.get();
 
-        // When
-        Future<QueryResponse<QueryResult>> future = queryGateway.retrieveForFuture(new TestQuery(null), Contexts.empty());
-        future.get();
+            fail();
+        } catch (final Exception e) {
+            // Then
+            assertTrue(ExecutionException.class.isAssignableFrom(e.getClass()));
+            assertTrue(JSR303ViolationException.class.isAssignableFrom(e.getCause().getClass()));
+        }
+
     }
 }

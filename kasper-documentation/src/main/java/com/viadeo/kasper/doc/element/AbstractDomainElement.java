@@ -8,7 +8,9 @@ package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.component.annotation.XKasperPublic;
-import com.viadeo.kasper.core.security.AuthorizationManager;
+import com.viadeo.kasper.core.interceptor.authorization.AuthorizationManager;
+
+import java.lang.annotation.Annotation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.component.annotation.XKasperAuthz.RequiresPermissions;
@@ -26,16 +28,18 @@ public abstract class AbstractDomainElement extends AbstractElement {
         super(checkNotNull(type), checkNotNull(referenceClass));
         this.domain = checkNotNull(domain);
 
-        this.publicAccess = referenceClass.getAnnotation(XKasperPublic.class) != null;
+        @SuppressWarnings("unchecked")
+        Annotation annotation = referenceClass.getAnnotation(XKasperPublic.class);
+        this.publicAccess = annotation != null;
 
-        // @XKasperRequireRoles
-        if (null != referenceClass.getAnnotation(RequiresRoles.class)) {
+        @SuppressWarnings("unchecked")
+        final RequiresRoles requireRoles = (RequiresRoles)
+                referenceClass.getAnnotation(RequiresRoles.class);
+
+        if (null != requireRoles) {
             if(null == this.authorization){
                 this.authorization = new DocumentedAuthorization();
             }
-
-            final RequiresRoles requireRoles = (RequiresRoles)
-                    referenceClass.getAnnotation(RequiresRoles.class);
 
             AuthorizationElement authorizationElement = new AuthorizationElement();
             if (null != requireRoles.value()) {
@@ -53,14 +57,14 @@ public abstract class AbstractDomainElement extends AbstractElement {
             this.authorization.setRoles(authorizationElement);
         }
 
-        // @XKasperRequirePermissions
-        if (null != referenceClass.getAnnotation(RequiresPermissions.class)) {
+        @SuppressWarnings("unchecked")
+        final RequiresPermissions requirePermissions = (RequiresPermissions)
+                referenceClass.getAnnotation(RequiresPermissions.class);
+
+        if (null != requirePermissions) {
             if(null == this.authorization){
                 this.authorization = new DocumentedAuthorization();
             }
-
-            final RequiresPermissions requirePermissions = (RequiresPermissions)
-                    referenceClass.getAnnotation(RequiresPermissions.class);
 
             AuthorizationElement authorizationElement = new AuthorizationElement();
             if (null != requirePermissions.value()) {

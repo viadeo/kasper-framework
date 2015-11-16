@@ -25,6 +25,7 @@ import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.CommandMessage;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
@@ -44,16 +45,14 @@ import javax.validation.constraints.Size;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
+    private static final String AUTHENTICATION_TOKEN = "42-4242-24-2424";
     public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
 
     public static class CreateAccountCommand implements Command {
@@ -106,7 +105,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
             if (command.getCode() != null)
                 return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
-            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN);
+            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN).withAuthenticationToken(AUTHENTICATION_TOKEN);
         }
     }
 
@@ -139,6 +138,30 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     public static class UnexposedCommand implements Command {}
 
+    public static class ContextCheckCommand implements Command {
+        private static final long serialVersionUID = 674842094842929150L;
+
+        private String contextName;
+
+        public ContextCheckCommand(final String contextName) {
+            this.contextName = contextName;
+        }
+
+        public String getContextName() {
+            return this.contextName;
+        }
+    }
+
+    public static final String RETURNED_SECURITY_TOKEN = UUID.randomUUID().toString();
+
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class ContextCheckCommandHandler extends AutowiredCommandHandler<ContextCheckCommand> {
+        @Override
+        public CommandResponse handle(final CommandMessage<ContextCheckCommand> message) {
+            return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
+        }
+    }
+
     @XKasperUnexposed
     @XKasperCommandHandler(domain = AccountDomain.class)
     public static class UnexposedCommandHandler extends AutowiredCommandHandler<UnexposedCommand> {
@@ -157,8 +180,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     // ------------------------------------------------------------------------
 
     @Override
-    protected HttpCommandExposerPlugin createExposerPlugin() {
-        return new HttpCommandExposerPlugin();
+    protected HttpExposer getHttpExposer() {
+        return httpExposurePlugin.getCommandExposer();
     }
 
     @Override
@@ -169,7 +192,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
                           new NeedValidationCommandHandler(),
                           new CreateAccountCommandHandler(),
                           new NeedValidationWithAliasCommandHandler(),
-                          new UnexposedCommandHandler()
+                          new UnexposedCommandHandler(),
+                          new ContextCheckCommandHandler()
                   )
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
@@ -216,6 +240,24 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
+        assertTrue(response.getAuthenticationToken().isPresent());
+        assertEquals(AUTHENTICATION_TOKEN, response.getAuthenticationToken().get());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testCommandWithFullContext() throws Exception {
+        // Given
+        final Command command = new ContextCheckCommand(getContextName());
+
+        // When
+        final CommandResponse response = client().send(getFullContext(), command);
+
+        // Then
+        assertTrue(response.isOK());
+        assertTrue(response.getSecurityToken().isPresent());
+        assertEquals(RETURNED_SECURITY_TOKEN, response.getSecurityToken().get());
     }
 
     // ------------------------------------------------------------------------

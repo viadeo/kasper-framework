@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.core.TestDomain;
-import com.viadeo.kasper.core.config.spring.KasperConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +19,18 @@ import static org.junit.Assert.assertNotNull;
 
 public class ResilienceConfiguratorUTest {
 
-    private final Config config = KasperConfiguration.configuration("test", true)
+    private final Config config = ConfigFactory.empty()
+            .withFallback(ConfigFactory.parseMap(
+                    ImmutableMap.<String, Object>builder()
+                            .put("runtime.hystrix.circuitBreaker.enable", true)
+                            .put("runtime.hystrix.circuitBreaker.requestVolumeThreshold", 20)
+                            .put("runtime.hystrix.circuitBreaker.thresholdInPercent", 40)
+                            .put("runtime.hystrix.circuitBreaker.sleepWindowInMillis", 3600000)
+                            .put("runtime.hystrix.execution.timeoutInMillis", 2000)
+                            .put("runtime.hystrix.threadPool.coreSize", 30)
+                            .put("runtime.hystrix.threadPool.queueSizeRejectionThreshold", 25)
+                            .build()
+            ))
             .withFallback(ConfigFactory.parseMap(
                     ImmutableMap.<String, Object>builder()
                             .put("runtime.hystrix.input." + TestQuery.class.getSimpleName() + ".circuitBreaker.enable", false)

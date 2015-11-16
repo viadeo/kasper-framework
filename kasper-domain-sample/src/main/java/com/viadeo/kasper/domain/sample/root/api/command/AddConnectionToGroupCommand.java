@@ -12,7 +12,6 @@ import com.viadeo.kasper.api.component.command.Command;
 import javax.validation.constraints.NotNull;
 
 @XKasperCommand
-@Deprecated
 public class AddConnectionToGroupCommand implements Command {
 	private static final long serialVersionUID = -5348191495602297087L;
 

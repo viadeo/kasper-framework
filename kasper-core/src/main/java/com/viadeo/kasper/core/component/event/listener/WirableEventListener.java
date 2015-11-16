@@ -22,5 +22,6 @@ public interface WirableEventListener<EVENT extends Event> extends EventListener
      * Wires an event bus on this <code>EventListener</code> instance.
      * @param eventBus an event bus
      */
-    void setEventBus(final EventBus eventBus);
+    void setEventBus(EventBus eventBus);
+
 }

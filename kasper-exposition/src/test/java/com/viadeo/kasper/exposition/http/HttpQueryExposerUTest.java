@@ -43,6 +43,7 @@ public class HttpQueryExposerUTest {
     @Test(expected = HttpExposerError.class)
     public void init_withTwoHandlers_handlingTheSameQuery_throwException() throws Exception {
         // Given
+        @SuppressWarnings("unchecked")
         final List<ExposureDescriptor<Query, QueryHandler>> descriptors = Lists.newArrayList(
                 new ExposureDescriptor<Query, QueryHandler>(AQuery.class, QueryHandlerA.class),
                 new ExposureDescriptor<Query, QueryHandler>(AQuery.class, QueryHandlerB.class)
@@ -104,7 +105,7 @@ public class HttpQueryExposerUTest {
 
         // When
         boolean exposable = exposer.isExposable(
-                new ExposureDescriptor<Query, Object>(
+                new ExposureDescriptor<Query, QueryHandler>(
                         AQuery.class,
                         QueryHandlerB.class
                 )

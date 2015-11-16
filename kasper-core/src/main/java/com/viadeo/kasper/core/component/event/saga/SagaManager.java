@@ -43,10 +43,11 @@ public class SagaManager {
 
     // ------------------------------------------------------------------------
 
-    public SagaExecutor register(final Saga saga) {
+    public <SAGA extends Saga> SagaExecutor<SAGA> register(final SAGA saga) {
         checkNotNull(saga);
 
-        final Class<? extends Saga> sagaClass = saga.getClass();
+        @SuppressWarnings("unchecked")
+        final Class<SAGA> sagaClass = (Class<SAGA>) saga.getClass();
 
         checkState(
             !descriptors.containsKey(sagaClass),
@@ -56,7 +57,7 @@ public class SagaManager {
         final SagaFactory factory = checkNotNull(sagaFactoryProvider.getOrCreate(saga));
         final SagaIdReconciler reconciler = saga.getIdReconciler().or(SagaIdReconciler.NONE);
         final Set<Step> steps = operationProcessor.process(sagaClass, reconciler);
-        final SagaExecutor executor = new SagaExecutor(sagaClass, steps, factory, repository);
+        final SagaExecutor<SAGA> executor = new SagaExecutor<>(sagaClass, steps, factory, repository);
 
         descriptors.put(sagaClass, executor);
 
@@ -68,6 +69,10 @@ public class SagaManager {
     public Optional<SagaExecutor> get(final Class<? extends Saga> sagaClass) {
         checkNotNull(sagaClass);
         return Optional.fromNullable(descriptors.get(sagaClass));
+    }
+
+    public StepProcessor getStepProcessor() {
+        return this.operationProcessor;
     }
 
     @VisibleForTesting

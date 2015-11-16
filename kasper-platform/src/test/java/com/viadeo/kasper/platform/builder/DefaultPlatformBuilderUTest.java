@@ -18,6 +18,7 @@ import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
@@ -25,6 +26,7 @@ import com.viadeo.kasper.core.component.event.saga.SagaManager;
 import com.viadeo.kasper.core.component.query.gateway.KasperQueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.ExtraComponent;
+import com.viadeo.kasper.platform.Meta;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
@@ -32,8 +34,8 @@ import com.viadeo.kasper.platform.bundle.descriptor.*;
 import com.viadeo.kasper.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.platform.plugin.Plugin;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -50,13 +52,7 @@ public class DefaultPlatformBuilderUTest {
         private static final long serialVersionUID = -7248313390394661735L;
     }
 
-    private static class TestRepository extends Repository<TestConcept> {
-
-        public TestRepository() throws Exception {
-            final Field declaredField = Repository.class.getDeclaredField("initialized");
-            declaredField.setAccessible(true);
-            declaredField.set(this, true);
-        }
+    private static class TestRepository extends AutowiredRepository<KasperID,TestConcept> {
 
         @Override
         protected Optional<TestConcept> doLoad(final KasperID aggregateIdentifier,
@@ -332,7 +328,7 @@ public class DefaultPlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(domainBundle).configure(refEq(new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList())));
+        verify(domainBundle).configure(refEq(new PlatformContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList(), Meta.UNKNOWN)));
     }
 
     @Test
@@ -359,7 +355,7 @@ public class DefaultPlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(plugin).initialize(refEq(platform), refEq(metricRegistry), (DomainDescriptor[]) anyVararg());
+        verify(plugin).initialize(new PlatformContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Lists.<ExtraComponent>newArrayList(), Meta.UNKNOWN));
     }
 
     @Test
@@ -416,12 +412,11 @@ public class DefaultPlatformBuilderUTest {
         verify(eventBus).register(refEq(eventInterceptorFactory));
     }
 
-
-
     @Test
     public void build_withDomainBundle_containingRepository_shouldWiredTheComponent() throws Exception {
         // Given
-        final Repository repository = spy(new TestRepository());
+        final ArgumentCaptor<Repository> captor = ArgumentCaptor.forClass(Repository.class);
+        final TestRepository repository = spy(new TestRepository());
 
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(repository)
@@ -429,10 +424,9 @@ public class DefaultPlatformBuilderUTest {
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        final DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
         final RepositoryManager repositoryManager = mock(DefaultRepositoryManager.class);
 
-        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(domainDescriptorFactory)
+        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
@@ -448,7 +442,11 @@ public class DefaultPlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(repository).setEventBus(refEq(eventBus));
-        verify(repositoryManager).register(refEq(repository));
+        verify(repositoryManager).register(captor.capture());
+
+        Repository capturedRepository = captor.getValue();
+        assertNotNull(capturedRepository);
+        assertEquals(repository.getClass(), capturedRepository.getRepositoryClass());
     }
 
     @Test
@@ -482,7 +480,7 @@ public class DefaultPlatformBuilderUTest {
         expectedExtraComponents.add(new ExtraComponent(name, component.getClass(), component));
 
         assertNotNull(platform);
-        verify(domainBundle).configure(eq(new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents)));
+        verify(domainBundle).configure(eq(new PlatformContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents, Meta.UNKNOWN)));
     }
 
     @Test
@@ -557,7 +555,7 @@ public class DefaultPlatformBuilderUTest {
 //        // Given
 //        final DomainHelper domainHelper = mock(DomainHelper.class);
 //
-//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformConfiguration());
+//        final DefaultPlatform.Builder builder = new DefaultPlatform.Builder(new KasperPlatformSpringConfiguration());
 //        builder.setDomainHelper(domainHelper);
 //
 //        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain()).build();

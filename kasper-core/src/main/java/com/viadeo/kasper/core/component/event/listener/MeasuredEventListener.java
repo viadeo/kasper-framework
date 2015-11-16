@@ -16,18 +16,19 @@ import com.viadeo.kasper.core.metrics.MetricNames;
 
 import java.util.Set;
 
-public class MeasuredEventListener
-        extends MeasuredHandler<Event, EventMessage<Event>, EventResponse, EventListener<Event>>
-        implements EventListener<Event>
+public class MeasuredEventListener<EVENT extends Event>
+        extends MeasuredHandler<EVENT, EventMessage<EVENT>, EventResponse, EventListener<EVENT>>
+        implements EventListener<EVENT>
 {
 
-    public MeasuredEventListener(MetricRegistry metricRegistry, EventListener<Event> handler) {
+    public MeasuredEventListener(MetricRegistry metricRegistry, EventListener<EVENT> handler) {
         super(metricRegistry, handler, EventListener.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handle(org.axonframework.domain.EventMessage event) {
-        handle(new EventMessage<Event>(event));
+        handle(new EventMessage<EVENT>(event));
     }
 
     @Override

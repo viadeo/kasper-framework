@@ -8,10 +8,6 @@ package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
-import com.viadeo.kasper.core.component.command.repository.ClientRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 
 import java.util.Map;
@@ -32,27 +28,20 @@ public class DefaultRepositoryManager implements RepositoryManager {
 
     @Override
     public void register(final Repository repository) {
-        checkNotNull(repository);
-        if ( ! repository.isInitialized()) {
-            throw new KasperException(
-                    "The repository isn't initialized : "
-                            + repository.getClass().getName()
-            );
-        }
         repositoryByAggregateClass.put(repository.getAggregateClass(), repository);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final Class<E> aggregateClass) {
+    public <REPO extends Repository> Optional<REPO> getEntityRepository(final Class aggregateClass) {
         checkNotNull(aggregateClass);
-        final IRepository<E> repository = repositoryByAggregateClass.get(aggregateClass);
+        final Repository repository = repositoryByAggregateClass.get(aggregateClass);
 
         if (null == repository) {
             return Optional.absent();
         }
 
-        return Optional.of(new ClientRepository<>(repository));
+        return Optional.of((REPO)repository);
     }
 
     public boolean isRegistered(final Repository repository){

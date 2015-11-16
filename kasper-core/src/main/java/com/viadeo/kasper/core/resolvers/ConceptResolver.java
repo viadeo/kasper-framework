@@ -22,6 +22,7 @@ public class ConceptResolver extends AbstractResolver<Concept> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Concept> clazz) {
 

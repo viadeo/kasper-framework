@@ -83,7 +83,7 @@ public class DomainDescriptorFactory {
         this(null);
     }
 
-    public DomainDescriptorFactory(StepProcessor stepProcessor) {
+    public DomainDescriptorFactory(final StepProcessor stepProcessor) {
         this.stepProcessor = Optional.fromNullable(stepProcessor);
     }
 
@@ -123,6 +123,7 @@ public class DomainDescriptorFactory {
         );
     }
 
+    @SuppressWarnings("unchecked")
     private List<SagaDescriptor> getSagaDescriptor(Collection<Saga> sagas) {
         final List<SagaDescriptor> sagaDescriptors = Lists.newArrayList();
 

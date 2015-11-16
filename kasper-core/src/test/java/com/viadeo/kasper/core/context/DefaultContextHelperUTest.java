@@ -75,7 +75,6 @@ public class DefaultContextHelperUTest {
     public void toContext_withUserID_isOk() {
         // Given
         Context givenContext = Contexts.builder()
-                .withUserId("4")
                 .withUserID(new ID("viadeo", "member", DB_ID, 4))
                 .withSecurityToken("003chh8bxkrn338")
                 .build();
@@ -86,7 +85,6 @@ public class DefaultContextHelperUTest {
         // Then
         Assert.assertNotNull(actualContext);
         Assert.assertEquals(givenContext.getSecurityToken(), actualContext.getSecurityToken());
-        Assert.assertEquals(givenContext.getUserId(), actualContext.getUserId());
         Assert.assertEquals(givenContext.getUserID(), actualContext.getUserID());
     }
 }

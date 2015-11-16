@@ -8,7 +8,6 @@ package com.viadeo.kasper.core.component.event.saga.step.quartz;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
@@ -21,8 +20,6 @@ import org.joda.time.Duration;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.SmartLifecycle;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -31,7 +28,7 @@ import static org.quartz.JobKey.jobKey;
 /**
  * MethodInvocationScheduler implementation that delegates scheduling and triggering to a Quartz Scheduler.
  */
-public class MethodInvocationScheduler implements com.viadeo.kasper.core.component.event.saga.step.Scheduler, SmartLifecycle {
+public class MethodInvocationScheduler implements com.viadeo.kasper.core.component.event.saga.step.Scheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodInvocationScheduler.class);
 
@@ -70,22 +67,27 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
 
     private final ObjectMapper mapper;
     private final Scheduler scheduler;
-    private final ApplicationContext applicationContext;
     private final String groupIdentifier;
+    private final SagaManager sagaManager;
 
     private boolean initialized;
 
     // ------------------------------------------------------------------------
 
-    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final ApplicationContext applicationContext) {
-        this(mapper, scheduler, applicationContext, DEFAULT_GROUP_NAME);
+    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final SagaManager sagaManager) {
+        this(mapper, scheduler, DEFAULT_GROUP_NAME, sagaManager);
     }
 
-    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final ApplicationContext applicationContext, final String groupIdentifier) {
+    public MethodInvocationScheduler(
+            final ObjectMapper mapper,
+            final Scheduler scheduler,
+            final String groupIdentifier,
+            final SagaManager sagaManager
+    ) {
         this.mapper = mapper;
         this.scheduler = checkNotNull(scheduler);
-        this.applicationContext = checkNotNull(applicationContext);
         this.groupIdentifier = checkNotNull(groupIdentifier);
+        this.sagaManager = checkNotNull(sagaManager);
     }
 
     // ------------------------------------------------------------------------
@@ -94,7 +96,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
     public void initialize() {
         try {
             this.scheduler.getContext().put(OBJECT_MAPPER_KEY, mapper);
-            this.scheduler.getContext().put(SAGA_MANAGER_KEY, applicationContext.getBean(SagaManager.class));
+            this.scheduler.getContext().put(SAGA_MANAGER_KEY, sagaManager);
             this.scheduler.start();
             initialized = true;
         } catch (SchedulerException e) {
@@ -224,39 +226,6 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
         return JOB_NAME_PREFIX + "_" + sagaClass.getName() + "_" + methodName + "_" + identifier.toString();
     }
 
-    @Override
-    public void start() {
-        this.initialize();
-    }
-
-    @Override
-    public void stop() {
-        try {
-            this.shutdown();
-        } catch (SchedulerException e) {
-            LOGGER.error("Failed to shutdown the scheduler", e);
-        }
-    }
-
-    @Override
-    public boolean isRunning() {
-        return isInitialized();
-    }
-
-    @Override
-    public boolean isAutoStartup() {
-        return false;
-    }
-
-    @Override
-    public void stop(Runnable callback) {
-        stop();
-    }
-
-    @Override
-    public int getPhase() {
-        return Integer.MAX_VALUE - 1;
-    }
 
     // ------------------------------------------------------------------------
 
@@ -285,6 +254,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             final Object identifier;
 
             try {
+                @SuppressWarnings("unchecked")
                 final Class<Saga> sagaIdentifierClass = (Class<Saga>) Class.forName(sagaIdentifierClassName);
                 identifier = mapper.readValue(sagaIdentifier, sagaIdentifierClass);
 
@@ -298,6 +268,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             }
 
             try {
+                @SuppressWarnings("unchecked")
                 final Class<Saga> sagaClass = (Class<Saga>) Class.forName(sagaClassName);
                 final Optional<SagaExecutor> sagaExecutor = sagaManager.get(sagaClass);
 
@@ -323,6 +294,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.core.compone
             }
         }
 
+        @SuppressWarnings("unchecked")
         private <E> E getFromSchedulerContext(final JobExecutionContext context, final String key) {
             try {
                 return (E) context.getScheduler().getContext().get(key);

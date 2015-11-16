@@ -79,6 +79,7 @@ public class BaseEventListener<EVENT extends Event>
         return getClass().getName();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Set<EventDescriptor> getEventDescriptors() {
         return Sets.newHashSet(new EventDescriptor(this.eventClass, getClass().isAnnotationPresent(Deprecated.class)));

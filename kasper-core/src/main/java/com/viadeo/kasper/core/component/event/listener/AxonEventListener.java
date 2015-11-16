@@ -91,6 +91,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         return response;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean acceptMessage(final org.axonframework.domain.EventMessage eventMessage) {
         checkNotNull(eventMessage);
         final Class payloadType = eventMessage.getPayloadType();

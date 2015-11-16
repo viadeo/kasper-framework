@@ -18,6 +18,7 @@ import com.viadeo.kasper.api.exception.KasperSecurityException;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperResponse;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
+import com.viadeo.kasper.core.component.Handler;
 import com.viadeo.kasper.core.component.annotation.XKasperPublic;
 import com.viadeo.kasper.core.component.annotation.XKasperUnexposed;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
@@ -51,7 +52,7 @@ import static com.viadeo.kasper.common.exposition.HttpContextHeaders.HEADER_REQU
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extends HttpServlet {
+public abstract class HttpExposer<INPUT, HANDLER extends Handler, RESPONSE extends KasperResponse> extends HttpServlet {
 
     private static final long serialVersionUID = 8448984922303895424L;
 
@@ -60,6 +61,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     private final Map<String, Class<INPUT>> exposedInputs;
     private final Map<String, Class<INPUT>> unexposedInputs;
+
+    private final transient List<ExposureDescriptor<INPUT, HANDLER>> descriptors;
 
     private final HttpContextDeserializer contextDeserializer;
     private final AliasRegistry aliasRegistry;
@@ -71,7 +74,18 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     // ------------------------------------------------------------------------
 
-    protected HttpExposer(final HttpContextDeserializer contextDeserializer, final Meta meta) {
+    protected HttpExposer(
+            final HttpContextDeserializer contextDeserializer,
+            final Meta meta
+    ) {
+        this(contextDeserializer, meta, Lists.<ExposureDescriptor<INPUT, HANDLER>>newArrayList());
+    }
+
+    protected HttpExposer(
+            final HttpContextDeserializer contextDeserializer,
+            final Meta meta,
+            final List<ExposureDescriptor<INPUT, HANDLER>> descriptors
+    ) {
         this.meta = meta;
         this.metricNames = new MetricNames(getClass());
         this.contextDeserializer = checkNotNull(contextDeserializer);
@@ -80,6 +94,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         this.requestLogger = LoggerFactory.getLogger(getClass());
         this.exposedInputs = new HashMap<>();
         this.unexposedInputs = new HashMap<>();
+        this.descriptors = checkNotNull(descriptors);
     }
 
     // ------------------------------------------------------------------------
@@ -96,6 +111,15 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
         // nothing by default
+    }
+
+    public void register(final ExposureDescriptor<INPUT, HANDLER> exposureDescriptor) {
+        checkNotNull(exposureDescriptor);
+        descriptors.add(exposureDescriptor);
+    }
+
+    protected List<ExposureDescriptor<INPUT, HANDLER>> getDescriptors() {
+        return Collections.unmodifiableList(this.descriptors);
     }
 
     public final void handleRequest(
@@ -481,7 +505,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     // ------------------------------------------------------------------------
 
-    public <HANDLER> HttpExposer<INPUT, RESPONSE> expose(final ExposureDescriptor<INPUT, HANDLER> descriptor) {
+    public HttpExposer<INPUT, HANDLER, RESPONSE> expose(final ExposureDescriptor<INPUT, HANDLER> descriptor) {
         checkNotNull(descriptor);
 
         final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public" : "protected";
@@ -520,7 +544,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         return this;
     }
 
-    public <HANDLER> boolean isExposable(final ExposureDescriptor<INPUT, HANDLER> descriptor) {
+    public boolean isExposable(final ExposureDescriptor<INPUT, HANDLER> descriptor) {
         return !descriptor.getHandler().isAnnotationPresent(XKasperUnexposed.class);
     }
 

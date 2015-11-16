@@ -13,8 +13,8 @@ import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.domain.sample.hello.api.command.SendHelloToBuddyCommand;
 import com.viadeo.kasper.domain.sample.hello.api.query.GetAllHelloMessagesSentToBuddyQuery;
 import com.viadeo.kasper.domain.sample.hello.api.query.results.HelloMessagesResult;
-import com.viadeo.kasper.platform.Platforms;
-import com.viadeo.kasper.platform.builder.SpringPlatform;
+import com.viadeo.kasper.spring.platform.Platforms;
+import com.viadeo.kasper.spring.platform.SpringPlatform;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -25,8 +25,8 @@ public class HelloITest {
     public void create_a_platform_with_hello_domain() throws Exception {
         SpringPlatform platform = Platforms.newSpringPlatformBuilder()
                 .addBundle(HelloBundle.class)
-                .build();
-        platform.start();
+                .build()
+                .start();
 
         try {
             CommandResponse commandResponse = platform.getCommandGateway().sendCommandAndWaitForAResponse(

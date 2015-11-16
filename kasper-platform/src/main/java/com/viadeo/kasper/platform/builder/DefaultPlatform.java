@@ -24,20 +24,18 @@ import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
-import com.viadeo.kasper.platform.ExtraComponent;
-import com.viadeo.kasper.platform.Meta;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.PlatformWirer;
+import com.viadeo.kasper.platform.*;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.platform.plugin.Plugin;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -48,19 +46,27 @@ public class DefaultPlatform implements Platform {
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
     private final KasperEventBus eventBus;
+    private final MetricRegistry metricRegistry;
     private final Meta meta;
+    private final Collection<Plugin> plugins;
 
     // ------------------------------------------------------------------------
 
-    public DefaultPlatform(final CommandGateway commandGateway,
-                           final QueryGateway queryGateway,
-                           final KasperEventBus eventBus,
-                           final Meta meta
+    public DefaultPlatform(
+            final CommandGateway commandGateway
+            , final QueryGateway queryGateway
+            , final KasperEventBus eventBus
+            , final MetricRegistry metricRegistry
+            , final Meta meta
+            , final Collection<Plugin> plugins
+
     ) {
         this.commandGateway = checkNotNull(commandGateway);
         this.queryGateway = checkNotNull(queryGateway);
         this.eventBus = checkNotNull(eventBus);
+        this.metricRegistry = checkNotNull(metricRegistry);
         this.meta = checkNotNull(meta);
+        this.plugins = checkNotNull(plugins);
     }
 
     // ------------------------------------------------------------------------
@@ -81,11 +87,44 @@ public class DefaultPlatform implements Platform {
     }
 
     @Override
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
+    }
+
+    @Override
     public Meta getMeta() {
         return meta;
     }
 
+    @Override
+    public DefaultPlatform start() {
+        for (final PlatformAware platformAware : plugins) {
+            platformAware.onPlatformStarted(this);
+        }
+        return this;
+    }
+
+    @Override
+    public DefaultPlatform stop() {
+        for (final PlatformAware platformAware : plugins) {
+            platformAware.onPlatformStopped(this);
+        }
+        return this;
+    }
+
     // ========================================================================
+
+    public static Builder builder () {
+        return new Builder();
+    }
+
+    public static Builder builder(final RepositoryManager repositoryManager) {
+        return new Builder(repositoryManager);
+    }
+
+    public static Builder builder(final PlatformConfiguration platformConfiguration) {
+        return new Builder(platformConfiguration);
+    }
 
     public static class Builder implements Platform.Builder {
 
@@ -98,7 +137,6 @@ public class DefaultPlatform implements Platform {
         private final List<EventInterceptorFactory> eventInterceptorFactories;
         private final List<ExtraComponent> extraComponents;
 
-        private DomainDescriptorFactory domainDescriptorFactory;
         private DomainHelper domainHelper;
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
@@ -113,18 +151,12 @@ public class DefaultPlatform implements Platform {
         // --------------------------------------------------------------------
 
         public Builder() {
-            this(new DomainDescriptorFactory());
-        }
-
-        public Builder(final DomainDescriptorFactory domainDescriptorFactory) {
-            this(checkNotNull(domainDescriptorFactory), new DefaultRepositoryManager());
+            this(new DefaultRepositoryManager());
         }
 
         protected Builder(
-                final DomainDescriptorFactory domainDescriptorFactory,
                 final RepositoryManager repositoryManager
         ) {
-            this.domainDescriptorFactory = checkNotNull(domainDescriptorFactory);
             this.repositoryManager = checkNotNull(repositoryManager);
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
@@ -148,7 +180,6 @@ public class DefaultPlatform implements Platform {
             this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
             this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
             this.eventInterceptorFactories.addAll(checkNotNull(platformConfiguration.eventInterceptorFactories()));
-            this.domainDescriptorFactory = checkNotNull(platformConfiguration.domainDescriptorFactory());
         }
 
         // --------------------------------------------------------------------
@@ -270,6 +301,8 @@ public class DefaultPlatform implements Platform {
             checkState((null != metricRegistry), "the metric registry cannot be null");
             checkState((null != sagaManager), "the saga manager cannot be null");
 
+            this.meta = Objects.firstNonNull(meta, Meta.UNKNOWN);
+
             this.platformWirer = new PlatformWirer(
                     configuration,
                     metricRegistry,
@@ -277,14 +310,13 @@ public class DefaultPlatform implements Platform {
                     commandGateway,
                     queryGateway,
                     sagaManager,
-                    repositoryManager
+                    repositoryManager,
+                    meta
             );
 
             for (final ExtraComponent extraComponent : extraComponents) {
                 this.platformWirer.register(extraComponent);
             }
-
-            this.meta = Objects.firstNonNull(meta, new Meta("unknown", DateTime.now(), DateTime.now()));
 
             registerGlobalInterceptors(platformWirer);
 
@@ -292,11 +324,18 @@ public class DefaultPlatform implements Platform {
 
             initializeKasperMetrics(domainHelper);
 
-            final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(platformWirer);
+            initializePlugins(platformWirer);
 
-            final DefaultPlatform platform = new DefaultPlatform(commandGateway, queryGateway, eventBus, meta);
+            final DefaultPlatform platform = new DefaultPlatform(
+                    commandGateway,
+                    queryGateway,
+                    eventBus,
+                    metricRegistry,
+                    meta,
+                    kasperPlugins
+            );
 
-            initializePlugins(platform, domainDescriptors);
+            configureDomainBundles(platformWirer);
 
             LOGGER.info("Platform is ready (version:'{}', date:'{}')", meta.getVersion(), meta.getBuildingDate());
 
@@ -343,12 +382,12 @@ public class DefaultPlatform implements Platform {
             return descriptor;
         }
 
-        protected void initializePlugins(final Platform platform, final Collection<DomainDescriptor> domainDescriptors) {
-            final DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
-
-            for (final Plugin plugin : kasperPlugins) {
+        protected void initializePlugins(final PlatformWirer platformWirer) {
+            ArrayList<Plugin> toWirer = Lists.newArrayList(kasperPlugins);
+            Collections.sort(toWirer, Plugin.REVERSED_COMPARATOR);
+            for (final Plugin plugin : toWirer) {
                 LOGGER.debug("Initializing plugin : {}", plugin.getClass().getSimpleName());
-                plugin.initialize(platform, metricRegistry, domainDescriptorArray);
+                platformWirer.wire(plugin);
             }
         }
 

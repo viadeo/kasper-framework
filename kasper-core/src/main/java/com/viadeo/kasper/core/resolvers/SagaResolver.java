@@ -20,6 +20,7 @@ public class SagaResolver extends AbstractResolver<Saga> {
         return "Saga";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Saga> clazz) {
         if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {

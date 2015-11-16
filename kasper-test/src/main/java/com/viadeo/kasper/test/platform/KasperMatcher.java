@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.api.id.StringKasperId;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -295,7 +295,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
         return SECURITY_TOKEN;
     }
 
-    private static final KasperID KASPER_ID = new StringKasperId("wildcard");
+    private static final KasperID KASPER_ID = new DefaultKasperId();
 
     /**
      * @return a Kasper id wildcard

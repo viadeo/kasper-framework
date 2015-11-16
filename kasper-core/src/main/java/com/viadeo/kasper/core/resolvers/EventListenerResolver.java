@@ -84,14 +84,14 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     public Class<? extends Event> getEventClass(final Class<? extends EventListener> clazz) {
 
         if (cacheEvents.containsKey(checkNotNull(clazz))) {
             return cacheEvents.get(clazz);
         }
 
-        @SuppressWarnings("unchecked") // Safe
+//        @SuppressWarnings("unchecked") // Safe
         final Optional<Class<? extends Event>> eventClazz =
                 (Optional<Class<? extends Event>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(

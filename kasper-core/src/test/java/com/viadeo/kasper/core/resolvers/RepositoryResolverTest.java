@@ -12,9 +12,10 @@ import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
-import com.viadeo.kasper.core.component.command.aggregate.ddd.IRepository;
+import com.viadeo.kasper.core.component.command.repository.BaseRepository;
 import org.axonframework.domain.DomainEventStream;
 import org.axonframework.domain.EventRegistrationCallback;
+import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -47,39 +48,41 @@ public class RepositoryResolverTest {
     }
 
     @XKasperUnregistered
-    private static final class TestRepository implements IRepository<TestAggregateRoot> {
+    private static final class TestRepository extends BaseRepository<KasperID,TestAggregateRoot> {
+
+        protected TestRepository(EventBus eventBus) {
+            super(eventBus);
+        }
+
         @Override
-        public void init() { }
+        protected Optional<TestAggregateRoot> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+            return null;
+        }
+
         @Override
-        public boolean has(KasperID id) { return false; }
+        protected void doSave(TestAggregateRoot aggregate) { }
+
         @Override
-        public TestAggregateRoot get(KasperID aggregateIdentifier, Long expectedVersion) { return null; }
-        @Override
-        public TestAggregateRoot get(KasperID aggregateIdentifier) { return null; }
-        @Override
-        public TestAggregateRoot load(Object aggregateIdentifier, Long expectedVersion) { return null; }
-        @Override
-        public TestAggregateRoot load(Object aggregateIdentifier) { return null; }
-        @Override
-        public void add(TestAggregateRoot aggregate) { }
+        protected void doDelete(TestAggregateRoot aggregate) { }
     }
 
     @XKasperUnregistered
-    private static final class TestGenericRepository implements IRepository {
+    private static final class TestGenericRepository extends BaseRepository {
+
+        protected TestGenericRepository(EventBus eventBus) {
+            super(eventBus);
+        }
+
         @Override
-        public void init() { }
+        protected Optional doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+            return null;
+        }
+
         @Override
-        public boolean has(KasperID id) { return false; }
+        protected void doSave(AggregateRoot aggregate) { }
+
         @Override
-        public TestAggregateRoot get(KasperID aggregateIdentifier, Long expectedVersion) { return null; }
-        @Override
-        public TestAggregateRoot get(KasperID aggregateIdentifier) { return null; }
-        @Override
-        public Object load(Object aggregateIdentifier, Long expectedVersion) { return null; }
-        @Override
-        public Object load(Object aggregateIdentifier) { return null; }
-        @Override
-        public void add(Object aggregate) { }
+        protected void doDelete(AggregateRoot aggregate) { }
     }
 
     // ------------------------------------------------------------------------
@@ -111,12 +114,10 @@ public class RepositoryResolverTest {
     public void testGetDomainFromGenericRepository() {
         // Given
         final RepositoryResolver resolver = new RepositoryResolver();
-        final EntityResolver entityResolver = mock(EntityResolver.class);
 
         // When
         try {
-            final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomainClass(TestGenericRepository.class);
+            resolver.getDomainClass(TestGenericRepository.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception

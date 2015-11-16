@@ -21,11 +21,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SagaWrapper extends AxonEventListener<Event> implements EventListener<Event> {
 
-    private final SagaExecutor executor;
+    private final SagaExecutor<Saga> executor;
 
     // ------------------------------------------------------------------------
 
-    public SagaWrapper(final SagaExecutor executor) {
+    public SagaWrapper(final SagaExecutor<Saga> executor) {
         super();
         this.executor = checkNotNull(executor);
     }

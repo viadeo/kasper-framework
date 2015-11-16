@@ -7,14 +7,22 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -24,48 +32,58 @@ import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertEquals;
 
-public class HttpMetricsExposerTest extends BaseHttpExposerTest {
+public class HttpMetricsExposerTest {
 
-    @Override
-    protected HttpMetricsExposerPlugin createExposerPlugin() {
-        return new HttpMetricsExposerPlugin();
+    private static final String HTTP_ENDPOINT = "http://127.0.0.1";
+    private static final String ROOT_PATH = "/rootpath/";
+
+    private Server server;
+    private Client client;
+    private int port;
+
+    @Before
+    public void setUp() throws Exception {
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
+
+        final HttpMetricsExposer httpMetricsExposer = new HttpMetricsExposer(
+                KasperMetrics.getMetricRegistry(),
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
+
+        final ServletContextHandler servletContext = new ServletContextHandler();
+        servletContext.setContextPath("/");
+        servletContext.addServlet(new ServletHolder(httpMetricsExposer), ROOT_PATH + "*");
+
+        server = new Server(0);
+        server.setHandler(servletContext);
+        server.start();
+
+        port = server.getConnectors()[0].getLocalPort();
+
+        final DefaultClientConfig cfg = new DefaultClientConfig();
+        cfg.getSingletons().add(new JacksonJsonProvider(ObjectMapperProvider.INSTANCE.mapper()));
+
+        client = Client.create(cfg);
     }
 
-    @Override
-    protected DomainBundle getDomainBundle() {
-        return null;
+    @After
+    public void cleanUp() throws Exception {
+        server.stop();
+    }
+
+    protected String url() {
+        return HTTP_ENDPOINT + ":" + port + ROOT_PATH;
     }
 
     @Test
     public void testMetrics() throws IOException {
         // Given
-        final Client client = Client.create();
         final WebResource webResource = client.resource(url() + "");
 
         final Meter meter = KasperMetrics.getMetricRegistry().meter("com.viadeo.kasper.test");
         meter.mark();
 
-        final String expectedOutput =
-                "{\"counters\":{\"com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.running\":"
-              + "{\"count\":0},\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.running\":{\"count\":0}},"
-              + "\"gauges\":{},\"histograms\":{},\"meters\":{\""
-              + "com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.submitted\":"
-              + "{\"count\":0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.submitted\":{\"count\":0,\"m15_rate\":0.0,\"m1_rate"
-              + "\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},\"com.viadeo.kasper.test\":{\"count\":1,\"m15_rate\""
-              + ":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.completed\":"
-              + "{\"count\":0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.completed\":"
-              + "{\"count\":0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"}},"
-              + "\"timers\":{\"com.viadeo.kasper.core.component.event.eventbus.KasperEventBus.duration\":"
-              + "{\"count\":0,\"max\":0.0,\"mean\":0.0,\"min\":0.0,\"p50\":0.0,\"p75\":0.0,\"p95\":0.0,\"p98\":0.0,\"p99\":0.0,"
-              + "\"p999\":0.0,\"stddev\":0.0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"duration_units\":"
-              + "\"milliseconds\",\"rate_units\":\"calls/second\"},"
-              + "\"com.viadeo.kasper.core.component.event.eventbus.KasperProcessorDownLatch.duration\":"
-              + "{\"count\":0,\"max\":0.0,\"mean\":0.0,\"min\":0.0,\"p50\":0.0,\"p75\":0.0,\"p95\":0.0,\"p98\":0.0,"
-              + "\"p99\":0.0,\"p999\":0.0,\"stddev\":0.0,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,"
-              + "\"duration_units\":\"milliseconds\",\"rate_units\":\"calls/second\"}}}";
+        final String expectedOutput = "{\"counters\":{},\"gauges\":{},\"histograms\":{},\"meters\":{\"com.viadeo.kasper.test\":{\"count\":1,\"m15_rate\":0.0,\"m1_rate\":0.0,\"m5_rate\":0.0,\"mean_rate\":0,\"units\":\"events/second\"}},\"timers\":{}}";
 
         // When
         final ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);

@@ -20,8 +20,6 @@ dependencies {
     compile libraries.JERSEY_JSON
     compile libraries.JERSEY_SERVLET
 
-    compile libraries.SPRING_WEB
-
     compile libraries.SERVLET
 
     compile libraries.JETTY
@@ -31,10 +29,13 @@ dependencies {
     compile libraries.METRICS_SERVLET
 
     compile libraries.HYSTRIX_STREAM
+    compile libraries.SPRING_WEB
+    compile libraries.SPRING_TEST
 
     // Test projects
     testCompile project(':kasper-client')
     testCompile project(':kasper-domain-sample')
+    testCompile project(':kasper-test')
 
     // Test dependencies
     testCompile libraries.DIFFUTILS
@@ -48,5 +49,4 @@ dependencies {
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.TYPESAFE_CONFIG
-    testCompile libraries.SPRING_TEST
 }

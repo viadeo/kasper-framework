@@ -9,7 +9,7 @@ ext.nexusCredentials = {
     password nexus_password
 }
 
-wrapper.gradleVersion = '2.5'
+wrapper.gradleVersion = '2.7'
 
 configure(allprojects) {
     apply plugin: 'idea'
@@ -48,7 +48,7 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '1.1.2'
+    version = '1.2.0-SNAPSHOT'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
@@ -64,6 +64,7 @@ configure(subprojects) {
 
     configure([compileJava, compileTestJava]) {
         options.encoding = 'UTF-8'
+        options.warnings = false
     }
 
     configurations {

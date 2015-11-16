@@ -34,6 +34,7 @@ public class MeasuredInterceptorUTest {
     private InterceptorChain<Command, CommandResponse> interceptorChain;
     private CommandResponse response;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
         Timer timer = mock(Timer.class);

@@ -19,6 +19,7 @@ public class MeasuredQueryHandler
         implements QueryHandler<Query, QueryResult>
 {
 
+    @SuppressWarnings("unchecked")
     public MeasuredQueryHandler(
             final MetricRegistry metricRegistry,
             final QueryHandler handler

@@ -14,15 +14,14 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.command.MeasuredCommandHandler;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
-import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventDescriptor;
 import com.viadeo.kasper.core.component.event.listener.QueryEventListener;
@@ -36,15 +35,19 @@ import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactor
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.*;
 import com.viadeo.kasper.platform.bundle.sample.MyCustomDomainBox;
+import com.viadeo.kasper.platform.plugin.Plugin;
+import com.viadeo.kasper.platform.plugin.PluginAdapter;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.refEq;
@@ -79,9 +82,10 @@ public class PlatformWirerUTest {
 
     private PlatformWirer platformWirer;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws Exception {
-        platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager);
+        platformWirer = new PlatformWirer(config, metricRegistry, eventBus, commandGateway, queryGateway, sagaManager, repositoryManager, mock(Meta.class));
         when(sagaManager.register(any(Saga.class))).thenReturn(mock(SagaExecutor.class));
     }
 
@@ -135,7 +139,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_a_command_handler() {
         // Given
-        final AutowiredCommandHandler commandHandler = spy(new MyCustomDomainBox.MyCustomCommandHandler());
+        final MyCustomDomainBox.MyCustomCommandHandler commandHandler = spy(new MyCustomDomainBox.MyCustomCommandHandler());
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(commandHandler)
                 .build();
@@ -177,7 +181,7 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_an_event_listener() {
         // Given
-        final AutowiredEventListener eventListener = spy(new MyCustomDomainBox.MyCustomEventListener());
+        final MyCustomDomainBox.MyCustomEventListener eventListener = spy(new MyCustomDomainBox.MyCustomEventListener());
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -199,7 +203,7 @@ public class PlatformWirerUTest {
         // Given
         final CommandEventListener eventListener = mock(CommandEventListener.class);
         when(eventListener.getHandlerClass()).thenReturn(CommandEventListener.class);
-        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor(Event.class)));
+        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor<>(Event.class)));
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -222,7 +226,7 @@ public class PlatformWirerUTest {
         // Given
         final QueryEventListener eventListener = mock(QueryEventListener.class);
         when(eventListener.getHandlerClass()).thenReturn(QueryEventListener.class);
-        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor(Event.class)));
+        when(eventListener.getEventDescriptors()).thenReturn(Sets.<EventDescriptor>newHashSet(new EventDescriptor<>(Event.class)));
 
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(eventListener)
@@ -242,7 +246,8 @@ public class PlatformWirerUTest {
     @Test
     public void wire_a_bundle_containing_a_repository() throws Exception {
         // Given
-        final Repository repository = spy(new TestRepository());
+        final ArgumentCaptor<Repository> captor = ArgumentCaptor.forClass(Repository.class);
+        final TestRepository repository = spy(new TestRepository());
         final DomainBundle domainBundle = new DomainBundle.Builder(mock(Domain.class))
                 .with(repository)
                 .build();
@@ -251,8 +256,12 @@ public class PlatformWirerUTest {
         platformWirer.wire(domainBundle);
 
         // Then
-        verify(repositoryManager).register(refEq(repository));
+        verify(repositoryManager).register(captor.capture());
         verify(repository).setEventBus(refEq(eventBus));
+
+        Repository capturedRepository = captor.getValue();
+        assertNotNull(capturedRepository);
+        assertEquals(repository.getClass(), capturedRepository.getRepositoryClass());
     }
 
     @Test
@@ -334,15 +343,45 @@ public class PlatformWirerUTest {
         platformWirer.wire(bundleB);
     }
 
+    @Test
+    public void sort_registered_plugins_is_ok() {
+        // Given
+        Plugin pluginA = new PhasedPlugin("A", 2);
+        Plugin pluginB = new PhasedPlugin("B", 3);
+        Plugin pluginC = new PhasedPlugin("C", 1);
+        platformWirer.wire(pluginA);
+        platformWirer.wire(pluginB);
+        platformWirer.wire(pluginC);
 
+        // When
+        Collection<Plugin> actualPlugins = platformWirer.sortRegisteredPlugins();
 
-    private static class TestRepository extends Repository<MyCustomDomainBox.MyCustomEntity> {
+        //Then
+        assertEquals(Lists.newArrayList(pluginC, pluginA, pluginB), actualPlugins);
+    }
 
-        public TestRepository() throws Exception {
-            final Field declaredField = Repository.class.getDeclaredField("initialized");
-            declaredField.setAccessible(true);
-            declaredField.set(this, true);
+    private static class PhasedPlugin extends PluginAdapter {
+
+        private final String name;
+        private final int phase;
+
+        private PhasedPlugin(final String name, final int phase) {
+            this.name = name;
+            this.phase = phase;
         }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public int getPhase() {
+            return phase;
+        }
+    }
+
+    private static class TestRepository extends AutowiredRepository<KasperID,MyCustomDomainBox.MyCustomEntity> {
 
         @Override
         protected Optional<MyCustomDomainBox.MyCustomEntity> doLoad(final KasperID aggregateIdentifier,

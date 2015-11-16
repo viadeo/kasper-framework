@@ -147,7 +147,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
                 final Constructor constructor = domainBundleClass.getDeclaredConstructors()[0];
 
                 final List<Object> parameters = Lists.newArrayList();
-                for (final Class parameterClass : constructor.getParameterTypes()) {
+                for (final Class<?> parameterClass : constructor.getParameterTypes()) {
                     parameters.add(applicationContext.getBean(parameterClass));
                 }
 

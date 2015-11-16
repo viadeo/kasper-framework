@@ -9,5 +9,8 @@ include ':kasper-api',
         ':kasper-common', 
         ':kasper-test', 
         ':kasper-documentation',
+        ':kasper-spring',
+        ':kasper-eventbus-rabbitmq',
+        ':kasper-exposition-jetty',
         ':kasper-domain-sample'
 

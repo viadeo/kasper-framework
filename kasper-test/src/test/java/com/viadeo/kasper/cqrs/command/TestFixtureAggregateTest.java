@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.command;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.component.command.repository.EventSourcedRepository;
+import com.viadeo.kasper.core.component.command.repository.AutowiredEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.test.platform.KasperAggregateFixture;
@@ -29,22 +29,23 @@ import static org.junit.Assert.fail;
 public class TestFixtureAggregateTest {
 
     private KasperAggregateFixture<TestAggregate> fixture;
-    private Repository<TestAggregate> testRepository;
+    private Repository<KasperID,TestAggregate> testRepository;
 
     private static final String firstName = "Richard";
     private static final String lastName = "Stallman";
+
 
     // ========================================================================
 
     @Parameterized.Parameters
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
-            { new TestRepository() },
-            { new TestEventRepository() }
+            { new TestRepository() }
+            , { new TestEventRepository() }
         });
     }
 
-    public TestFixtureAggregateTest(final Repository<TestAggregate> testRepository) {
+    public TestFixtureAggregateTest(final Repository<KasperID,TestAggregate> testRepository) {
         this.testRepository = testRepository;
         KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
@@ -182,7 +183,7 @@ public class TestFixtureAggregateTest {
         /**
          * Non-event sourced repositories cannot handle "given" events
          */
-        if ( ! EventSourcedRepository.class.isAssignableFrom(this.testRepository.getClass())) {
+        if ( ! AutowiredEventSourcedRepository.class.isAssignableFrom(this.testRepository.getClass())) {
             return;
         }
 

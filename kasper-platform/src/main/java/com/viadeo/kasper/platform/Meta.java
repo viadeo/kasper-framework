@@ -15,6 +15,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class Meta {
 
+    public static final Meta UNKNOWN = new Meta("unknown", DateTime.now(), DateTime.now());
+
     private final String version;
     private final DateTime buildingDate;
     private final DateTime deploymentDate;
