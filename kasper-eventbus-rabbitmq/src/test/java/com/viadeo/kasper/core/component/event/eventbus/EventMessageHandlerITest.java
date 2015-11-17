@@ -421,10 +421,10 @@ public class EventMessageHandlerITest {
                     messageListenerContainerController
             ) {
                 @Override
-                protected Object createDelegateMessageListener(MessageConverter messageConverter, org.axonframework.eventhandling.EventListener eventListener, MetricRegistry metricRegistry, boolean enabledMessageHandling) {
+                protected Object createDelegateMessageListener(MessageConverter messageConverter, EventListener eventListener, MetricRegistry metricRegistry, boolean enabledMessageHandling) {
                     return new EventMessageHandler(
                             messageConverter,
-                            (EventListener) eventListener,
+                            eventListener,
                             metricRegistry,
                             messageRecoverer
                     );

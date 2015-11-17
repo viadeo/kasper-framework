@@ -1,12 +1,14 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.viadeo.kasper.core.component.event.listener.EventListener;
 import org.aopalliance.aop.Advice;
-import org.axonframework.eventhandling.EventListener;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.util.ErrorHandler;
 
 import java.util.List;
@@ -80,6 +82,13 @@ public class MessageListenerContainerFactory {
         container.setErrorHandler(errorHandler);
         container.setRabbitAdmin(rabbitAdmin);
         container.setAcknowledgeMode(acknowledgeMode);
+        container.setTaskExecutor(
+                new SimpleAsyncTaskExecutor(
+                        new ThreadFactoryBuilder()
+                                .setNameFormat("consumer-" + eventListener.getHandlerClass().getSimpleName() + "-%d")
+                                .build()
+                )
+        );
 
         if ( ! advices.isEmpty()) {
             container.setAdviceChain(advices.toArray(new Advice[advices.size()]));
