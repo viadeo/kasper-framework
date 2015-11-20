@@ -16,6 +16,7 @@ import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import org.axonframework.unitofwork.CurrentUnitOfWork;
@@ -68,12 +69,22 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
                     if (currentUnitOfWork.isPresent()) {
                         CurrentUnitOfWork.set(currentUnitOfWork.get());
                     }
+
+                    CurrentContext.set(context);
+
                     try {
                         return chain.next(input, context);
                     } catch (final Exception e) {
                         policy.manage(e);
                         exception = e;
                         throw e;
+                    }
+                    finally {
+                        if (currentUnitOfWork.isPresent()) {
+                            CurrentUnitOfWork.clear(currentUnitOfWork.get());
+                        }
+
+                        CurrentContext.clear();
                     }
                 }
 

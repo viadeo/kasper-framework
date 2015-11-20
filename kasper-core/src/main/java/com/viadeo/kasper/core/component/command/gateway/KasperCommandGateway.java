@@ -14,7 +14,6 @@ import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.core.component.command.interceptor.KasperCommandInterceptor;
-import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DefaultDomainLocator;
@@ -107,8 +106,6 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        CurrentContext.set(context);
-
         commandGateway.sendCommand(
                 command,
                 context
@@ -123,8 +120,6 @@ public class KasperCommandGateway implements CommandGateway {
                 final Context context) throws Exception {
         checkNotNull(command);
         checkNotNull(context);
-
-        CurrentContext.set(context);
 
         return commandGateway.sendCommandForFuture(
                 command,
@@ -141,8 +136,6 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        CurrentContext.set(context);
-
         return commandGateway.sendCommandAndWaitForAResponse(
                 command,
                 context
@@ -157,8 +150,6 @@ public class KasperCommandGateway implements CommandGateway {
                 final Context context) throws Exception {
         checkNotNull(command);
         checkNotNull(context);
-
-        CurrentContext.set(context);
 
         return commandGateway.sendCommandAndWaitForAResponseWithException(
                 command,
@@ -178,8 +169,6 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(context);
         checkNotNull(unit);
 
-        CurrentContext.set(context);
-
         commandGateway.sendCommandAndWait(
                 command,
                 context,
@@ -196,8 +185,6 @@ public class KasperCommandGateway implements CommandGateway {
                 final Context context) throws Exception {
         checkNotNull(command);
         checkNotNull(context);
-
-        CurrentContext.set(context);
 
         commandGateway.sendCommandAndWaitForever(
                 command,

@@ -13,7 +13,6 @@ import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.CommandMessage;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Before;
@@ -22,7 +21,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -63,8 +63,6 @@ public class AxonCommandHandlerUTest {
 
         // Then
         assertNotNull(handle);
-        assertTrue(CurrentContext.value().isPresent());
-        assertEquals(context, CurrentContext.value().get());
     }
 
     @Test

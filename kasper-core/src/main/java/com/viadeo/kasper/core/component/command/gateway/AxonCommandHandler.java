@@ -9,12 +9,10 @@ package com.viadeo.kasper.core.component.command.gateway;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.CommandMessage;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.repository.ConflictingAggregateVersionException;
 import org.axonframework.unitofwork.UnitOfWork;
 
@@ -29,9 +27,6 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
     @Override
     public Object handle(org.axonframework.commandhandling.CommandMessage<COMMAND> commandMessage, UnitOfWork unitOfWork) throws Throwable {
         final CommandMessage<COMMAND> kmessage = new CommandMessage<>(commandMessage);
-        final Context context = kmessage.getContext();
-
-        CurrentContext.set(context);
 
         final boolean isError;
 

@@ -59,7 +59,12 @@ public abstract class AutowiredEventListener<E extends Event>
     @Override
     public EventResponse handle(final EventMessage<E> message) {
         CurrentContext.set(message.getContext());
-        return super.handle(message);
+
+        try {
+            return super.handle(message);
+        } finally {
+            CurrentContext.clear();
+        }
     }
 
     // ------------------------------------------------------------------------

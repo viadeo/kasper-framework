@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.component.command;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperCommandException;
@@ -35,6 +36,14 @@ public abstract class AutowiredCommandHandler<C extends Command>
     private transient EventBus eventBus;
     private transient CommandGateway commandGateway;
     protected transient RepositoryManager repositoryManager;
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public CommandResponse handle(CommandMessage<C> message) {
+        CurrentContext.set(message.getContext());
+        return super.handle(message);
+    }
 
     // ------------------------------------------------------------------------
 

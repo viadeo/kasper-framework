@@ -8,17 +8,15 @@ package com.viadeo.kasper.core.component.command.gateway;
 
 import com.codahale.metrics.InstrumentedExecutorService;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.axonframework.commandhandling.AsynchronousCommandBus;
-import org.axonframework.commandhandling.CommandHandler;
-import org.axonframework.commandhandling.CommandMessage;
-import org.axonframework.commandhandling.NoHandlerForCommandException;
+import com.viadeo.kasper.core.context.CurrentContext;
+import org.axonframework.commandhandling.*;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 public class KasperCommandBus extends AsynchronousCommandBus {
@@ -36,12 +34,35 @@ public class KasperCommandBus extends AsynchronousCommandBus {
                                 .setNameFormat(COMMAND_THREAD_NAME + "-%d")
                                 .build()
                 ),
-                Preconditions.checkNotNull(metricRegistry, "metric registry may not be null")        ,
+                checkNotNull(metricRegistry, "metric registry may not be null"),
                 COMMAND_THREAD_NAME
         ));
     }
 
     // ------------------------------------------------------------------------
+
+    @Override
+    protected <R> void doDispatch(CommandMessage<?> command, final CommandCallback<R> callback) {
+        super.doDispatch(command, new CommandCallback<R>() {
+
+            @Override
+            public void onSuccess(R result) {
+                if (callback != null) {
+                    callback.onSuccess(result);
+                }
+                CurrentContext.clear();
+            }
+
+            @Override
+            public void onFailure(Throwable cause) {
+                if (callback != null) {
+                    callback.onFailure(cause);
+                }
+                CurrentContext.clear();
+            }
+        });
+
+    }
 
     @Override
     public <T> void subscribe(final String commandName, final CommandHandler<? super T> handler) {
@@ -68,5 +89,4 @@ public class KasperCommandBus extends AsynchronousCommandBus {
         }
         return handler.getClass();
     }
-
 }

@@ -14,7 +14,6 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +65,6 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         final EventMessage<EVENT> kmessage = new EventMessage<EVENT>(eventMessage);
         final EVENT event = kmessage.getEvent();
         final Context context = Objects.firstNonNull(kmessage.getContext(), Contexts.empty());
-
-        CurrentContext.set(context);
 
         EventResponse response;
 

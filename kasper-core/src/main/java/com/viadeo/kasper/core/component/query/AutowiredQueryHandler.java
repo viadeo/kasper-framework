@@ -53,6 +53,8 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
      * @return the command response
      */
     public QueryResponse<RESULT> handle(Context context, Q query) {
+        CurrentContext.set(context);
+
         try {
             return handle(query);
         } catch (final UnsupportedOperationException e) {

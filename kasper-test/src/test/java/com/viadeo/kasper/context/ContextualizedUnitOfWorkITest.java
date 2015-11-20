@@ -39,6 +39,7 @@ import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;

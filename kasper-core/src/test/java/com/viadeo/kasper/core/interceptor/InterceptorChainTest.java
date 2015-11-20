@@ -111,7 +111,7 @@ public class InterceptorChainTest {
     }
 
     @Test
-    public void next_withoutCurrentContext_shouldSetContextAsCurrentAndSetMDC() throws Exception {
+    public void next_withoutCurrentContext_shouldMDC() throws Exception {
         // Given
         CurrentContext.clear();
         final Context context = Contexts.builder(UUID.randomUUID())
@@ -125,14 +125,11 @@ public class InterceptorChainTest {
         chain.next(mock(Query.class), context);
 
         // Then
-        Optional<Context> optionalCurrentContext = CurrentContext.value();
-        assertTrue(optionalCurrentContext.isPresent());
-        assertEquals(context, optionalCurrentContext.get());
         assertEquals(context.asMap(), MDC.getCopyOfContextMap());
     }
 
     @Test
-    public void next_withUpdatedContext_shouldSetContextAsCurrentAndSetMDC() throws Exception {
+    public void next_withUpdatedContext_shouldSetMDC() throws Exception {
         // Given
         final Context context = Contexts.builder(UUID.randomUUID())
                 .withUserCountry("FR")
@@ -154,9 +151,6 @@ public class InterceptorChainTest {
         chain.next(mock(Query.class), newContext);
 
         // Then
-        Optional<Context> optionalCurrentContext = CurrentContext.value();
-        assertTrue(optionalCurrentContext.isPresent());
-        assertEquals(newContext, optionalCurrentContext.get());
         assertEquals(newContext.asMap(), MDC.getCopyOfContextMap());
     }
 

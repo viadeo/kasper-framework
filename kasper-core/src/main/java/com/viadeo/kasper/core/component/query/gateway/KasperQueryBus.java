@@ -87,9 +87,6 @@ public class KasperQueryBus {
             final Context context = message.getContext();
             final QueryHandler<Query, QueryResult> handler = findQueryHandlerFor(message);
 
-            /* Sets current thread context */
-            CurrentContext.set(context);
-
             // Search for associated handler --------------------------------------
             LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
             final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
@@ -173,7 +170,24 @@ public class KasperQueryBus {
 
         @Override
         public void run() {
-            KasperQueryBus.this.doDispatch(query, callback);
+            KasperQueryBus.this.doDispatch(query, new CommandCallback<R>() {
+
+                @Override
+                public void onSuccess(R result) {
+                    if (callback != null) {
+                        callback.onSuccess(result);
+                    }
+                    CurrentContext.clear();
+                }
+
+                @Override
+                public void onFailure(Throwable cause) {
+                    if (callback != null) {
+                        callback.onFailure(cause);
+                    }
+                    CurrentContext.clear();
+                }
+            });
         }
     }
 }

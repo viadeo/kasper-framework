@@ -107,7 +107,6 @@ public class InterceptorChain<INPUT, OUTPUT> {
         }
 
         if ( ! CurrentContext.value().isPresent() || (CurrentContext.value().isPresent() && ! CurrentContext.value().get().equals(context)) ) {
-            CurrentContext.set(context);
             MDC.setContextMap(context.asMap());
         }
 
