@@ -30,7 +30,6 @@ import com.viadeo.kasper.test.platform.fixture.KasperEventFixture;
 import com.viadeo.kasper.test.platform.fixture.KasperQueryFixture;
 import org.axonframework.commandhandling.CommandCallback;
 import org.axonframework.commandhandling.CommandMessage;
-import org.axonframework.domain.EventMessage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -132,7 +131,7 @@ public class KasperPlatformFixture implements
 
         for (final Event event : events) {
             try {
-                this.platform.get().getEventBus().publishEvent(context, event);
+                this.platform.get().getEventBus().publish(context, event);
             } catch (final Exception e) {
                 throw new KasperException(e);
             }
@@ -232,12 +231,10 @@ public class KasperPlatformFixture implements
         // -----
 
         @Override
-        public void publish(final EventMessage... messages) {
-            super.publish(messages);
-            for (final EventMessage message : messages) {
-                if (Event.class.isAssignableFrom(message.getPayloadType())) {
-                    this.recordingPlatform.recordedEvents.add((Event) message.getPayload());
-                }
+        public void publish(Context context, Event event) {
+            super.publish(context, event);
+            if (Event.class.isAssignableFrom(event.getClass())) {
+                this.recordingPlatform.recordedEvents.add(event);
             }
         }
 

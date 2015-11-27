@@ -31,7 +31,7 @@ public class CommandValidationInterceptor<C extends Command>
     public CommandResponse process(
             final C c,
             final Context context,
-            final InterceptorChain<C, CommandResponse> chain) throws Exception {
+            final InterceptorChain<C, CommandResponse> chain) {
         validate(c);
         return chain.next(c, context);
     }

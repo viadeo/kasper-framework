@@ -9,7 +9,6 @@ package com.viadeo.kasper.core.component.command.gateway;
 import com.codahale.metrics.InstrumentedExecutorService;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.commandhandling.*;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,31 +36,14 @@ public class KasperCommandBus extends AsynchronousCommandBus {
                 checkNotNull(metricRegistry, "metric registry may not be null"),
                 COMMAND_THREAD_NAME
         ));
+        setUnitOfWorkFactory(new ContextualizedUnitOfWork.Factory());
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     protected <R> void doDispatch(CommandMessage<?> command, final CommandCallback<R> callback) {
-        super.doDispatch(command, new CommandCallback<R>() {
-
-            @Override
-            public void onSuccess(R result) {
-                if (callback != null) {
-                    callback.onSuccess(result);
-                }
-                CurrentContext.clear();
-            }
-
-            @Override
-            public void onFailure(Throwable cause) {
-                if (callback != null) {
-                    callback.onFailure(cause);
-                }
-                CurrentContext.clear();
-            }
-        });
-
+        super.doDispatch(command, callback);
     }
 
     @Override

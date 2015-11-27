@@ -56,7 +56,7 @@ public class KasperQueryGatewayUTest {
 
     public static class InterceptorA implements QueryInterceptor<Query, QueryResult> {
         @Override
-        public QueryResponse<QueryResult> process(Query query, Context context, InterceptorChain<Query, QueryResponse<QueryResult>> chain) throws Exception {
+        public QueryResponse<QueryResult> process(Query query, Context context, InterceptorChain<Query, QueryResponse<QueryResult>> chain) {
             return chain.next(query, context);
         }
     }

@@ -12,7 +12,6 @@ import com.viadeo.kasper.core.component.annotation.XKasperEventListener;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
-import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.domain.sample.hello.api.HelloDomain;
 import com.viadeo.kasper.domain.sample.hello.api.command.NoticeTheWorldCommand;
 import com.viadeo.kasper.domain.sample.hello.api.event.BuddyWasUnableToRespondErrorEvent;
@@ -50,7 +49,7 @@ public class NoticeTheWorldAboutCreatedHelloListener extends AutowiredEventListe
             commandGateway.sendCommand(
                     new NoticeTheWorldCommand(response),
                 /* forward the current context */
-                    CurrentContext.value().get()
+                    context
             );
 
         } catch (final Exception e) {
@@ -59,6 +58,7 @@ public class NoticeTheWorldAboutCreatedHelloListener extends AutowiredEventListe
              * Will perhaps be replaced by this.publish() in some time
              */
             eventBus.publish(
+                    context,
                     new BuddyWasUnableToRespondErrorEvent(
                             event.getEntityId(),
                             response

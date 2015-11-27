@@ -31,7 +31,7 @@ public class QueryValidationInterceptor<Q extends Query, R extends QueryResult>
     @Override
     public QueryResponse<R> process(final Q q,
                                     final Context context,
-                                    final InterceptorChain<Q, QueryResponse<R>> chain) throws Exception {
+                                    final InterceptorChain<Q, QueryResponse<R>> chain) {
         validate(q);
         return chain.next(q, context);
     }

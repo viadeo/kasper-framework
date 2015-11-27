@@ -14,7 +14,6 @@ import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.component.event.listener.AutowiredEventListener;
-import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
@@ -66,10 +65,9 @@ public class KasperEventBusTest {
         // Given
         final KasperEventBus eventBus = spy(new KasperEventBus(metricRegistry));
         final TestEvent dummyEvent = new TestEvent();
-        CurrentContext.set(Contexts.empty());
 
         // When
-        eventBus.publish(dummyEvent);
+        eventBus.publish(Contexts.empty(), dummyEvent);
 
         // Then
         Mockito.verify(eventBus).publishToSuper(captor.capture());
@@ -125,7 +123,7 @@ public class KasperEventBusTest {
         // When
         eventBus.subscribe(new TestEventListener(returns));
         LOGGER.info("Publish event");
-        eventBus.publish(event);
+        eventBus.publish(Contexts.empty(), event);
         LOGGER.info("Event published");
         returns.add(EVENT_PUBLISHED);
         Thread.sleep(3 * LONG_RUNNING_TIME);
@@ -156,7 +154,7 @@ public class KasperEventBusTest {
         // When
         syncEventBus.subscribe(new TestEventErrorListener());
         try {
-            syncEventBus.publish(event);
+            syncEventBus.publish(Contexts.empty(), event);
         } catch (final RuntimeException e) {
             // Then ignore
         }

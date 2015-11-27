@@ -8,8 +8,8 @@ package com.viadeo.kasper.core.component.query;
 
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import org.axonframework.eventhandling.EventBus;
 
 /**
  * A class implements this interface in order to have the capability to be auto wired with the platform components.
@@ -27,7 +27,7 @@ public interface WirableQueryHandler<QUERY extends Query, RESULT extends QueryRe
      * Wires an event bus on this <code>QueryHandler</code> instance.
      * @param eventBus an event bus
      */
-    void setEventBus(EventBus eventBus);
+    void setEventBus(KasperEventBus eventBus);
 
     /**
      * Wires a query gateway on this <code>QueryHandler</code> instance.

@@ -9,10 +9,9 @@ package com.viadeo.kasper.spring.core;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
-import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
-import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,9 +26,8 @@ public class KasperCommandConfiguration {
      */
     @Bean
     public KasperCommandGateway commandGateway(final MetricRegistry metricRegistry) {
-        UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
         KasperCommandBus commandBus = new KasperCommandBus(metricRegistry);
-        commandBus.setUnitOfWorkFactory(uowFactory);
+        commandBus.setUnitOfWorkFactory(new ContextualizedUnitOfWork.Factory());
         return new KasperCommandGateway(commandBus);
     }
 

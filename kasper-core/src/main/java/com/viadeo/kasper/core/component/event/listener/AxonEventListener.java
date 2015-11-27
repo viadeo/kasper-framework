@@ -62,14 +62,14 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         }
 
         @SuppressWarnings("unchecked")
-        final EventMessage<EVENT> kmessage = new EventMessage<EVENT>(eventMessage);
-        final EVENT event = kmessage.getEvent();
-        final Context context = Objects.firstNonNull(kmessage.getContext(), Contexts.empty());
+        final EventMessage<EVENT> message = new EventMessage<EVENT>(eventMessage);
+        final EVENT event = message.getEvent();
+        final Context context = Objects.firstNonNull(message.getContext(), Contexts.empty());
 
         EventResponse response;
 
         try {
-            response = this.handle(kmessage);
+            response = this.handle(message);
         } catch (Exception e) {
             response =  EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }
@@ -78,7 +78,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
             case FAILURE:
             case ERROR:
                 try {
-                    rollback(kmessage);
+                    rollback(message);
                 } catch (Exception e) {
                     LOGGER.error("Failed to rollback, <context=%s> <event=%s> <response=%s>", context, event, response, e);
                 }

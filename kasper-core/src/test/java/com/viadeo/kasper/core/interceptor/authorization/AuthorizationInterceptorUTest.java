@@ -80,7 +80,7 @@ public class AuthorizationInterceptorUTest {
                         return Optional.of(
                                 InterceptorChain.makeChain(new Interceptor<Command, CommandResponse>() {
                                     @Override
-                                    public CommandResponse process(Command o, Context context, InterceptorChain chain) throws Exception {
+                                    public CommandResponse process(Command o, Context context, InterceptorChain chain) {
                                         return CommandResponse.accepted();
                                     }
                                 }

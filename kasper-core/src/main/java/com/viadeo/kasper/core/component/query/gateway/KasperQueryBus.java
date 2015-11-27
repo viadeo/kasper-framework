@@ -19,7 +19,6 @@ import com.viadeo.kasper.api.exception.KasperQueryException;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.query.interceptor.QueryHandlerInterceptorFactory;
-import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
@@ -170,24 +169,7 @@ public class KasperQueryBus {
 
         @Override
         public void run() {
-            KasperQueryBus.this.doDispatch(query, new CommandCallback<R>() {
-
-                @Override
-                public void onSuccess(R result) {
-                    if (callback != null) {
-                        callback.onSuccess(result);
-                    }
-                    CurrentContext.clear();
-                }
-
-                @Override
-                public void onFailure(Throwable cause) {
-                    if (callback != null) {
-                        callback.onFailure(cause);
-                    }
-                    CurrentContext.clear();
-                }
-            });
+            KasperQueryBus.this.doDispatch(query, callback);
         }
     }
 }

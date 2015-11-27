@@ -26,15 +26,18 @@ public class AxonCommandHandler<COMMAND extends Command> implements org.axonfram
 
     @Override
     public Object handle(org.axonframework.commandhandling.CommandMessage<COMMAND> commandMessage, UnitOfWork unitOfWork) throws Throwable {
-        final CommandMessage<COMMAND> kmessage = new CommandMessage<>(commandMessage);
-
+        final CommandMessage<COMMAND> message = new CommandMessage<>(commandMessage);
         final boolean isError;
+
+        if (unitOfWork instanceof ContextualizedUnitOfWork) {
+            ((ContextualizedUnitOfWork) unitOfWork).setContext(message.getContext());
+        }
 
         Optional<Exception> exception = Optional.absent();
         CommandResponse response;
 
         try {
-            response = commandHandler.handle(kmessage);
+            response = commandHandler.handle(message);
         } catch (final ConflictingAggregateVersionException e) {
             response = CommandResponse.error(CoreReasonCode.CONFLICT, e.getMessage());
         } catch (Exception e) {

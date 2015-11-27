@@ -35,7 +35,7 @@ public class CommandHandlerInterceptor implements Interceptor<Command, CommandRe
             final Command command,
             final Context context,
             final InterceptorChain<Command, CommandResponse> chain
-    ) throws Exception {
+    ) {
 
         final Map<String, Object> metaData = Maps.newHashMap();
         metaData.put(Context.METANAME, context);

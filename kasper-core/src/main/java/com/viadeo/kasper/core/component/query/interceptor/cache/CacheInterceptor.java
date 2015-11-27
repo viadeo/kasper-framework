@@ -41,7 +41,7 @@ public class CacheInterceptor<Q extends Query, P extends QueryResult> implements
     @Override
     public QueryResponse<P> process(final Q q,
                                     final Context context,
-                                    final InterceptorChain<Q, QueryResponse<P>> chain) throws Exception {
+                                    final InterceptorChain<Q, QueryResponse<P>> chain) {
 
         final Serializable key = keyGenerator.computeKey(context.getUserID(), q, cacheAnnotation.keys());
 

@@ -25,7 +25,7 @@ public class ResiliencePolicy {
      * @param exception a caught exception
      * @throws HystrixBadRequestException only it the specified exception represents an error
      */
-    public void manage(final Throwable exception) throws RuntimeException {
+    public void manage(final Throwable exception) {
         for (final Class<?> interceptorsException : getExceptionRepresentingAnError()) {
             if (interceptorsException.isAssignableFrom(exception.getClass())) {
                 throw new HystrixBadRequestException(exception.getMessage(), exception);

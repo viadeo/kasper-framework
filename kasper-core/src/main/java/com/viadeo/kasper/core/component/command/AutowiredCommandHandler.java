@@ -10,12 +10,10 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
 import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
@@ -41,7 +39,6 @@ public abstract class AutowiredCommandHandler<C extends Command>
 
     @Override
     public CommandResponse handle(CommandMessage<C> message) {
-        CurrentContext.set(message.getContext());
         return super.handle(message);
     }
 
@@ -66,13 +63,6 @@ public abstract class AutowiredCommandHandler<C extends Command>
 
     public CommandGateway getCommandGateway() {
         return commandGateway;
-    }
-
-    public Context getContext() {
-        if (CurrentContext.value().isPresent()) {
-            return CurrentContext.value().get();
-        }
-        throw new KasperCommandException("Unexpected condition : no context was set during command handling");
     }
 
     // ------------------------------------------------------------------------

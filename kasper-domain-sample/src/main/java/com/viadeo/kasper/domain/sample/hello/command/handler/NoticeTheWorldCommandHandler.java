@@ -7,6 +7,7 @@
 package com.viadeo.kasper.domain.sample.hello.command.handler;
 
 import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.core.component.command.AutowiredCommandHandler;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
@@ -36,7 +37,7 @@ public class NoticeTheWorldCommandHandler extends AutowiredCommandHandler<Notice
     }
 
     @Override
-    public CommandResponse handle(final NoticeTheWorldCommand command) {
+    public CommandResponse handle(final Context context, final NoticeTheWorldCommand command) {
 
         LOGGER.info(
             "Noticed the world : {}",
@@ -44,6 +45,7 @@ public class NoticeTheWorldCommandHandler extends AutowiredCommandHandler<Notice
         );
 
         this.eventBus.publish(
+            context,
             new NoticeSentToTheWorldEvent(
                 command.getNotice()
             )

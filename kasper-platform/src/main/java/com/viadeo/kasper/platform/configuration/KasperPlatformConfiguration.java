@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandBus;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
@@ -27,7 +28,6 @@ import com.viadeo.kasper.core.component.query.interceptor.filter.QueryFilterInte
 import com.viadeo.kasper.core.component.query.interceptor.validation.QueryValidationInterceptorFactory;
 import com.viadeo.kasper.platform.ExtraComponent;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
-import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -68,7 +68,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.extraComponents = Lists.newArrayList();
         this.configuration = ConfigFactory.empty();
 
-        final UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
+        final UnitOfWorkFactory uowFactory = new ContextualizedUnitOfWork.Factory();
         final KasperCommandBus commandBus = new KasperCommandBus(metricRegistry);
         commandBus.setUnitOfWorkFactory(uowFactory);
 

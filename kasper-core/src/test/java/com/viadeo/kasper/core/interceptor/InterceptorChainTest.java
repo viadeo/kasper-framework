@@ -13,7 +13,6 @@ import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
@@ -38,7 +37,6 @@ public class InterceptorChainTest {
     @Before
     public void setUp() throws Exception {
         MDC.clear();
-        CurrentContext.clear();
     }
 
     @Test
@@ -87,33 +85,8 @@ public class InterceptorChainTest {
     }
 
     @Test
-    public void next_withSameContext_isOk() throws Exception {
-        // Given
-        final Context context = Contexts.builder(UUID.randomUUID())
-                .withUserCountry("FR")
-                .withUserLang("fr")
-                .addTags(Sets.newHashSet("a", "b"))
-                .build();
-
-        CurrentContext.set(context);
-        MDC.setContextMap(context.asMap());
-
-        final InterceptorChain<Query, QueryResult> chain = InterceptorChain.makeChain(new DummyInterceptor());
-
-        // When
-        chain.next(mock(Query.class), context);
-
-        // Then
-        Optional<Context> optionalCurrentContext = CurrentContext.value();
-        assertTrue(optionalCurrentContext.isPresent());
-        assertEquals(context, optionalCurrentContext.get());
-        assertEquals(context.asMap(), MDC.getCopyOfContextMap());
-    }
-
-    @Test
     public void next_withoutCurrentContext_shouldMDC() throws Exception {
         // Given
-        CurrentContext.clear();
         final Context context = Contexts.builder(UUID.randomUUID())
                 .withUserCountry("FR")
                 .withUserLang("fr")
@@ -136,8 +109,6 @@ public class InterceptorChainTest {
                 .withUserLang("fr")
                 .addTags(Sets.newHashSet("a", "b"))
                 .build();
-
-        CurrentContext.set(context);
 
         final Context newContext = Contexts.newFrom(context)
                 .withFunnelName("MyFunnelRocks")

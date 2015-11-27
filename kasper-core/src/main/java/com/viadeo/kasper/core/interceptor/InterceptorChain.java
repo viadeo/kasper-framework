@@ -10,7 +10,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.core.context.CurrentContext;
 import org.slf4j.MDC;
 
 import java.util.Iterator;
@@ -26,7 +25,7 @@ public class InterceptorChain<INPUT, OUTPUT> {
     @SuppressWarnings("unchecked") // Generic element
     private static final InterceptorChain TAIL = new InterceptorChain() {
         @Override
-        public Object next(final Object i, final Context context) throws Exception {
+        public Object next(final Object i, final Context context) {
             throw new IllegalStateException("Reached chain tail without handling the input request");
         }
     };
@@ -101,15 +100,11 @@ public class InterceptorChain<INPUT, OUTPUT> {
 
     // ------------------------------------------------------------------------
 
-    public OUTPUT next(final INPUT input, final Context context) throws Exception {
+    public OUTPUT next(final INPUT input, final Context context) {
         if ( ! actor.isPresent()) {
             throw new NoSuchElementException("Actors chain has not more elements !");
         }
-
-        if ( ! CurrentContext.value().isPresent() || (CurrentContext.value().isPresent() && ! CurrentContext.value().get().equals(context)) ) {
-            MDC.setContextMap(context.asMap());
-        }
-
+        MDC.setContextMap(context.asMap());
         return actor.get().process(input, context, next.get());
     }
 

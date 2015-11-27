@@ -9,9 +9,10 @@ package com.viadeo.kasper.core.component.command.aggregate.ddd;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -85,7 +86,9 @@ public abstract class AggregateRoot<I extends KasperID>
         checkNotNull(metaData);
 
         if ( ! Event.class.isAssignableFrom(eventPayload.getClass())) {
-            throw new KasperCommandException("Only apply implementations of 'IEvent'");
+            throw new KasperCommandException(
+                    String.format("Only apply implementations of '%s'", eventPayload.getClass().getName())
+            );
         }
 
         super.apply(eventPayload, enrichMetaData(metaData));
@@ -97,9 +100,7 @@ public abstract class AggregateRoot<I extends KasperID>
         final Map<String, Object> newMetaData = Maps.newHashMap();
 
         // Add context
-        if (CurrentContext.value().isPresent()) {
-            newMetaData.put(Context.METANAME, CurrentContext.value().get());
-        }
+        newMetaData.put(Context.METANAME, ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext().or(Contexts.empty()));
 
         // Add version
         final Long version = (null == this.getVersion()) ? 0L : this.getVersion();

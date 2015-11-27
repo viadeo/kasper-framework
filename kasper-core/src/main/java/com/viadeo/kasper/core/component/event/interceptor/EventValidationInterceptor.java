@@ -30,7 +30,7 @@ public class EventValidationInterceptor<C extends Event>
     public Void process(
             final C c,
             final Context context,
-            final InterceptorChain<C, Void> chain) throws Exception {
+            final InterceptorChain<C, Void> chain) {
         validate(c);
         return chain.next(c, context);
     }

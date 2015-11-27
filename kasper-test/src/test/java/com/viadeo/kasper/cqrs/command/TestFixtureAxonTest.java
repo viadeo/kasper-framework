@@ -14,10 +14,12 @@ import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import com.viadeo.kasper.core.component.command.repository.AutowiredEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import org.axonframework.commandhandling.SimpleCommandBus;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
 import org.junit.Before;
@@ -65,6 +67,7 @@ public class TestFixtureAxonTest {
         this.fixture = Fixtures.newGivenWhenThenFixture(TestAggregate.class);
         fixture.setReportIllegalStateChange(true);
         fixture.registerIgnoredField(AggregateRoot.class, "version");
+        ((SimpleCommandBus)this.fixture.getCommandBus()).setUnitOfWorkFactory(new ContextualizedUnitOfWork.Factory());
 
         if (WirableRepository.class.isAssignableFrom(this.testRepository.getClass())) {
             ((WirableRepository) this.testRepository).setEventStore(fixture.getEventStore());

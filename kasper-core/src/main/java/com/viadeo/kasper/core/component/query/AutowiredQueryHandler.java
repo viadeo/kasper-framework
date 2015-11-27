@@ -11,12 +11,8 @@ import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.api.exception.KasperQueryException;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.gateway.QueryGateway;
-import com.viadeo.kasper.core.context.CurrentContext;
-import org.axonframework.domain.EventMessage;
-import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.EventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -38,7 +34,7 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
     implements WirableQueryHandler<Q,RESULT>
 {
 
-    private transient EventBus eventBus;
+    private transient KasperEventBus eventBus;
     private transient QueryGateway queryGateway;
 
     // ------------------------------------------------------------------------
@@ -53,8 +49,6 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
      * @return the command response
      */
     public QueryResponse<RESULT> handle(Context context, Q query) {
-        CurrentContext.set(context);
-
         try {
             return handle(query);
         } catch (final UnsupportedOperationException e) {
@@ -74,11 +68,12 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
      *
      * @param event The event
      */
-    public void publish(final Event event) {
+    public void publish(final Context context, final Event event) {
         checkNotNull(event, "The specified event must be non null");
+        checkNotNull(context, "The specified context must be non null");
         checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
-        final EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
-        this.eventBus.publish(eventMessage);
+
+        this.eventBus.publish(context, event);
     }
 
     // ------------------------------------------------------------------------
@@ -87,17 +82,10 @@ public abstract class AutowiredQueryHandler<Q extends Query, RESULT extends Quer
         return queryGateway;
     }
 
-    public Context getContext() {
-        if (CurrentContext.value().isPresent()) {
-            return CurrentContext.value().get();
-        }
-        throw new KasperQueryException("Unexpected condition : no context was set during query handling");
-    }
-
     // ------------------------------------------------------------------------
 
     @Override
-    public void setEventBus(final EventBus eventBus) {
+    public void setEventBus(final KasperEventBus eventBus) {
         this.eventBus = checkNotNull(eventBus);
     }
 

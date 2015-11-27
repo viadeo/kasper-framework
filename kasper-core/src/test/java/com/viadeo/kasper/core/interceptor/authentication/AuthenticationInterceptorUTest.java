@@ -79,7 +79,7 @@ public class AuthenticationInterceptorUTest {
                         return Optional.of(
                                 InterceptorChain.makeChain(new Interceptor<Command, CommandResponse>() {
                                                                @Override
-                                                               public CommandResponse process(Command o, Context context, InterceptorChain chain) throws Exception {
+                                                               public CommandResponse process(Command o, Context context, InterceptorChain chain) {
                                                                    return CommandResponse.ok();
                                                                }
                                                            }
@@ -96,7 +96,7 @@ public class AuthenticationInterceptorUTest {
                         return Optional.of(
                                 InterceptorChain.makeChain(new Interceptor<Command, CommandResponse>() {
                                                                @Override
-                                                               public CommandResponse process(Command o, Context context, InterceptorChain chain) throws Exception {
+                                                               public CommandResponse process(Command o, Context context, InterceptorChain chain) {
                                                                    return CommandResponse.doAuthenticate(new ID("kasper","subject", TestFormats.UUID, UUID.randomUUID()));
                                                                }
                                                            }
@@ -112,7 +112,7 @@ public class AuthenticationInterceptorUTest {
                         return Optional.of(
                                 InterceptorChain.makeChain(new Interceptor<Command, CommandResponse>() {
                                                                @Override
-                                                               public CommandResponse process(Command o, Context context, InterceptorChain chain) throws Exception {
+                                                               public CommandResponse process(Command o, Context context, InterceptorChain chain) {
                                                                    return CommandResponse.error(CoreReasonCode.INTERNAL_COMPONENT_ERROR);
                                                                }
                                                            }
@@ -133,7 +133,7 @@ public class AuthenticationInterceptorUTest {
                         return Optional.of(
                                 InterceptorChain.makeChain(new Interceptor<Query, QueryResponse>() {
                                                                @Override
-                                                               public QueryResponse process(Query o, Context context, InterceptorChain chain) throws Exception {
+                                                               public QueryResponse process(Query o, Context context, InterceptorChain chain) {
                                                                    return QueryResponse.of(new TestQueryResult());
                                                                }
                                                            }

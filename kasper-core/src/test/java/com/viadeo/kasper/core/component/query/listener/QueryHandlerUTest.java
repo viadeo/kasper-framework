@@ -9,12 +9,12 @@ package com.viadeo.kasper.core.component.query.listener;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
-import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class QueryHandlerUTest {
@@ -26,7 +26,7 @@ public class QueryHandlerUTest {
         final Event event = null;
 
         // When
-        handler.publish(event);
+        handler.publish(Contexts.empty(), event);
 
         // Then throws an exception
     }
@@ -34,18 +34,19 @@ public class QueryHandlerUTest {
     @Test
     public void publish_withEvent_shouldPublishAMessageOnTheEventBus() {
         // Given
-        final EventBus eventBus = mock(EventBus.class);
+        final KasperEventBus eventBus = mock(KasperEventBus.class);
 
         final AutowiredQueryHandler<Query, QueryResult> handler = new AutowiredQueryHandler<Query, QueryResult>() { };
         handler.setEventBus(eventBus);
 
+        final Context context = Contexts.empty();
         final Event event = new Event() { };
 
         // When
-        handler.publish(event);
+        handler.publish(context, event);
 
         // Then
-        verify(eventBus).publish(any(GenericEventMessage.class));
+        verify(eventBus).publish(context, event);
         verifyNoMoreInteractions(eventBus);
     }
 

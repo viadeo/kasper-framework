@@ -42,13 +42,13 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
     private static boolean received = false;
 
     @Test
-    public void testPublishEvent() throws InterruptedException, Exception {
+    public void testPublishEvent() throws Exception {
         // Given
         final KasperID id = KasperTestIdGenerator.get();
         final Event event = new TestEvent(id);
 
         // When
-        this.getPlatform().getEventBus().publishEvent(newContext(), event);
+        this.getPlatform().getEventBus().publish(newContext(), event);
         Thread.sleep(3000);
 
         // Then

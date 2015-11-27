@@ -68,7 +68,7 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
     }
 
     @Override
-    public O process(I c, Context context, InterceptorChain<I, O> chain) throws Exception {
+    public O process(I c, Context context, InterceptorChain<I, O> chain) {
         checkNotNull(context);
         final Class<?> clazz = type.getRawType();
 
@@ -111,7 +111,7 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
         return this.authorizationManagers.get(managerClass);
     }
 
-    protected Optional<Object> getTargetedId(I c) throws KasperInvalidAuthorizationException, IllegalAccessException {
+    protected Optional<Object> getTargetedId(I c) throws KasperInvalidAuthorizationException {
         Optional<Object> targetId = Optional.absent();
         for (Field field : c.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(TargetId.class)) {
@@ -119,7 +119,11 @@ public class AuthorizationInterceptor<I,O> implements Interceptor<I,O> {
                     throw new KasperInvalidAuthorizationException("Only one targetId is Authorized", CoreReasonCode.REQUIRE_AUTHORIZATION);
                 } else {
                     field.setAccessible(true);
-                    targetId = Optional.of(field.get(c));
+                    try {
+                        targetId = Optional.of(field.get(c));
+                    } catch (IllegalAccessException e) {
+                        throw new KasperInvalidAuthorizationException("Failed to retrieve targetId", e, CoreReasonCode.REQUIRE_AUTHORIZATION);
+                    }
                 }
             }
         }

@@ -18,6 +18,6 @@ public interface Interceptor<INPUT, OUTPUT> {
 
     OUTPUT process(final INPUT input,
                    final Context context,
-                   final InterceptorChain<INPUT, OUTPUT> chain) throws Exception;
+                   final InterceptorChain<INPUT, OUTPUT> chain);
 
 }

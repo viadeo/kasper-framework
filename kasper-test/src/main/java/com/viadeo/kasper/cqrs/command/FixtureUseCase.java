@@ -164,13 +164,13 @@ public class FixtureUseCase {
             try {
                 final CommandResponse response1 = getCommandGateway().get().sendCommandAndWaitForAResponse(
                         new TestCreateCommand(kasperId, event.firstName),
-                        getContext()
+                        context
                 );
 
                 if (response1.isOK()) {
                     getCommandGateway().get().sendCommandAndWaitForAResponse(
                             new TestChangeLastNameCommand(kasperId, event.lastName),
-                            getContext()
+                            context
                     );
                 }
 
@@ -437,17 +437,17 @@ public class FixtureUseCase {
     public static class TestCreateUserCommandHandler extends AutowiredCommandHandler<TestCreateUserCommand> {
 
         @Override
-        public CommandResponse handle(TestCreateUserCommand command) {
+        public CommandResponse handle(Context context, TestCreateUserCommand command) {
             try {
                 final CommandResponse response1 = getCommandGateway().sendCommandAndWaitForAResponse(
                         new TestCreateCommand(command.getIdToUse(), command.firstName),
-                        getContext()
+                        context
                 );
 
                 if (response1.isOK()) {
                     return getCommandGateway().sendCommandAndWaitForAResponse(
                             new TestChangeLastNameCommand(command.getIdToUse(), command.lastName),
-                            getContext()
+                            context
                     );
                 } else {
                     return response1;

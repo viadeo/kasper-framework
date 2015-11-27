@@ -31,7 +31,7 @@ public class MeasuredInterceptor<INPUT> implements Interceptor<INPUT, KasperResp
     }
 
     @Override
-    public KasperResponse process(INPUT input, Context context, InterceptorChain<INPUT, KasperResponse> chain) throws Exception {
+    public KasperResponse process(INPUT input, Context context, InterceptorChain<INPUT, KasperResponse> chain) {
         Timer.Context timer = metricRegistry.timer(metricNames.requestsTime).time();
 
         KasperResponse response;

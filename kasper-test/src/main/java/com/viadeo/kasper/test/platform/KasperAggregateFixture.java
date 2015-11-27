@@ -19,12 +19,14 @@ import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import com.viadeo.kasper.core.component.command.repository.BaseEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.SimpleCommandBus;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.GivenWhenThenTestFixture;
@@ -62,6 +64,7 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         this.fixture = new GivenWhenThenTestFixture<>(aggregateClass);
         this.fixture.setReportIllegalStateChange(checkIllegalState);
         this.fixture.registerIgnoredField(AggregateRoot.class, "version");
+        ((SimpleCommandBus)this.fixture.getCommandBus()).setUnitOfWorkFactory(new ContextualizedUnitOfWork.Factory());
 
         this.repository = repository;
 

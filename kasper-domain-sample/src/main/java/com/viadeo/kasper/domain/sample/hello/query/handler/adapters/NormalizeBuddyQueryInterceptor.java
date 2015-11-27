@@ -24,7 +24,7 @@ import com.viadeo.kasper.domain.sample.hello.api.query.GetAllHelloMessagesSentTo
 public class NormalizeBuddyQueryInterceptor implements QueryInterceptor<Query, QueryResult> {
 
     @Override
-    public QueryResponse<QueryResult> process(Query query, Context context, InterceptorChain<Query, QueryResponse<QueryResult>> chain) throws Exception {
+    public QueryResponse<QueryResult> process(Query query, Context context, InterceptorChain<Query, QueryResponse<QueryResult>> chain) {
         Query newQuery = query;
 
         if (GetAllHelloMessagesSentToBuddyQuery.class.isAssignableFrom(query.getClass())) {

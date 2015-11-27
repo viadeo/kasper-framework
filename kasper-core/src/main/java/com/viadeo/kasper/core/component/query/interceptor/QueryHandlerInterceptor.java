@@ -43,9 +43,8 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
             final QUERY query,
             final Context context,
             final InterceptorChain<QUERY, QueryResponse<RESULT>> chain
-    ) throws Exception {
+    ) {
 
-        /* Call the handler */
         QueryResponse<RESULT> ret = null;
 
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME).time();

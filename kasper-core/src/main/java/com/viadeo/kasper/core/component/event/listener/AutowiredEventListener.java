@@ -9,10 +9,7 @@ package com.viadeo.kasper.core.component.event.listener;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.api.exception.KasperException;
-import com.viadeo.kasper.core.context.CurrentContext;
-import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.EventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -28,16 +25,7 @@ public abstract class AutowiredEventListener<E extends Event>
     implements WirableEventListener<E>
 {
 
-    private EventBus eventBus;
-
-    // ------------------------------------------------------------------------
-
-    public Context getContext() {
-        if (CurrentContext.value().isPresent()) {
-            return CurrentContext.value().get();
-        }
-        throw new KasperException("Unexpected condition : no context was set during event handling");
-    }
+    private KasperEventBus eventBus;
 
 	// ------------------------------------------------------------------------
 
@@ -46,31 +34,25 @@ public abstract class AutowiredEventListener<E extends Event>
      *
      * @param event The event
      */
-    public void publish(final Event event) {
+    public void publish(final Context context, final Event event) {
         checkNotNull(event, "The specified event must be non null");
+        checkNotNull(context, "The specified context must be non null");
         checkState(null != eventBus, "Unable to publish the specified event : the event bus is null");
 
-        org.axonframework.domain.EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
-        this.eventBus.publish(eventMessage);
+        this.eventBus.publish(context, event);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     public EventResponse handle(final EventMessage<E> message) {
-        CurrentContext.set(message.getContext());
-
-        try {
-            return super.handle(message);
-        } finally {
-            CurrentContext.clear();
-        }
+        return super.handle(message);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public void setEventBus(final EventBus eventBus) {
+    public void setEventBus(final KasperEventBus eventBus) {
         this.eventBus = checkNotNull(eventBus);
     }
 }

@@ -44,7 +44,7 @@ public class KasperEventBusUTest {
     @Test
     public void publish_an_event_should_mark_a_metric() {
         // When
-        eventBus.publish(new TestDomain.TestEvent());
+        eventBus.publish(Contexts.empty(), new TestDomain.TestEvent());
 
         // Then
         verify(metricRegistry).meter(expectedMetricName);
@@ -62,9 +62,9 @@ public class KasperEventBusUTest {
     }
 
     @Test
-    public void publishEvent_should_mark_a_metric() throws Exception {
+    public void publish_should_mark_a_metric() throws Exception {
         // When
-        eventBus.publishEvent(Contexts.empty(), new TestDomain.TestEvent());
+        eventBus.publish(Contexts.empty(), new TestDomain.TestEvent());
 
         // Then
         verify(metricRegistry).meter(expectedMetricName);

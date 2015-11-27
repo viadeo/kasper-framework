@@ -26,6 +26,7 @@ import com.viadeo.kasper.core.component.command.CommandHandler;
 import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.AutowiredRepository;
 import com.viadeo.kasper.core.component.command.repository.Repository;
@@ -34,12 +35,10 @@ import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -51,7 +50,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("serial")
 public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
-    private static final Integer TOTAL_VERIFY_CALLS = 6;
+    private static final Integer TOTAL_VERIFY_CALLS = 5;
 
     // -- Test components -----------------------------------------------------
 
@@ -65,7 +64,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public static class ContextTestHandler extends AutowiredEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
         public CommandResponse handle(final ContextTestCommand command) {
 
-            StaticChecker.verify(CurrentContext.value().get());
+            StaticChecker.verify(ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext().get());
 
             final Repository<KasperID,ContextTestAGR> repo = this.getRepository();
 
@@ -88,21 +87,20 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
         public ContextTestEvent(final KasperID id) {
             super(id);
-            StaticChecker.verify(CurrentContext.value().get());
         }
     }
 
     @XKasperConcept(domain = ContextTestDomain.class, label = "test agr")
     public static class ContextTestAGR extends Concept {
         public ContextTestAGR(final KasperID id) {
-            StaticChecker.verify(CurrentContext.value().get());
+            StaticChecker.verify(ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext().get());
             apply(new ContextTestEvent(id));
         }
 
         @EventHandler
         protected void handlerContextTestEvent(final ContextTestEvent event) {
             this.setId(event.getEntityId());
-            StaticChecker.verify(CurrentContext.value().get());
+            StaticChecker.verify(ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext().get());
         }
     }
 
@@ -110,13 +108,13 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public static class ContextTestRepository extends AutowiredRepository<KasperID,ContextTestAGR> {
         @Override
         protected Optional<ContextTestAGR> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-            StaticChecker.verify(CurrentContext.value().get());
+            StaticChecker.verify(ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext().get());
             return Optional.absent();
         }
 
         @Override
         protected void doSave(final ContextTestAGR aggregate) {
-            StaticChecker.verify(CurrentContext.value().get());
+            StaticChecker.verify(ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext().get());
         }
 
         @Override

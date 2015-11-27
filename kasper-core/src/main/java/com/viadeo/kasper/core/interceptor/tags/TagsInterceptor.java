@@ -36,7 +36,7 @@ public class TagsInterceptor<I,O> implements Interceptor<I,O> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public O process(I c, Context context, InterceptorChain<I, O> chain) throws Exception {
+    public O process(I c, Context context, InterceptorChain<I, O> chain) {
         checkNotNull(context);
 
         final Set<String> additionalTags = TagsHolder.getTags(target);

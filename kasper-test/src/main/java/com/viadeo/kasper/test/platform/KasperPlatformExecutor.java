@@ -80,7 +80,7 @@ public class KasperPlatformExecutor implements
     public KasperPlatformListenedEventsValidator when(final Event event, final Context context) {
         Exception exception = null;
         try {
-            platform.get().getEventBus().publishEvent(context, event);
+            platform.get().getEventBus().publish(context, event);
         } catch (final Exception e) {
             exception = e;
         }

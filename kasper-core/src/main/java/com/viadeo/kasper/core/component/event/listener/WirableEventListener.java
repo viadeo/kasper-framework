@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.component.event.listener;
 
 import com.viadeo.kasper.api.component.event.Event;
-import org.axonframework.eventhandling.EventBus;
+import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
 
 /**
  * A class implements this interface in order to have the capability to be auto wired with the platform components.
@@ -22,6 +22,6 @@ public interface WirableEventListener<EVENT extends Event> extends EventListener
      * Wires an event bus on this <code>EventListener</code> instance.
      * @param eventBus an event bus
      */
-    void setEventBus(EventBus eventBus);
+    void setEventBus(KasperEventBus eventBus);
 
 }

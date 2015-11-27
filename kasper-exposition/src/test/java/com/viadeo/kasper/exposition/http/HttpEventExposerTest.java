@@ -149,7 +149,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         client().emit(Contexts.empty(), event);
 
         // Then
-        verify(eventBus).publishEvent(any(Context.class), refEq(event));
+        verify(eventBus).publish(any(Context.class), refEq(event));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         client().emit(Contexts.empty(), event);
 
         // Then
-        verify(eventBus).publishEvent(any(Context.class), refEq(event));
+        verify(eventBus).publish(any(Context.class), refEq(event));
     }
 
     @Test

@@ -45,7 +45,7 @@ public class AuthenticationInterceptor<I, O> implements Interceptor<I, O> {
     }
 
     @Override
-    public O process(final I c, final Context context, final InterceptorChain<I, O> chain) throws Exception {
+    public O process(final I c, final Context context, final InterceptorChain<I, O> chain) {
         checkAuthentication(context);
         return enrichResponseWithToken(chain.next(c, context));
     }

@@ -9,14 +9,15 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.InstrumentedExecutorService;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.core.component.event.interceptor.EventHandlerInterceptorFactory;
-import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
@@ -31,9 +32,7 @@ import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 
@@ -260,38 +259,6 @@ public class KasperEventBus extends ClusteringEventBus {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void publish(final EventMessage... messages) {
-        final EventMessage[] newMessages;
-
-        /* Add the context to messages if required */
-        if (CurrentContext.value().isPresent()) {
-            newMessages = new EventMessage[messages.length];
-            for (int i = 0 ; i < messages.length ; i++) {
-                final EventMessage message = messages[i];
-                if ( ! message.getMetaData().containsKey(Context.METANAME)) {
-                    final Map<String, Object> metaData = Maps.newHashMap();
-                    metaData.put(Context.METANAME, CurrentContext.value().get());
-                    newMessages[i] = message.andMetaData(metaData);
-                } else {
-                    newMessages[i] = message;
-                }
-            }
-        } else {
-            newMessages = messages;
-        }
-
-        /* Publish to Axon bus implementation */
-        this.publishToSuper(newMessages);
-
-        /* Notice handlers about event publication */
-        for (final EventMessage message : newMessages) {
-            this.noticePublicationHandlers(message);
-        }
-
-    }
-
     @VisibleForTesting
     void publishToSuper(final EventMessage... messages) {
         checkNotNull(messages);
@@ -302,26 +269,33 @@ public class KasperEventBus extends ClusteringEventBus {
         }
     }
 
-    public void publish(final Event event) {
-        this.publish(GenericEventMessage.asEventMessage(event));
+    @SuppressWarnings("unchecked")
+    @Override
+    public void publish(final EventMessage... messages) {
+        checkNotNull(messages);
+        for (final EventMessage message : messages) {
+            publish(
+                    Objects.firstNonNull((Context) message.getMetaData().get(Context.METANAME), Contexts.empty()),
+                    (Event) message.getPayload()
+            );
+        }
     }
 
-    public void publishEvent(final Context context, final Event event) throws Exception{
-        final Optional<InterceptorChain<Event, Void>> optionalRequestChain =
-                getInterceptorChain(event.getClass());
+    public void publish(final Context context, final Event event) {
+        checkNotNull(context);
+        checkNotNull(event);
+        final Optional<InterceptorChain<Event, Void>> optionalRequestChain = getInterceptorChain(event.getClass());
         try {
             LOGGER.info("Call actor chain for Event " + event.getClass().getSimpleName());
             optionalRequestChain.get().next(event, context);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
+            LOGGER.error("Failed to publish event, <event={}> <context={}>", event, context, e);
             throw e;
         }
-
     }
 
-    protected Optional<InterceptorChain<Event, Void>> getInterceptorChain(
-            final Class<? extends Event> eventClass) {
-        final Optional<InterceptorChain<Event, Void>> chainOptional =
-                interceptorChainRegistry.get(eventClass);
+    protected Optional<InterceptorChain<Event, Void>> getInterceptorChain(final Class<? extends Event> eventClass) {
+        final Optional<InterceptorChain<Event, Void>> chainOptional = interceptorChainRegistry.get(eventClass);
 
         if (chainOptional.isPresent()) {
             return chainOptional;
@@ -335,15 +309,13 @@ public class KasperEventBus extends ClusteringEventBus {
                     protected Interceptor<Event, Void> getEventHandlerInterceptor() {
                         return new Interceptor<Event, Void>() {
                             @Override
-                            public Void process(final Event event, final Context context, final InterceptorChain<Event, Void> chain) throws Exception {
-                                thisEventBus.publish(
-                                        new GenericEventMessage<>(
-                                                checkNotNull(event),
-                                                new HashMap<String, Object>() {{
-                                                    this.put(Context.METANAME, context);
-                                                }}
-                                        )
+                            public Void process(final Event event, final Context context, final InterceptorChain<Event, Void> chain) {
+                                GenericEventMessage<Event> message = new GenericEventMessage<>(
+                                        checkNotNull(event),
+                                        ImmutableMap.<String, Object>builder().put(Context.METANAME, context).build()
                                 );
+                                thisEventBus.publishToSuper(message);
+                                thisEventBus.noticePublicationHandlers(message);
                                 return null;
                             }
                         };

@@ -134,7 +134,7 @@ public class HttpEventExposer extends HttpExposer<Event, EventListener, KasperRe
 
     @Override
     public KasperResponse doHandle(final Event event, final Context context) throws Exception {
-        eventBus.publishEvent(context, event);
+        eventBus.publish(context, event);
         return new KasperResponse();
     }
 
