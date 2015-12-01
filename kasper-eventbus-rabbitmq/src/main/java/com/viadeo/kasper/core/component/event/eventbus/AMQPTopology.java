@@ -185,44 +185,7 @@ public class AMQPTopology {
         fireCreatedQueue(queue);
 
         final RoutingKeys routingKeys = routingKeysResolver.resolve(eventListener);
-        final Map<String,Binding> bindings = Maps.newHashMap();
-
-        for (final RoutingKeys.RoutingKey routingKey : routingKeys.all()) {
-            final Binding binding = new Binding(queueName, Binding.DestinationType.QUEUE, fullExchangeName, routingKey.getRoute(), new HashMap<String, Object>());
-
-            bindings.put(binding.toString(), binding);
-
-            if (deprecatedEventListener || routingKey.isDeprecated()) {
-                LOGGER.info("Unbinding queue due to deprecated {}, <binding={}>", deprecatedEventListener ? "event listener" : "handling method", binding);
-                try {
-                    admin.removeBinding(binding);
-                    fireDeletedBinding(binding);
-                } catch (Throwable t) {
-                    LOGGER.error("Failed to unbind queue, <binding={}>", binding);
-                }
-            } else {
-                try {
-                    admin.declareBinding(binding);
-                    fireCreatedBinding(binding);
-                } catch (AmqpIOException e) {
-                    createExchanges(exchangeName, exchangeVersion);
-                    admin.declareBinding(binding);
-                    fireCreatedBinding(binding);
-                }
-            }
-        }
-
-        for (final Binding binding : queueFinder.getQueueBindings(queueName)) {
-            if ( ! bindings.containsKey(binding.toString())) {
-                LOGGER.info("Detected obsolete binding, <binding={}>", binding);
-                try {
-                    admin.removeBinding(binding);
-                    fireDeletedBinding(binding);
-                } catch (Throwable t) {
-                    LOGGER.error("Failed to unbind queue, <binding={}>", binding);
-                }
-            }
-        }
+        createBindings(exchangeName, exchangeVersion, fullExchangeName, queueName, deprecatedEventListener, routingKeys);
 
         return queue;
     }
@@ -247,6 +210,7 @@ public class AMQPTopology {
         final String fullExchangeName = componentNameFormatter.getFullExchangeName(exchangeName, exchangeVersion);
         final String deadLetterExchangeName = componentNameFormatter.getDeadLetterExchangeName(exchangeName, exchangeVersion);
         final String deadLetterQueueName = componentNameFormatter.getDeadLetterQueueName(fullExchangeName, clusterName, eventListener);
+        final boolean deprecatedEventListener = eventListener.getClass().isAnnotationPresent(Deprecated.class);
 
         final Map<String, Object> arguments = ImmutableMap.<String, Object>builder()
                 .putAll(getArguments())
@@ -257,11 +221,51 @@ public class AMQPTopology {
         admin.declareQueue(deadLetterQueue);
         fireCreatedQueue(deadLetterQueue);
 
-        Binding deadLetterBinding = new Binding(deadLetterQueueName, Binding.DestinationType.QUEUE, deadLetterExchangeName, eventListener.getClass().getName(), new HashMap<String, Object>());
-        admin.declareBinding(deadLetterBinding);
-        fireCreatedBinding(deadLetterBinding);
+        final RoutingKeys routingKeys = routingKeysResolver.resolve(eventListener);
+        createBindings(exchangeName, exchangeVersion, deadLetterExchangeName, deadLetterQueueName, deprecatedEventListener, routingKeys);
 
         return deadLetterQueue;
+    }
+
+    private void createBindings(String exchangeName, String exchangeVersion, String deadLetterExchangeName, String deadLetterQueueName, boolean deprecatedEventListener, RoutingKeys routingKeys) {
+        final Map<String,Binding> bindings = Maps.newHashMap();
+
+        for (final RoutingKeys.RoutingKey routingKey : routingKeys.all()) {
+            final Binding binding = new Binding(deadLetterQueueName, Binding.DestinationType.QUEUE, deadLetterExchangeName, routingKey.getRoute(), new HashMap<String, Object>());
+
+            bindings.put(binding.toString(), binding);
+
+            if (deprecatedEventListener || routingKey.isDeprecated()) {
+                LOGGER.info("Unbinding queue due to deprecated {}, <binding={}>", deprecatedEventListener ? "event listener" : "handling method", binding);
+                try {
+                    admin.removeBinding(binding);
+                    fireDeletedBinding(binding);
+                } catch (Throwable t) {
+                    LOGGER.error("Failed to unbind queue, <binding={}>", binding);
+                }
+            } else {
+                try {
+                    admin.declareBinding(binding);
+                    fireCreatedBinding(binding);
+                } catch (AmqpIOException e) {
+                    createExchanges(exchangeName, exchangeVersion);
+                    admin.declareBinding(binding);
+                    fireCreatedBinding(binding);
+                }
+            }
+        }
+
+        for (final Binding binding : queueFinder.getQueueBindings(deadLetterQueueName)) {
+            if ( ! bindings.containsKey(binding.toString())) {
+                LOGGER.info("Detected obsolete binding, <binding={}>", binding);
+                try {
+                    admin.removeBinding(binding);
+                    fireDeletedBinding(binding);
+                } catch (Throwable t) {
+                    LOGGER.error("Failed to unbind queue, <binding={}>", binding);
+                }
+            }
+        }
     }
 
     /**
