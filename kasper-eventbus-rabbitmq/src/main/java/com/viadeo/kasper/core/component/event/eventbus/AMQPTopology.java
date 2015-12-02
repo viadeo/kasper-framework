@@ -257,7 +257,7 @@ public class AMQPTopology {
         admin.declareQueue(deadLetterQueue);
         fireCreatedQueue(deadLetterQueue);
 
-        Binding deadLetterBinding = new Binding(deadLetterQueueName, Binding.DestinationType.QUEUE, deadLetterExchangeName, eventListener.getClass().getName(), new HashMap<String, Object>());
+        Binding deadLetterBinding = new Binding(deadLetterQueueName, Binding.DestinationType.QUEUE, deadLetterExchangeName, eventListener.getHandlerClass().getName(), new HashMap<String, Object>());
         admin.declareBinding(deadLetterBinding);
         fireCreatedBinding(deadLetterBinding);
 
