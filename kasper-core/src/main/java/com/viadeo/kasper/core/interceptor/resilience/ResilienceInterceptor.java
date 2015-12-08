@@ -91,7 +91,7 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
             }.execute();
 
         } catch (final HystrixBadRequestException e) {
-            throw e;
+            throw (RuntimeException) e.getCause();
         }
     }
 

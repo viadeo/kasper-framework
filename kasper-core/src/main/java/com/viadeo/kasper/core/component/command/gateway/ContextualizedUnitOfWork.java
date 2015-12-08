@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.gateway;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.context.Context;
 import org.axonframework.unitofwork.CurrentUnitOfWork;
@@ -22,7 +23,14 @@ public class ContextualizedUnitOfWork extends DefaultUnitOfWork {
     }
 
     public Optional<Context> getContext() {
-        return Optional.of(context);
+        return Optional.fromNullable(context);
+    }
+
+    @VisibleForTesting
+    public static void setAndStartAnUnitOfWorkAsCurrent() {
+        ContextualizedUnitOfWork unitOfWork = new ContextualizedUnitOfWork();
+        unitOfWork.start();
+        CurrentUnitOfWork.set(unitOfWork);
     }
 
     public static ContextualizedUnitOfWork getCurrentUnitOfWork() {
