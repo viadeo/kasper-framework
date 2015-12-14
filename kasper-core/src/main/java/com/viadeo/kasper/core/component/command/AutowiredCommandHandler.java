@@ -10,9 +10,12 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperCommandException;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.CommandGateway;
+import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
 import com.viadeo.kasper.core.component.command.repository.Repository;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -50,9 +53,16 @@ public abstract class AutowiredCommandHandler<C extends Command>
      * @param event The event to be scheduled for publication to the unit of work
      */
     public void publish(final Event event) {
-        final EventMessage axonMessage = GenericEventMessage.asEventMessage(event);
 
         if (CurrentUnitOfWork.isStarted()) {
+            Optional<Context> contextOptional = ContextualizedUnitOfWork.getCurrentUnitOfWork().getContext();
+
+            final EventMessage axonMessage = new GenericEventMessage<>(
+                    event,
+                    contextOptional.isPresent() ?
+                            contextOptional.get().child().build().asMetaDataMap() : Contexts.empty().asMetaDataMap()
+            );
+
             CurrentUnitOfWork.get().publishEvent(axonMessage, eventBus);
         } else {
             throw new KasperCommandException("UnitOfWork is not started when trying to publish event");
