@@ -1,5 +1,25 @@
 # Kasper Releases #
 
+### Version 1.2.0-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.2-SNAPSHOT~~))
+
+* [Pull 354](https://github.com/viadeo/kasper-framework/pull/354) Use Gradle 2.9
+* [Pull 356](https://github.com/viadeo/kasper-framework/pull/356) Corrected the binding for our dead-letter queues related to a Saga
+* [Pull 349](https://github.com/viadeo/kasper-framework/pull/349) Extract Spring implementation in dedicated modules
+* [Pull 345](https://github.com/viadeo/kasper-framework/pull/345) Improved Repository component
+* [Pull 347](https://github.com/viadeo/kasper-framework/pull/347) Improved Plugin + Provided new implementation of plugins
+* Defines a name to the thread in charge to consume events from bus
+* Removes the CurrentContext
+* Defined a default id format : UUID
+
+### Version 1.1.2 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.2~~))
+
+* [Pull 353](https://github.com/viadeo/kasper-framework/pull/353) Added possibility to control the propagation of metrics provided by Hystrix
+* [Pull 352](https://github.com/viadeo/kasper-framework/pull/352) Removed duplicate metrics
+
+### Version 1.1.1 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.1~~))
+
+* Defined a unique thread pool key per service used by Hystrix
+
 ### Version 1.1.0 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.1.0~~))
 
 * [Pull 339](https://github.com/viadeo/kasper-framework/pull/339) Added new implementation of EventListener allowing to listen different events.
