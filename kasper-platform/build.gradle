@@ -11,14 +11,14 @@ dependencies {
     // Projects
     compile project(':kasper-core')
 
-    testCompile project(':kasper-test')
-
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
+    compile libraries.COMMONS_COLLECTIONS
 
     // Only used for classes scanner
     compile libraries.SPRING_CONTEXT
 
+    testCompile project(':kasper-test')
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
 }

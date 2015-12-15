@@ -39,13 +39,13 @@ import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.platform.plugin.Plugin;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.axonframework.domain.DomainEventMessage;
 import org.axonframework.domain.DomainEventStream;
 import org.axonframework.domain.SimpleDomainEventStream;
 import org.axonframework.eventstore.EventStore;
 
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -97,7 +97,7 @@ public class PlatformWirer {
                 // FIXME quick and dirty fix to avoid memory leaks
                 new EventStore() {
 
-                    private Queue<AggregateTypedEventMessage> queue = new ArrayBlockingQueue<>(10);
+                    private CircularFifoBuffer queue = new CircularFifoBuffer(10);
 
 
                     @Override
@@ -113,7 +113,8 @@ public class PlatformWirer {
                     @Override
                     public synchronized DomainEventStream readEvents(String type, Object identifier) {
                         ArrayList<DomainEventMessage<?>> selection = new ArrayList<>();
-                        for (AggregateTypedEventMessage typedMessage : queue) {
+                        for (Object o : queue) {
+                            AggregateTypedEventMessage typedMessage = (AggregateTypedEventMessage)o;
                             if (typedMessage.type.equals(type)) {
                                 DomainEventMessage<?> evMsg = typedMessage.eventMessage;
                                 if (identifier.equals(evMsg.getAggregateIdentifier())) {
