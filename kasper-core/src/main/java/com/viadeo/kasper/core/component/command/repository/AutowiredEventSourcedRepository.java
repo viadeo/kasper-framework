@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class AutowiredEventSourcedRepository<ID extends KasperID, AGR extends AggregateRoot>
         extends BaseEventSourcedRepository<ID,AGR>
-        implements WirableRepository
+        implements WirableEventSourcedRepository
 {
 
     private AxonEventSourcedRepository<ID,AGR> axonEventSourcedRepository;

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.repository;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import org.axonframework.eventhandling.EventBus;
@@ -34,7 +35,7 @@ public abstract class AutowiredRepository<ID extends KasperID, AGR extends Aggre
         this.eventBus = eventBus;
     }
 
-    @Override
+    @VisibleForTesting
     public void setEventStore(final EventStore eventStore) {
         checkNotNull(eventStore);
         this.eventStore.init(eventStore);

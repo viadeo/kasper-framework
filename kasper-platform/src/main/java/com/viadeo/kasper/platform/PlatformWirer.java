@@ -19,8 +19,10 @@ import com.viadeo.kasper.core.component.command.WirableCommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.KasperCommandGateway;
 import com.viadeo.kasper.core.component.command.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.component.command.repository.Repository;
+import com.viadeo.kasper.core.component.command.repository.WirableEventSourcedRepository;
 import com.viadeo.kasper.core.component.command.repository.WirableRepository;
 import com.viadeo.kasper.core.component.event.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.component.event.eventstore.VolatileEventStore;
 import com.viadeo.kasper.core.component.event.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.component.event.listener.CommandEventListener;
 import com.viadeo.kasper.core.component.event.listener.EventListener;
@@ -39,10 +41,6 @@ import com.viadeo.kasper.platform.bundle.DomainBundle;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.platform.plugin.Plugin;
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
-import org.axonframework.domain.DomainEventMessage;
-import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.SimpleDomainEventStream;
 import org.axonframework.eventstore.EventStore;
 
 import java.util.*;
@@ -69,11 +67,6 @@ public class PlatformWirer {
 
     // ------------------------------------------------------------------------
 
-    static class AggregateTypedEventMessage {
-        String type;
-        DomainEventMessage<?> eventMessage;
-    }
-
     public PlatformWirer(
             final Config config,
             final MetricRegistry metricRegistry,
@@ -93,39 +86,7 @@ public class PlatformWirer {
                 sagaManager,
                 repositoryManager,
                 meta,
-
-                // FIXME quick and dirty fix to avoid memory leaks
-                new EventStore() {
-
-                    private CircularFifoBuffer queue = new CircularFifoBuffer(10);
-
-
-                    @Override
-                    public synchronized void appendEvents(String type, DomainEventStream events) {
-                        while (events.hasNext()) {
-                            AggregateTypedEventMessage obj = new AggregateTypedEventMessage();
-                            obj.type = type;
-                            obj.eventMessage = events.next();
-                            queue.add(obj);
-                        }
-                    }
-
-                    @Override
-                    public synchronized DomainEventStream readEvents(String type, Object identifier) {
-                        ArrayList<DomainEventMessage<?>> selection = new ArrayList<>();
-                        for (Object o : queue) {
-                            AggregateTypedEventMessage typedMessage = (AggregateTypedEventMessage)o;
-                            if (typedMessage.type.equals(type)) {
-                                DomainEventMessage<?> evMsg = typedMessage.eventMessage;
-                                if (identifier.equals(evMsg.getAggregateIdentifier())) {
-                                    selection.add(typedMessage.eventMessage);
-                                }
-                            }
-                        }
-
-                        return new SimpleDomainEventStream(selection);
-                    }
-                }
+                new VolatileEventStore(10)
         );
     }
 
@@ -191,8 +152,12 @@ public class PlatformWirer {
         for (final Repository repository : bundle.getRepositories()) {
             if (repository instanceof WirableRepository) {
                 ((WirableRepository)repository).setEventBus(eventBus);
-                ((WirableRepository)repository).setEventStore(eventStore);
             }
+
+            if (repository instanceof WirableEventSourcedRepository) {
+                ((WirableEventSourcedRepository)repository).setEventStore(eventStore);
+            }
+
             repositoryManager.register(repository);
         }
 

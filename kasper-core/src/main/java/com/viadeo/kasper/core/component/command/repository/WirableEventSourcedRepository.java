@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command.repository;
 
-import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventstore.EventStore;
 
 /**
@@ -14,14 +13,11 @@ import org.axonframework.eventstore.EventStore;
  *
  * @see Repository
  */
-public interface WirableRepository {
+public interface WirableEventSourcedRepository extends WirableRepository {
 
     /**
-     * Wires an event bus on this <code>Repository</code> instance.
-     * @param eventBus an event bus
+     * Wires an event store on this <code>Repository</code> instance.
+     * @param eventStore an event bus
      */
-    void setEventBus(EventBus eventBus);
-
-
-
+    void setEventStore(EventStore eventStore);
 }

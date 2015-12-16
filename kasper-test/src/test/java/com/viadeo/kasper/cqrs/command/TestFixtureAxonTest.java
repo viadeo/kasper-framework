@@ -15,9 +15,7 @@ import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
-import com.viadeo.kasper.core.component.command.repository.AutowiredEventSourcedRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.component.command.repository.WirableRepository;
+import com.viadeo.kasper.core.component.command.repository.*;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.commandhandling.SimpleCommandBus;
 import org.axonframework.test.FixtureConfiguration;
@@ -70,8 +68,16 @@ public class TestFixtureAxonTest {
         ((SimpleCommandBus)this.fixture.getCommandBus()).setUnitOfWorkFactory(new ContextualizedUnitOfWork.Factory());
 
         if (WirableRepository.class.isAssignableFrom(this.testRepository.getClass())) {
-            ((WirableRepository) this.testRepository).setEventStore(fixture.getEventStore());
             ((WirableRepository) this.testRepository).setEventBus(fixture.getEventBus());
+        }
+
+        if (WirableEventSourcedRepository.class.isAssignableFrom(this.testRepository.getClass())) {
+            ((WirableEventSourcedRepository) this.testRepository).setEventStore(fixture.getEventStore());
+        }
+
+        // special case for which we attach an event store in order to apply our assertions
+        if (AutowiredRepository.class.isAssignableFrom(this.testRepository.getClass())) {
+            ((AutowiredRepository)this.testRepository).setEventStore(fixture.getEventStore());
         }
 
         // Register the update handler

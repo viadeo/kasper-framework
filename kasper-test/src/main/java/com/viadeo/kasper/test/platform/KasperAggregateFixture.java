@@ -20,9 +20,7 @@ import com.viadeo.kasper.core.component.command.RepositoryManager;
 import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
 import com.viadeo.kasper.core.component.command.gateway.AxonCommandHandler;
 import com.viadeo.kasper.core.component.command.gateway.ContextualizedUnitOfWork;
-import com.viadeo.kasper.core.component.command.repository.BaseEventSourcedRepository;
-import com.viadeo.kasper.core.component.command.repository.Repository;
-import com.viadeo.kasper.core.component.command.repository.WirableRepository;
+import com.viadeo.kasper.core.component.command.repository.*;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import org.axonframework.commandhandling.CommandBus;
@@ -69,8 +67,16 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         this.repository = repository;
 
         if (WirableRepository.class.isAssignableFrom(this.repository.getClass())) {
-            ((WirableRepository) this.repository).setEventStore(fixture.getEventStore());
             ((WirableRepository) this.repository).setEventBus(fixture.getEventBus());
+        }
+
+        if (WirableEventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
+            ((WirableEventSourcedRepository) this.repository).setEventStore(fixture.getEventStore());
+        }
+
+        // special case for which we attach an event store in order to apply our assertions
+        if (AutowiredRepository.class.isAssignableFrom(this.repository.getClass())) {
+            ((AutowiredRepository)this.repository).setEventStore(fixture.getEventStore());
         }
 
         this.repositoryManager = new DefaultRepositoryManager();
