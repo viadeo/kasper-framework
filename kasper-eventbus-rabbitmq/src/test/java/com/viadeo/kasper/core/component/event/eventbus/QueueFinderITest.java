@@ -1,7 +1,12 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.codahale.metrics.MetricRegistry;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.typesafe.config.Config;
+import com.viadeo.kasper.spring.core.KasperConfiguration;
+import com.viadeo.kasper.spring.core.KasperContextConfiguration;
+import com.viadeo.kasper.spring.core.KasperIDConfiguration;
+import com.viadeo.kasper.spring.core.KasperObjectMapperConfiguration;
 import io.github.fallwizard.rabbitmq.mgmt.RabbitMgmtService;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +23,13 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
-        classes = AMQPClusterITest.TestConfiguration.class
+        classes = {
+                KasperConfiguration.class,
+                KasperContextConfiguration.class,
+                KasperIDConfiguration.class,
+                KasperObjectMapperConfiguration.class,
+                MetricRegistry.class
+        }
 )
 public class QueueFinderITest {
 
