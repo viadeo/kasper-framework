@@ -12,6 +12,10 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQConfiguration;
 import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusConfiguration;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.spring.core.KasperConfiguration;
+import com.viadeo.kasper.spring.core.KasperContextConfiguration;
+import com.viadeo.kasper.spring.core.KasperIDConfiguration;
+import com.viadeo.kasper.spring.core.KasperObjectMapperConfiguration;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +39,12 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        AMQPClusterITest.TestConfiguration.class,
-        RabbitMQConfiguration.class
+        KasperConfiguration.class,
+        KasperContextConfiguration.class,
+        KasperIDConfiguration.class,
+        KasperObjectMapperConfiguration.class,
+        RabbitMQConfiguration.class,
+        MetricRegistry.class
 })
 @ActiveProfiles(profiles = "rabbitmq")
 public class KasperEventBusITest {

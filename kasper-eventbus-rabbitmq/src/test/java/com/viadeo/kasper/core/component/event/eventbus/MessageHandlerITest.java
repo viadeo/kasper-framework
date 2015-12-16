@@ -8,6 +8,10 @@ import com.viadeo.kasper.core.component.event.eventbus.spring.RabbitMQEventBusCo
 import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.listener.EventMessage;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.spring.core.KasperConfiguration;
+import com.viadeo.kasper.spring.core.KasperContextConfiguration;
+import com.viadeo.kasper.spring.core.KasperIDConfiguration;
+import com.viadeo.kasper.spring.core.KasperObjectMapperConfiguration;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.After;
 import org.junit.Before;
@@ -33,7 +37,11 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        AMQPClusterITest.TestConfiguration.class,
+        KasperConfiguration.class,
+        KasperContextConfiguration.class,
+        KasperIDConfiguration.class,
+        KasperObjectMapperConfiguration.class,
+        MetricRegistry.class,
         RabbitMQConfiguration.class,
         RabbitMQEventBusConfiguration.AmqpClusterConfiguration.class
 })
