@@ -29,7 +29,7 @@ import java.util.List;
 @Configuration
 public class SagaConfiguration {
 
-    @Bean(initMethod = "initialize", destroyMethod = "shutdown")
+    @Bean
     public Scheduler stepScheduler(final ObjectMapper objectMapper, final ApplicationContext applicationContext, final SagaManager sagaManager) throws SchedulerException {
         final SchedulerFactory sf = new StdSchedulerFactory();
         return new MethodInvocationSpringScheduler(objectMapper, sf.getScheduler(), sagaManager);
