@@ -112,15 +112,15 @@ public class EventMessageHandler implements ChannelAwareMessageListener {
 
             case SUCCESS:
             case OK:
-                logger.debug("Successfully handled the event message ({}) by '{}'", eventMessage.getIdentifier(), eventListener.getClass().getSimpleName());
+                logger.debug("Successfully handled the event message ({}) by '{}'", eventMessage.getIdentifier(), eventListener.getName());
                 channel.basicAck(deliveryTag, false);
                 break;
 
             case ERROR:
                 if (reason.getException().isPresent()) {
-                    logger.warn("Failed to handle the event message ({}) by '{}' : {}", eventMessage.getIdentifier(), eventListener.getClass().getSimpleName(), reason.getMessages(), reason.getException().get());
+                    logger.warn("Failed to handle the event message ({}) by '{}' : {}", eventMessage.getIdentifier(), eventListener.getName(), reason.getMessages(), reason.getException().get());
                 } else {
-                    logger.warn("Failed to handle the event message ({}) by '{}' : {}", eventMessage.getIdentifier(), eventListener.getClass().getSimpleName(), reason.getMessages());
+                    logger.warn("Failed to handle the event message ({}) by '{}' : {}", eventMessage.getIdentifier(), eventListener.getName(), reason.getMessages());
                 }
                 channel.basicAck(deliveryTag, false);
                 break;
@@ -131,7 +131,7 @@ public class EventMessageHandler implements ChannelAwareMessageListener {
                 final Integer nbAttempt = getIncrementedNbAttempt(message);
                 final DateTime time = new DateTime(message.getMessageProperties().getTimestamp());
 
-                LOGGER.debug("Failed to attempt to handle the event message ({}) : {} time(s) by '{}'", eventMessage.getIdentifier(), nbAttempt, eventListener.getClass().getSimpleName());
+                LOGGER.debug("Failed to attempt to handle the event message ({}) : {} time(s) by '{}'", eventMessage.getIdentifier(), nbAttempt, eventListener.getName());
 
                 if (response.isTemporary()) {
                     if ( nbAttempt >= maxAttempts) {
