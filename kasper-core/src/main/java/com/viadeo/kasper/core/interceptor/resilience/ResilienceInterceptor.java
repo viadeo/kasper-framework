@@ -72,12 +72,7 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
                     try {
                         return chain.next(input, context);
                     } catch (final Exception e) {
-                        try {
-                            policy.manage(e);
-                        } catch (final Exception pe) {
-                            exception = pe;
-                            throw pe;
-                        }
+                        policy.manage(e);
                         exception = e;
                         throw e;
                     }
