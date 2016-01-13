@@ -57,13 +57,17 @@ public class SagaManager {
         final SagaFactory factory = checkNotNull(sagaFactoryProvider.getOrCreate(saga));
         final SagaIdReconciler reconciler = saga.getIdReconciler().or(SagaIdReconciler.NONE);
         final Set<Step> steps = operationProcessor.process(sagaClass, reconciler);
-        final SagaExecutor<SAGA> executor = new SagaExecutor<>(sagaClass, steps, factory, repository);
+        final SagaExecutor<SAGA> executor = createSagaExecutor(sagaClass, factory, steps);
 
         descriptors.put(sagaClass, executor);
 
         repository.initStoreFor(sagaClass);
 
         return executor;
+    }
+
+    protected <SAGA extends Saga> SagaExecutor<SAGA> createSagaExecutor(Class<SAGA> sagaClass, SagaFactory factory, Set<Step> steps) {
+        return new SagaExecutor<>(sagaClass, steps, factory, repository);
     }
 
     public Optional<SagaExecutor> get(final Class<? extends Saga> sagaClass) {
