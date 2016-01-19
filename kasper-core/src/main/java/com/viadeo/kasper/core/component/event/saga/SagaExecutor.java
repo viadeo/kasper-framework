@@ -88,14 +88,7 @@ public class SagaExecutor<SAGA extends Saga> {
 
             final Saga saga = optionalSaga.get();
 
-            try {
-                method.invoke(saga);
-            } catch (final IllegalAccessException | InvocationTargetException e) {
-                LOGGER.error(
-                        "Unexpected error in executing saga method, <method={}> <saga={}> <identifier={}>",
-                        methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier, e
-                );
-            }
+            invokeMethod(sagaIdentifier, methodName, method, saga);
 
             persistSaga(sagaIdentifier, saga, endAfterExecution);
 
@@ -134,16 +127,34 @@ public class SagaExecutor<SAGA extends Saga> {
 
         if (optionalSaga.isPresent()) {
             final Saga saga = optionalSaga.get();
-            try {
-                step.invoke(saga, context, event);
-            } catch (Exception e) {
-                throw new SagaExecutionException(
-                        String.format("Unexpected error in invoking step, <step=%s> <optionalSaga=%s> <identifier=%s>", step.name(), step.getSagaClass(), sagaIdentifier),
-                        e
-                );
-            }
-
+            invokeStep(context, event, step, sagaIdentifier, saga);
             persistSaga(step, sagaIdentifier, saga);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected void invokeMethod(Object sagaIdentifier, String methodName, Method method, Saga saga) {
+        try {
+            method.invoke(saga);
+        } catch (final IllegalAccessException | InvocationTargetException e) {
+            LOGGER.error(
+                    "Unexpected error in executing saga method, <method={}> <saga={}> <identifier={}>",
+                    methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier, e
+            );
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected void invokeStep(Context context, Event event, Step step, Object sagaIdentifier, Saga saga) {
+        try {
+            step.invoke(saga, context, event);
+        } catch (Exception e) {
+            throw new SagaExecutionException(
+                    String.format("Unexpected error in invoking step, <step=%s> <saga=%s> <identifier=%s>", step.name(), step.getSagaClass(), sagaIdentifier),
+                    e
+            );
         }
     }
 
