@@ -48,11 +48,6 @@ public class BaseSagaRepositoryUTest {
             public void delete(Class<? extends Saga> sagaClass, Object identifier) throws SagaPersistenceException {
 
             }
-
-            @Override
-            public void initStoreFor(Class<? extends Saga> sagaClass) {
-
-            }
         });
     }
 

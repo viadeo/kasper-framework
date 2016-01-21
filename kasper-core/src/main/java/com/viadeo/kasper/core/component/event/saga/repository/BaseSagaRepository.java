@@ -80,6 +80,11 @@ public abstract class BaseSagaRepository implements SagaRepository {
         doSave(saga.getClass(), identifier, properties);
     }
 
+    @Override
+    public void initStoreFor(final Class<? extends Saga> sagaClass) {
+        sagaMapper.getOrCreateMappingDescriptor(sagaClass);
+    }
+
     // ------------------------------------------------------------------------
 
     public abstract Map<String, String> doLoad(Class<? extends Saga> sagaClass, Object identifier) throws SagaPersistenceException;

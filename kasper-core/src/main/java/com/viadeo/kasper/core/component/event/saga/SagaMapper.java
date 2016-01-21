@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.component.event.saga;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaInstantiationException;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -34,6 +36,8 @@ public class SagaMapper {
 
     public static final String X_KASPER_SAGA_CLASS = "X-KASPER-SAGA-CLASS";
     public static final String X_KASPER_SAGA_IDENTIFIER = "X-KASPER-SAGA-IDENTIFIER";
+
+    private static final Map<Class,MappingDescriptor> MAPPING_DESCRIPTOR_BY_SAGA_CLASS = Maps.newHashMap();
 
     private final ObjectMapper mapper;
     private final SagaFactoryProvider sagaFactoryProvider;
@@ -63,16 +67,24 @@ public class SagaMapper {
         }
 
         final SAGA saga = optionalSagaFactory.get().create(identifier, sagaClass);
+        final MappingDescriptor mappingDescriptor = getOrCreateMappingDescriptor(saga.getClass());
 
         for (final Entry<String, String> entry : properties.entrySet()) {
-            try {
-                final Field field = sagaClass.getDeclaredField(entry.getKey());
-                field.setAccessible(Boolean.TRUE);
-                field.set(saga, mapper.readValue(entry.getValue(), field.getType()));
+            final Optional<Field> fieldOptional = mappingDescriptor.getFieldByName(entry.getKey());
 
-            } catch (final IllegalAccessException | NoSuchFieldException | IOException e) {
+            if (fieldOptional.isPresent()) {
+                try {
+                    final Field field = fieldOptional.get();
+                    field.setAccessible(Boolean.TRUE);
+                    field.set(saga, mapper.readValue(entry.getValue(), field.getType()));
+
+                } catch (final IllegalAccessException | IOException e) {
+                    LOGGER.error("Failed to restore property '{}' to a saga instance, <saga={}> <identifier={}> <propertyValue={}>",
+                            entry.getKey(), saga.getClass(), identifier, entry.getValue(), e);
+                }
+            } else {
                 LOGGER.error("Failed to restore property '{}' to a saga instance, <saga={}> <identifier={}> <propertyValue={}>",
-                        entry.getKey(), saga.getClass(), identifier, entry.getValue(), e);
+                        entry.getKey(), saga.getClass(), identifier, entry.getValue());
             }
         }
 
@@ -92,25 +104,23 @@ public class SagaMapper {
                     X_KASPER_SAGA_IDENTIFIER, saga.getClass(), identifier, e);
         }
 
-        for (final Field field : saga.getClass().getDeclaredFields()) {
-            field.setAccessible(Boolean.TRUE);
+        final MappingDescriptor mappingDescriptor = getOrCreateMappingDescriptor(saga.getClass());
 
-            if ( ! field.getName().startsWith("$") && (Serializable.class.isAssignableFrom(field.getType()) || field.getType().isPrimitive())) {
-                Object value = null;
+        for (final Field field : mappingDescriptor.getFields()) {
+            Object value = null;
+            try {
+                value = field.get(saga);
+            } catch (final IllegalAccessException e) {
+                LOGGER.error("Failed to extract property '{}' from a saga, <saga={}> <identifier={}>",
+                        field.getName(), saga.getClass(), identifier, e);
+            }
+
+            if (null != value) {
                 try {
-                    value = field.get(saga);
-                } catch (final IllegalAccessException e) {
-                    LOGGER.error("Failed to extract property '{}' from a saga, <saga={}> <identifier={}>",
+                    properties.put(field.getName(), mapper.writeValueAsString(value));
+                } catch (JsonProcessingException e) {
+                    LOGGER.error("Failed to serialize property '{}' from a saga, <saga={}> <identifier={}>",
                             field.getName(), saga.getClass(), identifier, e);
-                }
-
-                if (null != value) {
-                    try {
-                        properties.put(field.getName(), mapper.writeValueAsString(value));
-                    } catch (JsonProcessingException e) {
-                        LOGGER.error("Failed to serialize property '{}' from a saga, <saga={}> <identifier={}>",
-                                field.getName(), saga.getClass(), identifier, e);
-                    }
                 }
             }
         }
@@ -118,4 +128,52 @@ public class SagaMapper {
         return properties;
     }
 
+    public MappingDescriptor getOrCreateMappingDescriptor(final Class<? extends Saga> sagaClass) {
+        final List<Field> fields = Lists.newArrayList();
+
+        MappingDescriptor mappingDescriptor = MAPPING_DESCRIPTOR_BY_SAGA_CLASS.get(sagaClass);
+
+        if (mappingDescriptor == null) {
+            for (final Field field : sagaClass.getDeclaredFields()) {
+                field.setAccessible(Boolean.TRUE);
+
+                if ( ! field.getName().startsWith("$") && (Serializable.class.isAssignableFrom(field.getType()) || field.getType().isPrimitive())) {
+                    fields.add(field);
+                }
+            }
+
+            mappingDescriptor = new MappingDescriptor(sagaClass, fields);
+            MAPPING_DESCRIPTOR_BY_SAGA_CLASS.put(sagaClass, mappingDescriptor);
+        }
+
+        return mappingDescriptor;
+    }
+
+    // ------------------------------------------------------------------------
+
+    private static class MappingDescriptor {
+
+        private final Class reference;
+        private final Map<String,Field> fieldsByName;
+
+        private MappingDescriptor(Class reference, List<Field> fields) {
+            this.reference = reference;
+            this.fieldsByName = Maps.newHashMap();
+            for (Field field : fields) {
+                this.fieldsByName.put(field.getName(), field);
+            }
+        }
+
+        private Class getReference() {
+            return reference;
+        }
+
+        private Optional<Field> getFieldByName(final String name) {
+            return Optional.fromNullable(fieldsByName.get(name));
+        }
+
+        private List<Field> getFields() {
+            return Lists.newArrayList(fieldsByName.values());
+        }
+    }
 }

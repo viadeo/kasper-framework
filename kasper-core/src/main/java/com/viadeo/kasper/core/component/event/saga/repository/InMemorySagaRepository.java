@@ -44,9 +44,4 @@ public class InMemorySagaRepository extends BaseSagaRepository {
         sagas.remove(identifier);
     }
 
-    @Override
-    public void initStoreFor(Class<? extends Saga> sagaClass) {
-
-    }
-
 }
