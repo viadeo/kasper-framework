@@ -75,7 +75,6 @@ public class SagaMapper {
             if (fieldOptional.isPresent()) {
                 try {
                     final Field field = fieldOptional.get();
-                    field.setAccessible(Boolean.TRUE);
                     field.set(saga, mapper.readValue(entry.getValue(), field.getType()));
 
                 } catch (final IllegalAccessException | IOException e) {
