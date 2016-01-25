@@ -31,17 +31,17 @@ public class InMemorySagaRepository extends BaseSagaRepository {
 
     @Override
     public Map<String, String> doLoad(final Class<? extends Saga> sagaClass, final Object identifier) {
-        return sagas.get(identifier);
+        return sagas.get(identifier + sagaClass.getSimpleName());
     }
 
     @Override
     public void doSave(final Class<? extends Saga> sagaClass, final Object identifier, final Map<String, String> sagaProperties) {
-        sagas.put(identifier, sagaProperties);
+        sagas.put(identifier + sagaClass.getSimpleName() , sagaProperties);
     }
 
     @Override
     public void delete(final Class<? extends Saga> sagaClass, final Object identifier) {
-        sagas.remove(identifier);
+        sagas.remove(identifier + sagaClass.getSimpleName() );
     }
 
 }
