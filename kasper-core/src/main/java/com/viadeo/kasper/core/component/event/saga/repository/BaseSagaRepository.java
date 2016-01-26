@@ -6,11 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga.repository;
 
+import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaMapper;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,9 +77,17 @@ public abstract class BaseSagaRepository implements SagaRepository {
         checkNotNull(identifier);
         checkNotNull(saga);
 
+        Timer.Context mappingTimer = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), "mapping-handle-time")).time();
+
         final Map<String, String> properties = sagaMapper.from(identifier, saga);
 
+        mappingTimer.stop();
+
+        Timer.Context savingTimer = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), "saving-handle-time")).time();
+
         doSave(saga.getClass(), identifier, properties);
+
+        savingTimer.stop();
     }
 
     @Override
