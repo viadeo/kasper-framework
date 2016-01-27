@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga;
 
+import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -21,6 +22,7 @@ import com.viadeo.kasper.core.component.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.core.component.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.core.component.event.saga.step.Step;
 import com.viadeo.kasper.core.component.event.saga.step.Steps;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -205,6 +207,7 @@ public class SagaExecutor<SAGA extends Saga> {
 
     protected void persistSaga(final Object sagaIdentifier, final Saga saga, final boolean endSaga) {
         if (endSaga) {
+            Timer.Context endTimer = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), "end-handle-time")).time();
             try {
                 repository.delete(saga.getClass(), sagaIdentifier);
 
@@ -216,7 +219,9 @@ public class SagaExecutor<SAGA extends Saga> {
                         String.format("Unexpected error in deleting saga, <saga=%s> <identifier=%s>", saga.getClass(), sagaIdentifier),
                         e
                 );
-            }
+            } finally {
+                endTimer.stop();
+           }
 
         } else {
             try {
