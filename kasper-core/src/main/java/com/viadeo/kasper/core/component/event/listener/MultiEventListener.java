@@ -168,10 +168,7 @@ public class MultiEventListener extends BaseEventListener<Event> {
             try {
                 return (EventResponse) method.invoke(instance, parameters(context, event));
             } catch (IllegalAccessException | InvocationTargetException e) {
-                return EventResponse.failure(new KasperReason(
-                        CoreReasonCode.INTERNAL_COMPONENT_ERROR,
-                        String.format("Error during handling event by the method '%s', <handler=%s>", method.getName(), instance.getClass().getName())
-                ));
+                return EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
             }
         }
 
