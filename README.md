@@ -1,5 +1,5 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/0da5a8cc1a3a47c392a3fe06649a8c20)](https://www.codacy.com)
-[![Circle CI](https://circleci.com/gh/viadeo/kasper-framework.svg?style=svg)](https://circleci.com/gh/viadeo/kasper-framework)
+[![Circle CI](https://circleci.com/gh/viadeo/kasper-framework.svg?style=svg&circle-token=82b6a490196b316a6c77e01d33f39d5646372e4f)](https://circleci.com/gh/viadeo/kasper-framework)
 
 ![Kasper](doc/source/_static/kasper-logo.png)
 
