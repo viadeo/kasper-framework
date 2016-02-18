@@ -20,6 +20,7 @@ import org.hamcrest.Matcher;
 import javax.validation.ConstraintViolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.test.platform.KasperMatcher.anySecurityToken;
 import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
@@ -89,7 +90,7 @@ public class KasperAggregateResultValidator implements
 
     @Override
     public KasperAggregateResultValidator expectReturnOK() {
-        return expectReturnOK(KasperMatcher.anySecurityToken());
+        return expectReturnOK(anySecurityToken());
     }
 
     public KasperAggregateResultValidator expectReturnOK(final String securityToken) {

@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+
 public class UUIDFormatUTest {
 
     @Test
@@ -22,6 +24,6 @@ public class UUIDFormatUTest {
         UUID actualUuid = new UUIDFormat().parseIdentifier(givenUuid.toString());
 
         // Then
-        Assert.assertEquals(givenUuid, actualUuid);
+        assertEquals(givenUuid, actualUuid);
     }
 }

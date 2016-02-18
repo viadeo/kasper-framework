@@ -50,7 +50,7 @@ public class SpringBundleUTest {
         assertTrue(command.containsBean("dummyCommandHandler"));
         assertFalse(command.containsBean("dummyCommandUnregisteredHandler"));
         assertTrue(command.containsBean("dummyCommandListener"));
-        Assert.assertEquals(1, command.getBean(DummyCommandHandler.class).getFoo());
+        assertEquals(1, command.getBean(DummyCommandHandler.class).getFoo());
 
         // query
         ApplicationContext query = springBundle.getQueryContext();

@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <blockquote><pre>
  * ID id1 = new ID(Vendors.VIADEO, "member", Format.DB_ID, 42);
  * ID id2 = new ID("urn:viadeo:member:db-id:42");
- * Assert.assertEquals(id1, id2)
+ * assertEquals(id1, id2)
  * </pre></blockquote>
  *
  *

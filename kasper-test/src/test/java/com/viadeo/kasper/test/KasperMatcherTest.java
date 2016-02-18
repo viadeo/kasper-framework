@@ -216,7 +216,7 @@ public class KasperMatcherTest {
         DateTime b = new DateTime(now.getMillis(), DateTimeZone.UTC);
 
         // When
-        final boolean matches = KasperMatcher.equalTo(a).matches(b);
+        final boolean matches = equalTo(a).matches(b);
 
         // Then
         assertTrue(matches);

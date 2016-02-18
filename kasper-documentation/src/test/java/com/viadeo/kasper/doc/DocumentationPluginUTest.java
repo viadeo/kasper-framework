@@ -61,7 +61,7 @@ public class DocumentationPluginUTest {
 
         // Then
         assertTrue(documentationPlugin.isInitialized());
-        Assert.assertNotNull(documentedPlatform);
+        assertNotNull(documentedPlatform);
     }
 
     @Test

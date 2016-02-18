@@ -17,6 +17,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class DefaultContextHelperUTest {
 
     private static final Format DB_ID = new FormatAdapter("db-id", Integer.class) {
@@ -43,8 +45,8 @@ public class DefaultContextHelperUTest {
         Context actualContext = contextHelper.createFrom(givenContext.asMap());
 
         // Then
-        Assert.assertNotNull(actualContext);
-        Assert.assertEquals("funnelVr", actualContext.getFunnelVersion().orNull());
+        assertNotNull(actualContext);
+        assertEquals("funnelVr", actualContext.getFunnelVersion().orNull());
     }
 
     @Test
@@ -56,9 +58,9 @@ public class DefaultContextHelperUTest {
         Context actualContext = contextHelper.createFrom(givenContext.asMap());
 
         // Then
-        Assert.assertNotNull(actualContext);
-        Assert.assertTrue(actualContext.getProperties().containsKey("miaou"));
-        Assert.assertEquals("hello kitty!", actualContext.getProperty("miaou").get());
+        assertNotNull(actualContext);
+        assertTrue(actualContext.getProperties().containsKey("miaou"));
+        assertEquals("hello kitty!", actualContext.getProperty("miaou").get());
     }
 
     @Test
@@ -67,8 +69,8 @@ public class DefaultContextHelperUTest {
         Context actualContext = contextHelper.createFrom(ImmutableMap.<String, String>builder().put(Context.USER_ID_SHORTNAME, "").build());
 
         // Then
-        Assert.assertNotNull(actualContext);
-        Assert.assertFalse(actualContext.getUserID().isPresent());
+        assertNotNull(actualContext);
+        assertFalse(actualContext.getUserID().isPresent());
     }
 
     @Test
@@ -83,8 +85,8 @@ public class DefaultContextHelperUTest {
         Context actualContext = contextHelper.createFrom(givenContext.asMap());
 
         // Then
-        Assert.assertNotNull(actualContext);
-        Assert.assertEquals(givenContext.getSecurityToken(), actualContext.getSecurityToken());
-        Assert.assertEquals(givenContext.getUserID(), actualContext.getUserID());
+        assertNotNull(actualContext);
+        assertEquals(givenContext.getSecurityToken(), actualContext.getSecurityToken());
+        assertEquals(givenContext.getUserID(), actualContext.getUserID());
     }
 }

@@ -7,6 +7,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class RabbitMQConfigurationUTest {
 
     private RabbitMQConfiguration configuration;
@@ -30,8 +33,8 @@ public class RabbitMQConfigurationUTest {
         String addresses = configuration.getAddresses(config);
 
         // Then
-        Assert.assertNotNull(addresses);
-        Assert.assertEquals("miaou:5672", addresses);
+        assertNotNull(addresses);
+        assertEquals("miaou:5672", addresses);
     }
 
     @Test
@@ -48,7 +51,7 @@ public class RabbitMQConfigurationUTest {
         String addresses = configuration.getAddresses(config);
 
         // Then
-        Assert.assertNotNull(addresses);
-        Assert.assertEquals("miaou1:5672,miaou2:5672", addresses);
+        assertNotNull(addresses);
+        assertEquals("miaou1:5672,miaou2:5672", addresses);
     }
 }

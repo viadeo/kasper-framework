@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
@@ -289,11 +290,11 @@ public class KasperClientQueryTest extends JerseyTest {
                 Contexts.empty(), query, MemberResult.class);
 
         // Then
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertTrue(response instanceof HTTPQueryResponse);
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
+        assertTrue(response instanceof HTTPQueryResponse);
 
         HTTPQueryResponse httpResponse = (HTTPQueryResponse) response;
-        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
+        assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
     @Test public void queryAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException, ExecutionException {
@@ -308,11 +309,11 @@ public class KasperClientQueryTest extends JerseyTest {
                 Contexts.empty(), query, MemberResult.class).get();
 
         // Then
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertTrue(response instanceof HTTPQueryResponse);
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
+        assertTrue(response instanceof HTTPQueryResponse);
 
         HTTPQueryResponse httpResponse = (HTTPQueryResponse) response;
-        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
+        assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
 }

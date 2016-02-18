@@ -271,11 +271,11 @@ public class KasperClientCommandTest extends JerseyTest {
         // Then
         assertNotNull(response);
         assertNotNull(response.getReason());
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertTrue(response instanceof HTTPCommandResponse);
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
+        assertTrue(response instanceof HTTPCommandResponse);
 
         HTTPCommandResponse httpResponse = (HTTPCommandResponse) response;
-        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
+        assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
     @Test
@@ -292,11 +292,11 @@ public class KasperClientCommandTest extends JerseyTest {
         // Then
         assertNotNull(response);
         assertNotNull(response.getReason());
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertTrue(response instanceof HTTPCommandResponse);
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
+        assertTrue(response instanceof HTTPCommandResponse);
 
         HTTPCommandResponse httpResponse = (HTTPCommandResponse) response;
-        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
+        assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
 }

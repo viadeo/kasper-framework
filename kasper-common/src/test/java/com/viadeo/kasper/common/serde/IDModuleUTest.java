@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class IDModuleUTest {
@@ -49,7 +50,7 @@ public class IDModuleUTest {
 
         // Then
         assertNotNull(serializedId);
-        Assert.assertEquals("\"" + id.toString() + "\"", serializedId);
+        assertEquals("\"" + id.toString() + "\"", serializedId);
     }
 
     @Test
@@ -62,9 +63,9 @@ public class IDModuleUTest {
 
         // Then
         assertNotNull(deserializedId);
-        Assert.assertEquals("member", deserializedId.getType());
-        Assert.assertEquals(DB_ID, deserializedId.getFormat());
-        Assert.assertEquals("42", deserializedId.getIdentifier());
+        assertEquals("member", deserializedId.getType());
+        assertEquals(DB_ID, deserializedId.getFormat());
+        assertEquals("42", deserializedId.getIdentifier());
     }
 
     @Test
@@ -77,10 +78,10 @@ public class IDModuleUTest {
 
         // Then
         assertNotNull(actualId);
-        Assert.assertEquals(givenId.getVendor(), actualId.getVendor());
-        Assert.assertEquals(givenId.getType(), actualId.getType());
-        Assert.assertEquals(givenId.getFormat(), actualId.getFormat());
-        Assert.assertEquals(givenId.getIdentifier(), actualId.getIdentifier());
+        assertEquals(givenId.getVendor(), actualId.getVendor());
+        assertEquals(givenId.getType(), actualId.getType());
+        assertEquals(givenId.getFormat(), actualId.getFormat());
+        assertEquals(givenId.getIdentifier(), actualId.getIdentifier());
     }
 
     @Test
@@ -97,8 +98,8 @@ public class IDModuleUTest {
 
         // Then
         assertNotNull(actualRelationId);
-        Assert.assertEquals(relationId.getSourceId(), actualRelationId.getSourceId());
-        Assert.assertEquals(relationId.getTargetId(), actualRelationId.getTargetId());
-        Assert.assertEquals(relationId.getId(), actualRelationId.getId());
+        assertEquals(relationId.getSourceId(), actualRelationId.getSourceId());
+        assertEquals(relationId.getTargetId(), actualRelationId.getTargetId());
+        assertEquals(relationId.getId(), actualRelationId.getId());
     }
 }

@@ -58,7 +58,7 @@ public class KasperClientBuilderTest {
         final WebResource resource = kasperClient.client.resource(kasperClient.resolveQueryPath(TestQuery.class));
 
         // then
-        Assert.assertEquals("/kasper/query/test", resource.getURI().getPath());
+        assertEquals("/kasper/query/test", resource.getURI().getPath());
     }
 
     @Test public void commandBaseLocation_withBaseUrlWithoutTrailingSlash_shouldAddTrailingSlash() {
@@ -70,7 +70,7 @@ public class KasperClientBuilderTest {
         final WebResource resource = kasperClient.client.resource(kasperClient.resolveCommandPath(TestCommand.class));
 
         // then
-        Assert.assertEquals("/kasper/command/test", resource.getURI().getPath());
+        assertEquals("/kasper/command/test", resource.getURI().getPath());
     }
 
     @Test public void queryBaseLocation_withBaseUrlWithTrailingSlash_shouldNotAddTrailingSlash() {
@@ -82,7 +82,7 @@ public class KasperClientBuilderTest {
         final WebResource resource = kasperClient.client.resource(kasperClient.resolveQueryPath(TestQuery.class));
 
         // then
-        Assert.assertEquals("/kasper/query/test", resource.getURI().getPath());
+        assertEquals("/kasper/query/test", resource.getURI().getPath());
     }
 
     @Test public void commandBaseLocation_withBaseUrlWithTrailingSlash_shouldNotAddTrailingSlash() {
@@ -94,7 +94,7 @@ public class KasperClientBuilderTest {
         final WebResource resource = kasperClient.client.resource(kasperClient.resolveCommandPath(TestCommand.class));
 
         // then
-        Assert.assertEquals("/kasper/command/test", resource.getURI().getPath());
+        assertEquals("/kasper/command/test", resource.getURI().getPath());
     }
 
 }

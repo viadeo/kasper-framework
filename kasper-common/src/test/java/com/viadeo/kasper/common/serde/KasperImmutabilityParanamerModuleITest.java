@@ -14,6 +14,7 @@ import com.viadeo.kasper.test.platform.KasperMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.junit.Assert.assertTrue;
 
 public class KasperImmutabilityParanamerModuleITest {
@@ -38,7 +39,7 @@ public class KasperImmutabilityParanamerModuleITest {
         final MutableObject actualMutableObject = mapper.readValue(json, MutableObject.class);
 
         // Then
-        assertTrue(KasperMatcher.equalTo(mutableObject).matches(actualMutableObject));
+        assertTrue(equalTo(mutableObject).matches(actualMutableObject));
     }
 
     @Test
@@ -51,7 +52,7 @@ public class KasperImmutabilityParanamerModuleITest {
         final ImmutableObject actualImmutableObject = mapper.readValue(json, ImmutableObject.class);
 
         // Then
-        assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
+        assertTrue(equalTo(immutableObject).matches(actualImmutableObject));
     }
 
     @Test
@@ -65,7 +66,7 @@ public class KasperImmutabilityParanamerModuleITest {
                 mapper.readValue(json, ImmutableObjectContainingAnother.class);
 
         // Then
-        assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
+        assertTrue(equalTo(immutableObject).matches(actualImmutableObject));
     }
 
     @Test
@@ -82,7 +83,7 @@ public class KasperImmutabilityParanamerModuleITest {
         );
 
         // Then
-        assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
+        assertTrue(equalTo(immutableObject).matches(actualImmutableObject));
     }
 
     @Test
@@ -97,7 +98,7 @@ public class KasperImmutabilityParanamerModuleITest {
                 mapper.readValue(json, ImmutableObjectWithSeveralConstructors.class);
 
         // Then
-        assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
+        assertTrue(equalTo(immutableObject).matches(actualImmutableObject));
     }
 
     @Test
@@ -112,7 +113,7 @@ public class KasperImmutabilityParanamerModuleITest {
                 mapper.readValue(json, ImmutableObjectUsingJacksonAnnotationWithSeveralConstructors.class);
 
         // Then
-        assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
+        assertTrue(equalTo(immutableObject).matches(actualImmutableObject));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class KasperImmutabilityParanamerModuleITest {
         );
 
         // Then
-        assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
+        assertTrue(equalTo(immutableObject).matches(actualImmutableObject));
     }
 
 

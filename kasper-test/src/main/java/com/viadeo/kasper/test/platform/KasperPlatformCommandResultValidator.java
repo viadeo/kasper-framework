@@ -206,7 +206,7 @@ public class KasperPlatformCommandResultValidator
         assertEquals(commands.length, actualCommands.size() - 1);
 
         for (int i = 0; i < commands.length; i++) {
-            assertTrue(KasperMatcher.equalTo(commands[i]).matches(actualCommands.get(i + 1)));
+            assertTrue(equalTo(commands[i]).matches(actualCommands.get(i + 1)));
         }
 
         return this;

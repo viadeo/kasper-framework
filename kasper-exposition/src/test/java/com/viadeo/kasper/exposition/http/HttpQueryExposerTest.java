@@ -275,10 +275,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Then
         assertFalse(actual.isOK());
         assertEquals(query.aValue, actual.getReason().getLabel());
-        Assert.assertTrue(actual instanceof HTTPQueryResponse);
+        assertTrue(actual instanceof HTTPQueryResponse);
 
         HTTPQueryResponse httpResponse = (HTTPQueryResponse) actual;
-        Assert.assertEquals(Response.Status.INTERNAL_SERVER_ERROR, httpResponse.getHTTPStatus());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, httpResponse.getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------

@@ -11,6 +11,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 
 public class KasperResultValidator implements ResultValidator {
 
@@ -55,7 +56,7 @@ public class KasperResultValidator implements ResultValidator {
         if (null == expectedReturnValue) {
             return expectReturnValue(CoreMatchers.nullValue());
         }
-        return expectReturnValue(KasperMatcher.equalTo(expectedReturnValue));
+        return expectReturnValue(equalTo(expectedReturnValue));
     }
 
     @Override

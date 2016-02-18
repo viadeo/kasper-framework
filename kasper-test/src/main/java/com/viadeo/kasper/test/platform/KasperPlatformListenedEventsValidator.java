@@ -18,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import java.util.List;
 import java.util.Set;
 
+import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
@@ -79,7 +80,7 @@ public class KasperPlatformListenedEventsValidator
         assertEquals(commands.length, actualCommands.size());
 
         for (int i = 0; i < commands.length; i++) {
-            assertTrue(KasperMatcher.equalTo(commands[i]).matches(actualCommands.get(i)));
+            assertTrue(equalTo(commands[i]).matches(actualCommands.get(i)));
         }
         return this;
     }

@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
+import static com.viadeo.kasper.test.platform.KasperMatcher.anyKasperId;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -303,8 +304,8 @@ public class TestFixturePlatformTest {
                         new TestCreateUserCommand(DefaultKasperId.random(), "Jack", "Bauer")
                 )
                 .expectExactSequenceOfCommands(
-                        new TestCreateCommand(KasperMatcher.anyKasperId(), "Jack"),
-                        new TestChangeLastNameCommand(KasperMatcher.anyKasperId(), "Bauer")
+                        new TestCreateCommand(anyKasperId(), "Jack"),
+                        new TestChangeLastNameCommand(anyKasperId(), "Bauer")
                 );
     }
 
@@ -317,8 +318,8 @@ public class TestFixturePlatformTest {
                         new DoSyncUserEvent("Jack", "Bauer")
                 )
                 .expectExactSequenceOfCommands(
-                        new TestCreateCommand(KasperMatcher.anyKasperId(), "Jack"),
-                        new TestChangeLastNameCommand(KasperMatcher.anyKasperId(), "Bauer")
+                        new TestCreateCommand(anyKasperId(), "Jack"),
+                        new TestChangeLastNameCommand(anyKasperId(), "Bauer")
                 );
     }
 }

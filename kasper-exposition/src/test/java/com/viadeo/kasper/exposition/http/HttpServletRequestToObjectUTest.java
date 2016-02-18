@@ -10,6 +10,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +46,7 @@ public class HttpServletRequestToObjectUTest {
         TestQuery query = mapper.map(request, payload, TestQuery.class);
 
         // Then
-        Assert.assertNotNull(query);
+        assertNotNull(query);
     }
 
     @Test(expected = InstantiationException.class)

@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.viadeo.kasper.core.id.TestConverters.mockConverter;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConvertersUTest {
@@ -60,9 +62,9 @@ public class ConvertersUTest {
         Map<ID, ID> result = converter.convert(Lists.newArrayList(firstUUID, secondUUID));
 
         // THEN
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(firstString, result.get(firstUUID));
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(firstString, result.get(firstUUID));
     }
 
     @Test
@@ -88,9 +90,9 @@ public class ConvertersUTest {
         Map<ID, ID> result = converter.convert(Lists.newArrayList(firstUUID, secondUUID));
 
         // THEN
-        Assert.assertNotNull(result);
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals(firstString, result.get(firstUUID));
-        Assert.assertEquals(secondString, result.get(secondUUID));
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(firstString, result.get(firstUUID));
+        assertEquals(secondString, result.get(secondUUID));
     }
 }

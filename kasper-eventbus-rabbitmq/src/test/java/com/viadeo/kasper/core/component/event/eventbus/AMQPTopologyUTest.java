@@ -22,6 +22,8 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -59,14 +61,14 @@ public class AMQPTopologyUTest {
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
 
         // Then
-        Assert.assertNotNull(queue);
+        assertNotNull(queue);
         verify(rabbitAdmin, times(0)).declareBinding(any(Binding.class));
         verify(rabbitAdmin).removeBinding(bindingArgumentCaptor.capture());
 
         List<Binding> removedBindings = bindingArgumentCaptor.getAllValues();
-        Assert.assertNotNull(removedBindings);
-        Assert.assertEquals(1, removedBindings.size());
-        Assert.assertEquals(FakeEvent.class.getName(), removedBindings.get(0).getRoutingKey());
+        assertNotNull(removedBindings);
+        assertEquals(1, removedBindings.size());
+        assertEquals(FakeEvent.class.getName(), removedBindings.get(0).getRoutingKey());
     }
 
     @Test
@@ -79,7 +81,7 @@ public class AMQPTopologyUTest {
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
 
         // Then
-        Assert.assertNotNull(queue);
+        assertNotNull(queue);
         verify(rabbitAdmin, times(0)).declareBinding(any(Binding.class));
     }
 
@@ -92,14 +94,14 @@ public class AMQPTopologyUTest {
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
 
         // Then
-        Assert.assertNotNull(queue);
+        assertNotNull(queue);
         verify(rabbitAdmin).declareBinding(bindingArgumentCaptor.capture());
         verify(rabbitAdmin, times(0)).removeBinding(any(Binding.class));
 
         List<Binding> removedBindings = bindingArgumentCaptor.getAllValues();
-        Assert.assertNotNull(removedBindings);
-        Assert.assertEquals(1, removedBindings.size());
-        Assert.assertEquals(FakeEvent.class.getName(), removedBindings.get(0).getRoutingKey());
+        assertNotNull(removedBindings);
+        assertEquals(1, removedBindings.size());
+        assertEquals(FakeEvent.class.getName(), removedBindings.get(0).getRoutingKey());
     }
 
     @Test
@@ -118,19 +120,19 @@ public class AMQPTopologyUTest {
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
 
         // Then
-        Assert.assertNotNull(queue);
+        assertNotNull(queue);
         verify(rabbitAdmin).declareBinding(bindingArgumentCaptor.capture());
         verify(rabbitAdmin).removeBinding(argumentCaptor.capture());
 
         List<Binding> declaredBindings = bindingArgumentCaptor.getAllValues();
-        Assert.assertNotNull(declaredBindings);
-        Assert.assertEquals(1, declaredBindings.size());
-        Assert.assertEquals(FakeEvent.class.getName(), declaredBindings.get(0).getRoutingKey());
+        assertNotNull(declaredBindings);
+        assertEquals(1, declaredBindings.size());
+        assertEquals(FakeEvent.class.getName(), declaredBindings.get(0).getRoutingKey());
 
         List<Binding> removedBindings = argumentCaptor.getAllValues();
-        Assert.assertNotNull(removedBindings);
-        Assert.assertEquals(1, removedBindings.size());
-        Assert.assertEquals(FakeEvent2.class.getName(), removedBindings.get(0).getRoutingKey());
+        assertNotNull(removedBindings);
+        assertEquals(1, removedBindings.size());
+        assertEquals(FakeEvent2.class.getName(), removedBindings.get(0).getRoutingKey());
     }
 
     @Test
@@ -147,23 +149,23 @@ public class AMQPTopologyUTest {
         Queue queue = topology.createQueue("exchange", "1", "default", eventListener);
 
         // Then
-        Assert.assertNotNull(queue);
+        assertNotNull(queue);
         verify(rabbitAdmin).declareBinding(bindingArgumentCaptor.capture());
         verify(rabbitAdmin).removeBinding(argumentCaptor.capture());
 
         List<Binding> declaredBindings = bindingArgumentCaptor.getAllValues();
-        Assert.assertNotNull(declaredBindings);
-        Assert.assertEquals(1, declaredBindings.size());
-        Assert.assertEquals(FakeEvent.class.getName(), declaredBindings.get(0).getRoutingKey());
+        assertNotNull(declaredBindings);
+        assertEquals(1, declaredBindings.size());
+        assertEquals(FakeEvent.class.getName(), declaredBindings.get(0).getRoutingKey());
 
         List<Binding> removedBindings = argumentCaptor.getAllValues();
-        Assert.assertNotNull(removedBindings);
-        Assert.assertEquals(1, removedBindings.size());
+        assertNotNull(removedBindings);
+        assertEquals(1, removedBindings.size());
 
         Binding actualBinding = removedBindings.get(0);
-        Assert.assertEquals(obsoleteBinding.getExchange(), actualBinding.getExchange());
-        Assert.assertEquals(obsoleteBinding.getRoutingKey(), actualBinding.getRoutingKey());
-        Assert.assertEquals(obsoleteBinding.getDestination(), actualBinding.getDestination());
+        assertEquals(obsoleteBinding.getExchange(), actualBinding.getExchange());
+        assertEquals(obsoleteBinding.getRoutingKey(), actualBinding.getRoutingKey());
+        assertEquals(obsoleteBinding.getDestination(), actualBinding.getDestination());
     }
 
 
