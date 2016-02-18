@@ -90,7 +90,7 @@ public class QueryHandlerResolverTest {
 
         // When
         try {
-            final Class<? extends Query> query = resolver.getQueryClass(TestQueryHandler.class);
+            resolver.getQueryClass(TestQueryHandler.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception
@@ -119,7 +119,7 @@ public class QueryHandlerResolverTest {
 
         // When
         try {
-            final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryHandler.class);
+            resolver.getQueryResultClass(TestQueryHandler.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception

@@ -22,7 +22,7 @@ public final class CoreReasonHttpCodes {
 
     // ------------------------------------------------------------------------
 
-    private static enum CoreReasonHttpCodesTranslationTable {
+    private enum CoreReasonHttpCodesTranslationTable {
         UNKNOWN_REASON(CoreReasonCode.UNKNOWN_REASON, Status.INTERNAL_SERVER_ERROR),
 
         REQUIRED_IPUT(CoreReasonCode.REQUIRED_INPUT, Status.BAD_REQUEST),

@@ -86,11 +86,8 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
 
         final MapQueryResult that = (MapQueryResult) o;
 
-        if ( ! map.equals(that.map)) {
-            return false;
-        }
+        return map.equals(that.map);
 
-        return true;
     }
 
     @Override

@@ -147,7 +147,7 @@ public class MultiEventListener extends BaseEventListener<Event> {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value={METHOD})
-    public static @interface Handle { }
+    public @interface Handle { }
 
     // ------------------------------------------------------------------------
 

@@ -627,7 +627,7 @@ public abstract class HttpExposer<INPUT, HANDLER extends Handler, RESPONSE exten
 
     // ------------------------------------------------------------------------
 
-    private static enum ErrorState {
+    private enum ErrorState {
         ERROR, REFUSED
     }
 

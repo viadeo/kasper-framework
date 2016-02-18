@@ -16,13 +16,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Actor {
 
-    private final ID actorID;
     private Set<Role> roles;
     private Set<Permission> permissions;
 
     // ------------------------------------------------------------------------
     public Actor(final ID actorID) {
-        this.actorID = checkNotNull(actorID);
+        ID actorID1 = checkNotNull(actorID);
         this.roles = Sets.newHashSet();
         this.permissions = Sets.newHashSet();
     }

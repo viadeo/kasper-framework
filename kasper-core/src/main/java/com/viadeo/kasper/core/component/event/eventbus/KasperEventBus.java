@@ -47,7 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class KasperEventBus extends ClusteringEventBus {
 
-    public static enum Policy {
+    public enum Policy {
         SYNCHRONOUS, ASYNCHRONOUS, USER
     }
 

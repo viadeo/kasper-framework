@@ -25,7 +25,7 @@ class BeanConstructorProperty {
     public BeanConstructorProperty(final int position, final Annotation[] annotations,
                                    final String name, final Type type) {
         this.position = position;
-        this.annotations = Arrays.copyOf(checkNotNull(annotations), annotations.length);;
+        this.annotations = Arrays.copyOf(checkNotNull(annotations), annotations.length);
         this.name = checkNotNull(name);
         this.type = checkNotNull(type);
     }

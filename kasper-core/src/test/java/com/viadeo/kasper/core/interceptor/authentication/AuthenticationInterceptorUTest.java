@@ -1,6 +1,5 @@
 package com.viadeo.kasper.core.interceptor.authentication;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,9 +32,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -45,11 +42,6 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationInterceptorUTest {
-
-    @Mock
-    private ApplicationContext applicationContext;
-    @Mock
-    private MetricRegistry metricRegistry;
 
     private InMemoryAuthentication authenticator;
     private AuthenticationTokenGenerator<String> authenticationTokenGenerator;
@@ -97,7 +89,7 @@ public class AuthenticationInterceptorUTest {
                                 InterceptorChain.makeChain(new Interceptor<Command, CommandResponse>() {
                                                                @Override
                                                                public CommandResponse process(Command o, Context context, InterceptorChain chain) {
-                                                                   return CommandResponse.doAuthenticate(new ID("kasper","subject", TestFormats.UUID, UUID.randomUUID()));
+                                                                   return CommandResponse.doAuthenticate(new ID("kasper", "subject", TestFormats.UUID, UUID.randomUUID()));
                                                                }
                                                            }
                                 ));
@@ -170,7 +162,7 @@ public class AuthenticationInterceptorUTest {
     public void process_for_command_withTokenInContextAndStore_shouldReturnAuthenticated() throws Exception {
         // Given
         InterceptorChain<Command, CommandResponse> chain = commandFactoryOk.create(TypeToken.of(TestCommandHandler.class)).get();
-        ID subjectID = new ID("kasper","subject", TestFormats.UUID, UUID.randomUUID());
+        ID subjectID = new ID("kasper", "subject", TestFormats.UUID, UUID.randomUUID());
         String token = authenticationTokenGenerator.generate(subjectID, Maps.<String, Object>newHashMap());
         authenticator.addToken(token, subjectID);
         context = Contexts.newFrom(context).withAuthenticationToken(token).build();
@@ -234,7 +226,7 @@ public class AuthenticationInterceptorUTest {
     public void process_for_query_withTokenInContextAndStore_shouldReturnAuthenticated() throws Exception {
         // Given
         InterceptorChain<Query, QueryResponse> chain = queryFactory.create(TypeToken.of(TestQueryHandler.class)).get();
-        ID subjectID = new ID("kasper","subject", TestFormats.UUID, UUID.randomUUID());
+        ID subjectID = new ID("kasper", "subject", TestFormats.UUID, UUID.randomUUID());
         context = Contexts.newFrom(context).withUserID(subjectID).build();
         String token = authenticationTokenGenerator.generate(subjectID, Maps.<String, Object>newHashMap());
         authenticator.addToken(token, subjectID);

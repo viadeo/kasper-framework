@@ -24,7 +24,7 @@ public interface EventListener<EVENT extends Event>
     /**
      * Generic parameter position for the listened event
      */
-    public static final int EVENT_PARAMETER_POSITION = 0;
+    int EVENT_PARAMETER_POSITION = 0;
 
     @Override
     EventResponse handle(EventMessage<EVENT> message);

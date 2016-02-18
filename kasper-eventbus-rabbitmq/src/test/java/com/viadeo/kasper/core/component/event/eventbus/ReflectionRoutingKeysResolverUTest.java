@@ -103,8 +103,8 @@ public class ReflectionRoutingKeysResolverUTest {
     }
 
     private static class MyConcreteEvent implements Event {}
-    private static interface MyInterfaceEvent extends Event {}
-    private static interface MySpeAbstractEvent extends MyInterfaceEvent {}
+    private interface MyInterfaceEvent extends Event {}
+    private interface MySpeAbstractEvent extends MyInterfaceEvent {}
     private static class MyAbstractEvent implements Event {}
     private static class MySpeOneAbstractEvent extends MyAbstractEvent {}
     private static class MySpeTwoAbstractEvent extends MyAbstractEvent {}

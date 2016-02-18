@@ -92,7 +92,7 @@ public interface DomainBundle {
 
     // ========================================================================
 
-    static class Builder {
+    class Builder {
 
         private final Domain domain;
         private final String domainName;

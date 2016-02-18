@@ -40,7 +40,7 @@ public enum HttpContextHeaders {
     private final String headerName;
     private final String propertyKey;
 
-    private HttpContextHeaders(String headerName, String propertyKey) {
+    HttpContextHeaders(String headerName, String propertyKey) {
         this.headerName = checkNotNull(headerName);
         this.propertyKey = checkNotNull(propertyKey);
     }

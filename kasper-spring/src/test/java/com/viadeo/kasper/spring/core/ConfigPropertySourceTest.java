@@ -19,6 +19,7 @@ import org.springframework.core.env.MutablePropertySources;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -58,12 +59,11 @@ public class ConfigPropertySourceTest {
     }
 
     private AnnotationConfigApplicationContext ctx;
-    private MutablePropertySources sources;
 
     @Before
     public void setUp() throws Exception {
         ctx = new AnnotationConfigApplicationContext();
-        sources = ctx.getEnvironment().getPropertySources();
+        final MutablePropertySources sources = ctx.getEnvironment().getPropertySources();
         sources.addLast(new ConfigPropertySource(ConfigFactory.parseMap(ImmutableMap.of("foo", "bar", "number", 1)), "boo"));
     }
 
@@ -82,7 +82,7 @@ public class ConfigPropertySourceTest {
         ctx.register(MyBean.class, PropertyConfiguration.class);
         ctx.refresh();
 
-        assertEquals(Arrays.asList("bar"), ctx.getBean(MyBean.class).foo);
+        assertEquals(Collections.singletonList("bar"), ctx.getBean(MyBean.class).foo);
         assertEquals(Integer.valueOf(1), ctx.getBean(MyBean.class).number);
 
     }

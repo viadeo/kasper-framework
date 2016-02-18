@@ -68,13 +68,8 @@ public class QueryAttributesKeyGenerator<Q extends Query> implements QueryCacheK
                 return false;
             }
 
-            if ((null != queryClass) ?
-                    ( ! queryClass.equals(that.queryClass)) :
-                    (null != that.queryClass)) {
-                return false;
-            }
+            return (null != queryClass) ? queryClass.equals(that.queryClass) : null == that.queryClass;
 
-            return true;
         }
 
         @Override

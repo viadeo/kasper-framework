@@ -30,7 +30,7 @@ public enum DocumentedElementType {
 
     // ------------------------------------------------------------------------
 
-    private DocumentedElementType(final String type, final String pluralType) {
+    DocumentedElementType(final String type, final String pluralType) {
         this.type = type;
         this.pluralType = pluralType;
     }

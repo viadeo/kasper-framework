@@ -277,11 +277,8 @@ public class CommandResponse extends KasperResponse {
             return true;
         }
 
-        if ( ! this.getAuthenticationToken().get().equals(other.getAuthenticationToken().get())) {
-            return false;
-        }
+        return this.getAuthenticationToken().get().equals(other.getAuthenticationToken().get());
 
-        return true;
     }
 
     @Override

@@ -46,6 +46,6 @@ public @interface XKasperQueryHandlerAdapter {
      * Static default (null) domain
      */
     @XKasperUnregistered
-    static final class NullDomain implements Domain { }
+    final class NullDomain implements Domain { }
 
 }

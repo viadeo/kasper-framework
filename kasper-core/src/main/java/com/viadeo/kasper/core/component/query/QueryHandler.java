@@ -31,12 +31,12 @@ public interface QueryHandler<QUERY extends Query, RESULT extends QueryResult>
     /**
      * Generic parameter position for Data Query Object
      */
-    public static final int PARAMETER_QUERY_POSITION = 0;
+    int PARAMETER_QUERY_POSITION = 0;
 
     /**
      * Generic parameter position for Data Transfer Object
      */
-    public static final int PARAMETER_RESULT_POSITION = 1;
+    int PARAMETER_RESULT_POSITION = 1;
 
     /**
      * Handle the <code>QueryMessage</code>.

@@ -9,7 +9,7 @@ package com.viadeo.kasper.api.component.query;
 /** A paginated Kasper query */
 public interface OrderedQuery extends Query {
 
-    public static enum ORDER {
+    enum ORDER {
         ASC, DESC, NONE
     }
 

@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 public interface KasperEventBusFixture {
 
-    public static class ChildEvent extends UserEvent {
+    class ChildEvent extends UserEvent {
 
         public ChildEvent(String firstName, String lastName, Integer age) {
             super(firstName, lastName, age);
         }
     }
 
-    public static class ChildEventListener extends AutowiredEventListener<UserEvent> {
+    class ChildEventListener extends AutowiredEventListener<UserEvent> {
         private Spy<UserEvent> spy;
 
         public ChildEventListener(final Spy<UserEvent> spy) {
@@ -37,7 +37,7 @@ public interface KasperEventBusFixture {
         }
     }
 
-    public static class Spy<T> {
+    class Spy<T> {
         private static final Logger LOGGER = LoggerFactory.getLogger(Spy.class);
         private static final long TIMEOUT = 8000L;
         public final CountDownLatch countDownLatch;
@@ -75,7 +75,7 @@ public interface KasperEventBusFixture {
         }
     }
 
-    public static class UserEvent implements Event {
+    class UserEvent implements Event {
         public String firstName;
         public String lastName;
         public Integer age;
@@ -104,7 +104,7 @@ public interface KasperEventBusFixture {
         }
     }
 
-    public static class UserEventListener extends AutowiredEventListener<UserEvent> {
+    class UserEventListener extends AutowiredEventListener<UserEvent> {
 
         private Spy<UserEvent> spy;
 

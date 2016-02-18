@@ -34,6 +34,6 @@ public interface XKasperAuthz {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    public @interface TargetId { }
+    @interface TargetId { }
 
 }

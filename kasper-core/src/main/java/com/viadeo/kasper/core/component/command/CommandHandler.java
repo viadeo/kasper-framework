@@ -28,7 +28,7 @@ public interface CommandHandler<COMMAND extends Command>
     /**
      * Generic parameter position for the handled command
      */
-    public static final int COMMAND_PARAMETER_POSITION = 0;
+    int COMMAND_PARAMETER_POSITION = 0;
 
     /**
      * Handle the <code>CommandMessage</code>.

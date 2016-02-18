@@ -20,14 +20,14 @@ import java.util.List;
  */
 public interface Plugin extends PlatformAware {
 
-    static final Comparator<Plugin> COMPARATOR = new Comparator<Plugin>() {
+    Comparator<Plugin> COMPARATOR = new Comparator<Plugin>() {
         @Override
         public int compare(final Plugin o1, final Plugin o2) {
             return Integer.compare(o1.getPhase(), o2.getPhase());
         }
     };
 
-    static final Comparator<Plugin> REVERSED_COMPARATOR = new Comparator<Plugin>() {
+    Comparator<Plugin> REVERSED_COMPARATOR = new Comparator<Plugin>() {
         @Override
         public int compare(final Plugin o1, final Plugin o2) {
             return -1 * Integer.compare(o1.getPhase(), o2.getPhase());

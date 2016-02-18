@@ -12,7 +12,7 @@ package com.viadeo.kasper.core.component.event.saga;
  */
 public interface SagaIdReconciler {
 
-    static final SagaIdReconciler NONE = new SagaIdReconciler() {
+    SagaIdReconciler NONE = new SagaIdReconciler() {
         @Override
         public Object reconcile(Object identifier) {
             return identifier;

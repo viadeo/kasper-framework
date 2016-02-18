@@ -22,11 +22,11 @@ public interface EntityCommandHandler<COMMAND extends Command, AGR extends Aggre
     /**
      * Generic parameter position for the handled entity
      */
-    public static final int ENTITY_PARAMETER_POSITION = 1;
+    int ENTITY_PARAMETER_POSITION = 1;
 
     /**
      * @return the aggregate class mutated by this <code>CommandHandler</code>.
      */
-    public Class<AGR> getAggregateClass();
+    Class<AGR> getAggregateClass();
 
 }

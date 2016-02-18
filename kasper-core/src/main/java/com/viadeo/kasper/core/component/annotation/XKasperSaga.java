@@ -40,7 +40,7 @@ public @interface XKasperSaga {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface Start {
+    @interface Start {
 
         /**
          * Indicate the method name of the event for which we get the saga identifier.
@@ -57,7 +57,7 @@ public @interface XKasperSaga {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface End {
+    @interface End {
 
         /**
          * Indicate the method name of the event for which we get the saga identifier.
@@ -75,7 +75,7 @@ public @interface XKasperSaga {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface Step {
+    @interface Step {
 
         /**
          * Indicate the method name of the event for which we get the saga identifier.
@@ -93,7 +93,7 @@ public @interface XKasperSaga {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface Schedule {
+    @interface Schedule {
 
         /**
          * @return the delay to invoke the method
@@ -126,7 +126,7 @@ public @interface XKasperSaga {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface ScheduledByEvent {
+    @interface ScheduledByEvent {
 
         /**
          * @return the method name to be invoked
@@ -148,7 +148,7 @@ public @interface XKasperSaga {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface CancelSchedule {
+    @interface CancelSchedule {
 
         /**
          * @return the method name for which we have a scheduled invocation

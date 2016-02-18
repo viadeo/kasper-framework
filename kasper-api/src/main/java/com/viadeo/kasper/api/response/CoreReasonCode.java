@@ -82,7 +82,7 @@ public enum CoreReasonCode {
         public CoreReasonCode reason;
     }
 
-    public static final ParsedCode parseString(final String string) {
+    public static ParsedCode parseString(final String string) {
         final ParsedCode ret = new ParsedCode();
 
         final Pattern codePattern = Pattern.compile("^.([0-9]+). - (.*)$");

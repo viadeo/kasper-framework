@@ -19,7 +19,7 @@ public class KasperResponse implements Serializable, Immutable {
     /**
      * Accepted values for command response statuses
      */
-    public static enum Status {
+    public enum Status {
         OK,         /** All is ok */
         REFUSED,    /** Refused by some intermediate validation mechanisms */
         ERROR,      /** Error in handling or domain business */
