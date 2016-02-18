@@ -1,3 +1,6 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/0da5a8cc1a3a47c392a3fe06649a8c20)](https://www.codacy.com)
+[![Circle CI](https://circleci.com/gh/viadeo/kasper-framework.svg?style=svg)](https://circleci.com/gh/viadeo/kasper-framework)
+
 ![Kasper](doc/source/_static/kasper-logo.png)
 
 KASPER - Kasper is the treasure keeper
