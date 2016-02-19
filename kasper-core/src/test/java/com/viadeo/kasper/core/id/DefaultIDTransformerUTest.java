@@ -74,6 +74,54 @@ public class DefaultIDTransformerUTest {
         // Then throws exception
     }
 
+    @Test(expected = FailedToTransformIDException.class)
+    public void to_withOneID_withFormat_withConverterVendorMismatch_throwException() {
+        // Given
+        ID id = new ID("viadeo", "member", TestFormats.ID, 42);
+
+        Converter converter = mockConverter("glinglin", TestFormats.ID, TestFormats.UUID);
+        when(converter.convert(anyCollectionOf(ID.class)))
+                .thenThrow(new AssertionError("unexpected call"));
+        converterRegistry.register(converter);
+
+        // When
+        transformer.to(TestFormats.UUID, id);
+
+        // Then throws exception
+    }
+
+    @Test(expected = FailedToTransformIDException.class)
+    public void to_withOneID_withFormat_withConverterInputFormatMismatch_throwException() {
+        // Given
+        ID id = new ID("viadeo", "member", TestFormats.ID, 42);
+
+        Converter converter = mockConverter("viadeo", TestFormats.UUID, TestFormats.UUID);
+        when(converter.convert(anyCollectionOf(ID.class)))
+                .thenThrow(new AssertionError("unexpected call"));
+        converterRegistry.register(converter);
+
+        // When
+        transformer.to(TestFormats.UUID, id);
+
+        // Then throws exception
+    }
+
+    @Test(expected = FailedToTransformIDException.class)
+    public void to_withOneID_withFormat_withConverterOutputFormatMismatch_throwException() {
+        // Given
+        ID id = new ID("viadeo", "member", TestFormats.ID, 42);
+
+        Converter converter = mockConverter("viadeo", TestFormats.ID, TestFormats.ID);
+        when(converter.convert(anyCollectionOf(ID.class)))
+                .thenThrow(new AssertionError("unexpected call"));
+        converterRegistry.register(converter);
+
+        // When
+        transformer.to(TestFormats.UUID, id);
+
+        // Then throws exception
+    }
+
     @Test
     public void to_withOneID_withFormat_withConverter_returnId() throws Exception {
         // Given
@@ -235,36 +283,6 @@ public class DefaultIDTransformerUTest {
         // Then
         assertNotNull(convertedIds);
         assertEquals(0, convertedIds.size());
-    }
-
-    @Test
-    public void accept_withAdaptedConverter_returnTrue() throws Exception {
-        // Given
-        Converter converter = new AbstractSimpleConverter("viadeo", TestFormats.ID, TestFormats.UUID) {
-            @Override
-            public ID convert(ID id) { return id; }
-        };
-
-        // When
-        boolean accept = transformer.accept(converter, "viadeo", TestFormats.ID, TestFormats.UUID);
-
-        // Then
-        assertTrue(accept);
-    }
-
-    @Test
-    public void accept_withUnadaptedConverter_returnFalse() throws Exception {
-        // Given
-        Converter Converter = new AbstractSimpleConverter("viadeo", TestFormats.ID, TestFormats.UUID) {
-            @Override
-            public ID convert(ID id) { return id; }
-        };
-
-        // When
-        boolean accept = transformer.accept(Converter, "viadeo", TestFormats.ID, TestFormats.STRING);
-
-        // Then
-        assertFalse(accept);
     }
 
     @Test
