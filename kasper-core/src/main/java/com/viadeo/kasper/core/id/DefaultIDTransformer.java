@@ -57,7 +57,9 @@ public class DefaultIDTransformer implements IDTransformer {
                 }
 
                 for (final Converter converter : converterRegistry.getConverters(vendor, targetFormat)) {
-                    if (accept(converter, vendor, sourceFormat, targetFormat)) {
+                    if (converter.getSource() == sourceFormat &&
+                            converter.getTarget() == targetFormat &&
+                            converter.getVendor().equals(vendor)) {
                         try {
                             return converter.convert(values);
                         } catch (FailedToTransformIDException e) {
@@ -105,12 +107,6 @@ public class DefaultIDTransformer implements IDTransformer {
     @Override
     public List<ID> toList(final Format format, final Collection<ID> ids) {
         return newArrayList(to(format, ids).values());
-    }
-
-    public boolean accept(final Converter converter, final String vendor, final Format sourceFormat, final Format targetFormat) {
-        return converter.getSource() == sourceFormat &&
-                converter.getTarget() == targetFormat &&
-                converter.getVendor().equals(vendor);
     }
 
 }
