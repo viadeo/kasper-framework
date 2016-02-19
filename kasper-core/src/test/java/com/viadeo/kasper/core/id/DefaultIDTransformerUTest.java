@@ -168,16 +168,29 @@ public class DefaultIDTransformerUTest {
         // Then throws exception
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void to_withMultiId_containingNotTheSameFormat_throwException() {
+    @Test
+    public void to_withMultiId_containingNotTheSameFormat_returnMultiId() {
         // Given
         ID id1 = new ID("viadeo", "member", TestFormats.ID, 42);
+        ID uuid1 = new ID("viadeo", "member", TestFormats.UUID, UUID.randomUUID());
+
         ID id2 = new ID("viadeo", "member", TestFormats.UUID, UUID.randomUUID());
 
-        // When
-        transformer.to(TestFormats.UUID, id1, id2);
+        Converter converter = mockConverter("viadeo", TestFormats.ID, TestFormats.UUID);
+        when(converter.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.of(
+                id1, uuid1
+        ));
+        converterRegistry.register(converter);
 
-        // Then throws exception
+        // When
+        Map<ID, ID> ids = transformer.to(TestFormats.UUID, id1, id2);
+
+        // Then
+        assertNotNull(ids);
+        assertEquals(2, ids.size());
+
+        assertSame(uuid1, ids.get(id1));
+        assertSame(id2, ids.get(id2));
     }
 
     @Test(expected = IllegalArgumentException.class)
