@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.id;
 
-import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -20,21 +20,12 @@ import com.viadeo.kasper.api.id.IDTransformer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
 
 public class DefaultIDTransformer implements IDTransformer {
-
-    private static final Function<ID, String> GET_VENDOR_FUNCTION = new Function<ID, String>() {
-        @Override
-        public java.lang.String apply(ID id) {
-            return checkNotNull(id).getVendor();
-        }
-    };
 
     private final ConverterRegistry converterRegistry;
 
@@ -43,58 +34,51 @@ public class DefaultIDTransformer implements IDTransformer {
     }
 
     @Override
-    public Map<ID, ID> to(final Format format, final Collection<ID> givenIds) {
-        checkNotNull(format);
-        checkNotNull(givenIds);
-
-        final Set<ID> ids = newHashSet(givenIds);
+    public Map<ID, ID> to(final Format targetFormat, final Collection<ID> ids) {
+        checkNotNull(targetFormat);
+        checkNotNull(ids);
 
         checkArgument(Iterables.all(ids, Predicates.notNull()), "Each specified ids must be not null");
-        checkArgument(hasSameValue(ids, GET_VENDOR_FUNCTION), "Each specified ids must have the same vendor");
 
-        if (ids.isEmpty()) {
-            return doNothing(ids);
-        }
-
-        final ID firstElement = ids.iterator().next();
-        final String currentVendor = firstElement.getVendor();
-
-        HashMultimap<Format, ID> idsByFormat = HashMultimap.create();
+        HashMultimap<ImmutablePair<String, Format>, ID> idsByVendorFormat = HashMultimap.create();
         for (ID id : ids) {
-            idsByFormat.put(id.getFormat(), id);
+            idsByVendorFormat.put(ImmutablePair.of(id.getVendor(), id.getFormat()), id);
         }
 
-        Map<Format, Map<ID, ID>> convertedIdsByFormat = Maps.transformEntries(idsByFormat.asMap(), new Maps.EntryTransformer<Format, Collection<ID>, Map<ID, ID>>() {
+        Map<ImmutablePair<String, Format>, Map<ID, ID>> convertedIdsByVendorFormat = Maps.transformEntries(idsByVendorFormat.asMap(), new Maps.EntryTransformer<ImmutablePair<String, Format>, Collection<ID>, Map<ID, ID>>() {
             @Override
-            public Map<ID, ID> transformEntry(Format currentFormat, Collection<ID> idsForFormat) {
+            public Map<ID, ID> transformEntry(ImmutablePair<String, Format> key, Collection<ID> values) {
 
-                if (idsForFormat.isEmpty() || format == currentFormat) {
-                    return doNothing(idsForFormat);
+                String vendor = key.first;
+                Format sourceFormat = key.second;
+
+                if (values.isEmpty() || targetFormat == sourceFormat) {
+                    return Maps.uniqueIndex(values, Functions.<ID>identity());
                 }
 
-                for (final Converter converter : converterRegistry.getConverters(currentVendor, format)) {
-                    if (accept(converter, currentVendor, currentFormat, format)) {
+                for (final Converter converter : converterRegistry.getConverters(vendor, targetFormat)) {
+                    if (accept(converter, vendor, sourceFormat, targetFormat)) {
                         try {
-                            return converter.convert(ids);
-                        } catch (FailedToTransformIDException t) {
-                            throw t;
+                            return converter.convert(values);
+                        } catch (FailedToTransformIDException e) {
+                            throw e;
                         } catch (RuntimeException e) {
                             throw new FailedToTransformIDException(
-                                    String.format("Failed to convert id from '%s' to '%s', <ids=%s>", currentFormat, format, ids), e
+                                    String.format("Failed to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values), e
                             );
                         }
                     }
                 }
 
                 throw new FailedToTransformIDException(
-                        String.format("No available converter allowing to convert id from '%s' to '%s', <ids=%s>", currentFormat, format, ids)
+                        String.format("No available converter allowing to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values)
                 );
             }
         });
 
         ImmutableMap.Builder<ID, ID> flattened = ImmutableMap.builder();
-        for (Map<ID, ID> formatResult : convertedIdsByFormat.values()) {
-            flattened.putAll(formatResult);
+        for (Map<ID, ID> idMap : convertedIdsByVendorFormat.values()) {
+            flattened.putAll(idMap);
         }
         return flattened.build();
     }
@@ -123,23 +107,10 @@ public class DefaultIDTransformer implements IDTransformer {
         return newArrayList(to(format, ids).values());
     }
 
-    private Map<ID, ID> doNothing(final Collection<ID> ids) {
-        return Maps.uniqueIndex(ids, new Function<ID, ID>() {
-            @Override
-            public ID apply(ID input) {
-                return input;
-            }
-        });
-    }
-
     public boolean accept(final Converter converter, final String vendor, final Format sourceFormat, final Format targetFormat) {
         return converter.getSource() == sourceFormat &&
                 converter.getTarget() == targetFormat &&
                 converter.getVendor().equals(vendor);
-    }
-
-    public <T> boolean hasSameValue(final Collection<ID> ids, final Function<ID, T> function) {
-        return ids.isEmpty() || newHashSet(Iterables.transform(ids, function)).size() == 1;
     }
 
 }
