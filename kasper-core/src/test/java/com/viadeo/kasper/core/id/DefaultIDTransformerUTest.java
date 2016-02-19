@@ -193,16 +193,36 @@ public class DefaultIDTransformerUTest {
         assertSame(id2, ids.get(id2));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void to_withMultiId_containingNotTheSameVendor_throwException() {
+    @Test
+    public void to_withMultiId_containingNotTheSameVendor_returnMultiId() {
         // Given
         ID id1 = new ID("viadeo", "member", TestFormats.ID, 42);
+        ID uuid1 = new ID("viadeo", "member", TestFormats.UUID, UUID.randomUUID());
+
         ID id2 = new ID("glinglin", "member", TestFormats.ID, 43);
+        ID uuid2 = new ID("glinglin", "member", TestFormats.UUID, UUID.randomUUID());
+
+        Converter converter1 = mockConverter("viadeo", TestFormats.ID, TestFormats.UUID);
+        when(converter1.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.of(
+                id1, uuid1
+        ));
+        converterRegistry.register(converter1);
+
+        Converter converter2 = mockConverter("glinglin", TestFormats.ID, TestFormats.UUID);
+        when(converter2.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.of(
+                id2, uuid2
+        ));
+        converterRegistry.register(converter2);
 
         // When
-        transformer.to(TestFormats.UUID, id1, id2);
+        Map<ID, ID> ids = transformer.to(TestFormats.UUID, id1, id2);
 
-        // Then throws exception
+        // Then
+        assertNotNull(ids);
+        assertEquals(2, ids.size());
+
+        assertSame(uuid1, ids.get(id1));
+        assertSame(uuid2, ids.get(id2));
     }
 
     @Test
