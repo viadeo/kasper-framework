@@ -212,7 +212,9 @@ public class SagaExecutor<SAGA extends Saga> {
                 repository.delete(saga.getClass(), sagaIdentifier);
 
                 for (final Step aStep : steps.values()) {
+                    Timer.Context endTimerSteps = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), saga.getClass().toString() + "." + aStep.name() + ".end-handle-time")).time();
                     aStep.clean(sagaIdentifier);
+                    endTimerSteps.stop();
                 }
             } catch (Exception e) {
                 throw new SagaExecutionException(
