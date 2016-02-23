@@ -68,18 +68,16 @@ public class DefaultIDTransformer implements IDTransformer {
             idsByVendorFormat.put(ImmutablePair.of(id.getVendor(), id.getFormat()), id);
         }
 
-        Map<ImmutablePair<String, Format>, Map<ID, ID>> convertedIdsByVendorFormat = Maps.transformEntries(idsByVendorFormat.asMap(), new Maps.EntryTransformer<ImmutablePair<String, Format>, Collection<ID>, Map<ID, ID>>() {
-            @Override
-            public Map<ID, ID> transformEntry(ImmutablePair<String, Format> key, Collection<ID> values) {
-                return doConvert(key.first, key.second, targetFormat, values);
-            }
-        });
+        ImmutableMap.Builder<ID, ID> convertedIds = ImmutableMap.builder();
 
-        ImmutableMap.Builder<ID, ID> flattened = ImmutableMap.builder();
-        for (Map<ID, ID> idMap : convertedIdsByVendorFormat.values()) {
-            flattened.putAll(idMap);
+        for (Map.Entry<ImmutablePair<String, Format>, Collection<ID>> entry : idsByVendorFormat.asMap().entrySet()) {
+            ImmutablePair<String, Format> key = entry.getKey();
+            Collection<ID> values = entry.getValue();
+
+            convertedIds.putAll(doConvert(key.first, key.second, targetFormat, values));
         }
-        return flattened.build();
+
+        return convertedIds.build();
     }
 
     private Map<ID, ID> doConvert(String vendor, Format sourceFormat, Format targetFormat, Collection<ID> values) {
