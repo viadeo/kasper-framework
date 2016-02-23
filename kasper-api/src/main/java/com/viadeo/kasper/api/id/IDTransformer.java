@@ -35,12 +35,9 @@ public interface IDTransformer {
     Map<ID,ID> to(Format format, ID firstId,  ID... restIds);
 
     /**
-     * Transform the <code>ID</code>s according to the specified <code>Format</code>
-     *
-     * @param format the targeted format
-     * @param ids the list of initial ids
-     * @return a list of transformed id
+     * @deprecated DO NOT USE, instead do: {@code new ArrayList<>(transformer.to(format, ids).values()); }
      */
+    @Deprecated
     List<ID> toList(Format format, Collection<ID> ids);
 
     /**
