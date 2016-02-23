@@ -8,14 +8,13 @@ package com.viadeo.kasper.core.id;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.id.IDBuilder;
 import com.viadeo.kasper.api.id.IDTransformer;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import java.util.UUID;
 import static com.viadeo.kasper.core.id.TestConverters.mockConverter;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyCollectionOf;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -148,7 +148,8 @@ public class DefaultIDTransformerUTest {
         when(mockedConverter.getSource()).thenReturn(TestFormats.ID);
         when(mockedConverter.getTarget()).thenReturn(TestFormats.UUID);
         when(mockedConverter.getVendor()).thenReturn("viadeo");
-        Mockito.doThrow(new RuntimeException("Fake exception")).when(mockedConverter).convert(Sets.newHashSet(id));
+        doThrow(new RuntimeException("Fake exception"))
+                .when(mockedConverter).convert(Matchers.anyCollectionOf(ID.class));
 
         converterRegistry.register(mockedConverter);
 
@@ -169,7 +170,8 @@ public class DefaultIDTransformerUTest {
         when(mockedConverter.getSource()).thenReturn(TestFormats.ID);
         when(mockedConverter.getTarget()).thenReturn(TestFormats.UUID);
         when(mockedConverter.getVendor()).thenReturn("viadeo");
-        Mockito.doThrow(new FailedToTransformIDException("Fake exception")).when(mockedConverter).convert(Sets.newHashSet(id));
+        doThrow(new FailedToTransformIDException("Fake exception"))
+                .when(mockedConverter).convert(Matchers.anyCollectionOf(ID.class));
 
         converterRegistry.register(mockedConverter);
 

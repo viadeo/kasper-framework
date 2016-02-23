@@ -18,6 +18,7 @@ import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.id.IDTransformer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,12 +35,34 @@ public class DefaultIDTransformer implements IDTransformer {
     }
 
     @Override
-    public Map<ID, ID> to(final Format targetFormat, final Collection<ID> ids) {
-        checkNotNull(targetFormat);
+    public Map<ID, ID> to(final Format format, final Collection<ID> ids) {
+        checkNotNull(format);
         checkNotNull(ids);
-
         checkArgument(Iterables.all(ids, Predicates.notNull()), "Each specified ids must be not null");
 
+        return doConvertAll(format, ids);
+    }
+
+    @Override
+    public Map<ID, ID> to(final Format format, final ID firstId, final ID... restIds) {
+        checkNotNull(format);
+        List<ID> ids = Lists.asList(firstId, restIds);
+        checkArgument(Iterables.all(ids, Predicates.notNull()), "Each specified ids must be not null");
+
+        return doConvertAll(format, ids);
+    }
+
+    @Override
+    public ID to(final Format format, final ID id) {
+        checkNotNull(format);
+        checkNotNull(id);
+
+        Map<ID, ID> transformedIds = doConvert(id.getVendor(), id.getFormat(), format, Collections.singletonList(id));
+
+        return transformedIds.get(id);
+    }
+
+    private Map<ID, ID> doConvertAll(final Format targetFormat, Collection<ID> ids) {
         HashMultimap<ImmutablePair<String, Format>, ID> idsByVendorFormat = HashMultimap.create();
         for (ID id : ids) {
             idsByVendorFormat.put(ImmutablePair.of(id.getVendor(), id.getFormat()), id);
@@ -48,33 +71,7 @@ public class DefaultIDTransformer implements IDTransformer {
         Map<ImmutablePair<String, Format>, Map<ID, ID>> convertedIdsByVendorFormat = Maps.transformEntries(idsByVendorFormat.asMap(), new Maps.EntryTransformer<ImmutablePair<String, Format>, Collection<ID>, Map<ID, ID>>() {
             @Override
             public Map<ID, ID> transformEntry(ImmutablePair<String, Format> key, Collection<ID> values) {
-
-                String vendor = key.first;
-                Format sourceFormat = key.second;
-
-                if (values.isEmpty() || targetFormat == sourceFormat) {
-                    return Maps.uniqueIndex(values, Functions.<ID>identity());
-                }
-
-                for (final Converter converter : converterRegistry.getConverters(vendor, targetFormat)) {
-                    if (converter.getSource() == sourceFormat &&
-                            converter.getTarget() == targetFormat &&
-                            converter.getVendor().equals(vendor)) {
-                        try {
-                            return converter.convert(values);
-                        } catch (FailedToTransformIDException e) {
-                            throw e;
-                        } catch (RuntimeException e) {
-                            throw new FailedToTransformIDException(
-                                    String.format("Failed to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values), e
-                            );
-                        }
-                    }
-                }
-
-                throw new FailedToTransformIDException(
-                        String.format("No available converter allowing to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values)
-                );
+                return doConvert(key.first, key.second, targetFormat, values);
             }
         });
 
@@ -85,23 +82,30 @@ public class DefaultIDTransformer implements IDTransformer {
         return flattened.build();
     }
 
-    @Override
-    public Map<ID, ID> to(final Format format, final ID firstId, final ID... restIds) {
-        checkNotNull(format);
-        checkNotNull(firstId);
-        checkNotNull(restIds);
+    private Map<ID, ID> doConvert(String vendor, Format sourceFormat, Format targetFormat, Collection<ID> values) {
+        if (values.isEmpty() || targetFormat == sourceFormat) {
+            return Maps.uniqueIndex(values, Functions.<ID>identity());
+        }
 
-        return to(format, Lists.asList(firstId, restIds));
-    }
+        for (final Converter converter : converterRegistry.getConverters(vendor, targetFormat)) {
+            if (converter.getSource() == sourceFormat &&
+                    converter.getTarget() == targetFormat &&
+                    converter.getVendor().equals(vendor)) {
+                try {
+                    return converter.convert(values);
+                } catch (FailedToTransformIDException e) {
+                    throw e;
+                } catch (RuntimeException e) {
+                    throw new FailedToTransformIDException(
+                            String.format("Failed to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values), e
+                    );
+                }
+            }
+        }
 
-    @Override
-    public ID to(final Format format, final ID id) {
-        checkNotNull(format);
-        checkNotNull(id);
-
-        Map<ID, ID> transformedIds = to(format, id, new ID[0]);
-
-        return transformedIds.get(id);
+        throw new FailedToTransformIDException(
+                String.format("No available converter allowing to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values)
+        );
     }
 
     @Override
