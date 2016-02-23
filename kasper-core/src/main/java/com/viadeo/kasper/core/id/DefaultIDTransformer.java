@@ -109,6 +109,7 @@ public class DefaultIDTransformer implements IDTransformer {
     }
 
     @Override
+    @Deprecated
     public List<ID> toList(final Format format, final Collection<ID> ids) {
         return newArrayList(to(format, ids).values());
     }

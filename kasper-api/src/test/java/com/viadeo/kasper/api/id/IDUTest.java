@@ -106,6 +106,7 @@ public class IDUTest {
             }
 
             @Override
+            @Deprecated
             public List<ID> toList(Format format, Collection<ID> ids) {
                 throw new UnsupportedOperationException();
             }
