@@ -81,14 +81,14 @@ public class DefaultIDTransformer implements IDTransformer {
     }
 
     private Map<ID, ID> doConvert(String vendor, Format sourceFormat, Format targetFormat, Collection<ID> values) {
-        if (values.isEmpty() || targetFormat == sourceFormat) {
+        if (values.isEmpty() || targetFormat.equals(sourceFormat)) {
             return Maps.uniqueIndex(values, Functions.<ID>identity());
         }
 
         for (final Converter converter : converterRegistry.getConverters(vendor, targetFormat)) {
-            if (converter.getSource() == sourceFormat &&
-                    converter.getTarget() == targetFormat &&
-                    converter.getVendor().equals(vendor)) {
+            if (sourceFormat.equals(converter.getSource()) &&
+                    targetFormat.equals(converter.getTarget()) &&
+                    vendor.equals(converter.getVendor())) {
                 try {
                     return converter.convert(values);
                 } catch (FailedToTransformIDException e) {
