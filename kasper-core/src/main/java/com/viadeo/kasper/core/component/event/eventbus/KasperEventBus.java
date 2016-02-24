@@ -286,7 +286,6 @@ public class KasperEventBus extends ClusteringEventBus {
         checkNotNull(event);
         final Optional<InterceptorChain<Event, Void>> optionalRequestChain = getInterceptorChain(event.getClass());
         try {
-            LOGGER.info("Call actor chain for Event " + event.getClass().getSimpleName());
             optionalRequestChain.get().next(event, context);
         } catch (final RuntimeException e) {
             LOGGER.error("Failed to publish event, <event={}> <context={}>", event, context, e);

@@ -96,7 +96,6 @@ public class KasperQueryBus {
             }
 
             try {
-                LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
                 @SuppressWarnings("unchecked")
                 R ret = (R) optionalRequestChain.get().next(query, context);
                 callback.onSuccess(ret);
