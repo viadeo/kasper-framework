@@ -6,40 +6,27 @@
 // ============================================================================
 package com.viadeo.kasper.core.id;
 
-import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.base.Predicates;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.id.Format;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.id.IDTransformer;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 
 public class DefaultIDTransformer implements IDTransformer {
-
-    private static final Function<ID, String> GET_VENDOR_FUNCTION = new Function<ID, String>() {
-        @Override
-        public java.lang.String apply(ID id) {
-            return checkNotNull(id).getVendor();
-        }
-    };
-
-    private static final Function<ID, Format> GET_FORMAT_FUNCTION = new Function<ID, Format>() {
-        @Override
-        public Format apply(ID id) {
-            return checkNotNull(id).getFormat();
-        }
-    };
 
     private final ConverterRegistry converterRegistry;
 
@@ -48,57 +35,21 @@ public class DefaultIDTransformer implements IDTransformer {
     }
 
     @Override
-    public Map<ID,ID> to(final Format format, final Collection<ID> givenIds) {
+    public Map<ID, ID> to(final Format format, final Collection<ID> ids) {
         checkNotNull(format);
-        checkNotNull(givenIds);
-
-        final Set<ID> ids = Sets.newHashSet(givenIds);
-
+        checkNotNull(ids);
         checkArgument(Iterables.all(ids, Predicates.notNull()), "Each specified ids must be not null");
-        checkArgument(hasSameValue(ids, GET_FORMAT_FUNCTION), "Each specified ids must have the same format");
-        checkArgument(hasSameValue(ids, GET_VENDOR_FUNCTION), "Each specified ids must have the same vendor");
 
-        if (ids.isEmpty()) {
-            return doNothing(ids);
-        }
-
-        final ID firstElement = ids.iterator().next();
-
-        if (format == ids.iterator().next().getFormat()) {
-            return doNothing(ids);
-        }
-
-        final Format currentFormat = firstElement.getFormat();
-        final String currentVendor = firstElement.getVendor();
-
-        final Collection<Converter> converters = converterRegistry.getConverters(currentVendor, format);
-
-        for (final Converter converter : converters) {
-            if (accept(converter, currentVendor, currentFormat, format)) {
-                try {
-                    return converter.convert(ids);
-                } catch (FailedToTransformIDException t) {
-                    throw t;
-                } catch (RuntimeException e) {
-                    throw new FailedToTransformIDException(
-                            String.format("Failed to convert id from '%s' to '%s', <ids=%s>", currentFormat, format, ids), e
-                    );
-                }
-            }
-        }
-
-        throw new FailedToTransformIDException(
-                String.format("No available converter allowing to convert id from '%s' to '%s', <ids=%s>", currentFormat, format, ids)
-        );
+        return doConvertAll(format, ids);
     }
 
     @Override
-    public Map<ID,ID> to(final Format format, final ID firstId,  final ID... restIds) {
+    public Map<ID, ID> to(final Format format, final ID firstId, final ID... restIds) {
         checkNotNull(format);
-        checkNotNull(firstId);
-        checkNotNull(restIds);
+        List<ID> ids = Lists.asList(firstId, restIds);
+        checkArgument(Iterables.all(ids, Predicates.notNull()), "Each specified ids must be not null");
 
-        return to(format, Lists.asList(firstId, restIds));
+        return doConvertAll(format, ids);
     }
 
     @Override
@@ -106,33 +57,59 @@ public class DefaultIDTransformer implements IDTransformer {
         checkNotNull(format);
         checkNotNull(id);
 
-        Map<ID,ID> transformedIds = to(format, id, new ID[0]);
+        Map<ID, ID> transformedIds = doConvert(id.getVendor(), id.getFormat(), format, Collections.singletonList(id));
 
         return transformedIds.get(id);
     }
 
+    private Map<ID, ID> doConvertAll(final Format targetFormat, Collection<ID> ids) {
+        HashMultimap<ImmutablePair<String, Format>, ID> idsByVendorFormat = HashMultimap.create();
+        for (ID id : ids) {
+            idsByVendorFormat.put(ImmutablePair.of(id.getVendor(), id.getFormat()), id);
+        }
+
+        ImmutableMap.Builder<ID, ID> convertedIds = ImmutableMap.builder();
+
+        for (Map.Entry<ImmutablePair<String, Format>, Collection<ID>> entry : idsByVendorFormat.asMap().entrySet()) {
+            ImmutablePair<String, Format> key = entry.getKey();
+            Collection<ID> values = entry.getValue();
+
+            convertedIds.putAll(doConvert(key.first, key.second, targetFormat, values));
+        }
+
+        return convertedIds.build();
+    }
+
+    private Map<ID, ID> doConvert(String vendor, Format sourceFormat, Format targetFormat, Collection<ID> values) {
+        if (values.isEmpty() || targetFormat.equals(sourceFormat)) {
+            return Maps.uniqueIndex(values, Functions.<ID>identity());
+        }
+
+        for (final Converter converter : converterRegistry.getConverters(vendor, targetFormat)) {
+            if (sourceFormat.equals(converter.getSource()) &&
+                    targetFormat.equals(converter.getTarget()) &&
+                    vendor.equals(converter.getVendor())) {
+                try {
+                    return converter.convert(values);
+                } catch (FailedToTransformIDException e) {
+                    throw e;
+                } catch (RuntimeException e) {
+                    throw new FailedToTransformIDException(
+                            String.format("Failed to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values), e
+                    );
+                }
+            }
+        }
+
+        throw new FailedToTransformIDException(
+                String.format("No available converter allowing to convert id from '%s' to '%s', <ids=%s>", sourceFormat, targetFormat, values)
+        );
+    }
+
     @Override
+    @Deprecated
     public List<ID> toList(final Format format, final Collection<ID> ids) {
         return newArrayList(to(format, ids).values());
-    }
-
-    private Map<ID, ID> doNothing(final Collection<ID> ids) {
-        return Maps.uniqueIndex(ids, new Function<ID, ID>() {
-            @Override
-            public ID apply(ID input) {
-                return input;
-            }
-        });
-    }
-
-    public boolean accept(final Converter converter, final String vendor, final Format sourceFormat, final Format targetFormat) {
-        return  converter.getSource() == sourceFormat &&
-                converter.getTarget() == targetFormat &&
-                converter.getVendor().equals(vendor);
-    }
-
-    public <T> boolean hasSameValue(final Collection<ID> ids, final Function<ID, T> function) {
-        return ids.isEmpty() || Sets.newHashSet(Iterables.transform(ids, function)).size() == 1;
     }
 
 }
