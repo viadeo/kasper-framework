@@ -206,15 +206,16 @@ public class SagaExecutor<SAGA extends Saga> {
     }
 
     protected void persistSaga(final Object sagaIdentifier, final Saga saga, final boolean endSaga) {
+        long startTime = System.nanoTime();
         if (endSaga) {
             Timer.Context endTimer = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), "end-handle-time")).time();
             try {
                 repository.delete(saga.getClass(), sagaIdentifier);
 
                 for (final Step aStep : steps.values()) {
-                    Timer.Context endTimerStep = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), sagaIdentifier.toString() + "." + aStep.name() + "-step-handle-time")).time();
+                    Timer.Context endTimerSteps = KasperMetrics.getMetricRegistry().timer(KasperMetrics.name(saga.getClass(), saga.getClass().getSimpleName() + "." + aStep.name() + ".end-handle-time")).time();
                     aStep.clean(sagaIdentifier);
-                    endTimerStep.stop();
+                    endTimerSteps.stop();
                 }
             } catch (Exception e) {
                 throw new SagaExecutionException(
@@ -222,8 +223,10 @@ public class SagaExecutor<SAGA extends Saga> {
                         e
                 );
             } finally {
+                long endTime = System.nanoTime();
+                LOGGER.info(String.format("[SagaExecutor][End] Process time %d ms", (endTime - startTime)/1000000));
                 endTimer.stop();
-           }
+            }
 
         } else {
             try {
@@ -233,6 +236,9 @@ public class SagaExecutor<SAGA extends Saga> {
                         String.format("Unexpected error in saving saga, <saga=%s> <identifier=%s>", saga.getClass(), sagaIdentifier),
                         e
                 );
+            }finally {
+                long endTime = System.nanoTime();
+                LOGGER.info(String.format("[SagaExecutor][Save] Process time %d ms", (endTime - startTime)/1000000));
             }
         }
     }
