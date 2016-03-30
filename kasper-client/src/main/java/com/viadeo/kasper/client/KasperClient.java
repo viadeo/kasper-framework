@@ -44,6 +44,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
@@ -126,6 +128,8 @@ import static com.viadeo.kasper.common.exposition.HttpContextHeaders.*;
  */
 public class KasperClient {
     private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
+
+    public static final int DEFAULT_TIMEOUT = 6000;
 
     protected final Client client;
     protected final URL commandBaseLocation;
@@ -334,12 +338,17 @@ public class KasperClient {
                     throws InterruptedException {
                 try {
 
-                    callback.done(handleCommandResponse(f.get()));
+                    callback.done(handleCommandResponse(f.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)));
 
                 } catch (final ExecutionException e) {
                     throw new KasperException(String.format(
                         "ERROR handling command [%s]",
                         command.getClass()), e
+                    );
+                } catch (TimeoutException e) {
+                    throw new KasperException(String.format(
+                            "ERROR handling command [%s]. Timeout exception.",
+                            command.getClass()), e
                     );
                 }
             }
@@ -602,10 +611,12 @@ public class KasperClient {
             public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
                 try {
 
-                    callback.done(handleQueryResponse(f.get(), mapTo));
+                    callback.done(handleQueryResponse(f.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS), mapTo));
 
                 } catch (final ExecutionException e) {
                     throw new KasperException("ERROR handling query[" + query.getClass() + "]", e);
+                } catch (TimeoutException e) {
+                    throw new KasperException("ERROR handling query[" + query.getClass() + "]. Timeout exception", e);
                 }
             }
         };
@@ -749,5 +760,4 @@ public class KasperClient {
             return status;
         }
     }
-
 }

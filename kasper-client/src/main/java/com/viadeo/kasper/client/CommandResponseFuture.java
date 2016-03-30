@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 class CommandResponseFuture extends ResponseFuture<CommandResponse> {
 
@@ -31,7 +32,11 @@ class CommandResponseFuture extends ResponseFuture<CommandResponse> {
     // ------------------------------------------------------------------------
 
     public CommandResponse get() throws InterruptedException, ExecutionException {
-        return kasperClient.handleCommandResponse(futureResponse().get());
+        try {
+            return get(KasperClient.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            throw propagate(e);
+        }
     }
 
     public CommandResponse get(final long timeout, final TimeUnit unit)
