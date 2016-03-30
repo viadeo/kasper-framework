@@ -103,6 +103,7 @@ public class EventMessageHandler implements ChannelAwareMessageListener {
         try {
             response = eventListener.handle(new com.viadeo.kasper.core.component.event.listener.EventMessage(eventMessage));
         } catch (Exception e) {
+            logger.error("Can't process event", e);
             response = EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }
 
