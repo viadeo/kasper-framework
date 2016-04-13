@@ -28,18 +28,17 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import com.viadeo.kasper.common.exposition.TypeAdapter;
-import com.viadeo.kasper.common.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.common.exposition.query.QueryBuilder;
 import com.viadeo.kasper.common.exposition.query.QueryFactory;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -144,6 +143,7 @@ public class KasperClient {
     @VisibleForTesting
     protected final HttpContextSerializer contextSerializer;
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String version;
 
     // ------------------------------------------------------------------------
@@ -280,7 +280,11 @@ public class KasperClient {
 
         final ClientResponse response = builder.put(ClientResponse.class, command);
 
-        return handleCommandResponse(response);
+        try {
+            return handleCommandResponse(response);
+        } finally {
+            closeClientResponse(response);
+        }
     }
 
     // --
@@ -338,14 +342,19 @@ public class KasperClient {
                     throws InterruptedException {
                 try {
 
-                    callback.done(handleCommandResponse(f.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)));
-
+                    ClientResponse clientResponse = f.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+                    try {
+                        callback.done(handleCommandResponse(clientResponse));
+                    } finally {
+                        closeClientResponse(clientResponse);
+                    }
                 } catch (final ExecutionException e) {
                     throw new KasperException(String.format(
                         "ERROR handling command [%s]",
                         command.getClass()), e
                     );
                 } catch (TimeoutException e) {
+                    f.cancel(true);
                     throw new KasperException(String.format(
                             "ERROR handling command [%s]. Timeout exception.",
                             command.getClass()), e
@@ -418,9 +427,10 @@ public class KasperClient {
             client.resource(resolveEventPath(event.getClass()))
         );
 
-        try {
+        ClientResponse response = null;
 
-            final ClientResponse response = builder.put(ClientResponse.class, event);
+        try {
+            response = builder.put(ClientResponse.class, event);
             final ClientResponse.Status status = response.getClientResponseStatus();
 
             if ( ! ACCEPTED.equals(status)) {
@@ -429,6 +439,8 @@ public class KasperClient {
 
         } catch (final Exception e) {
             throw new KasperException("Unable to send event : " + event.getClass().getName(), e);
+        } finally {
+            closeClientResponse(response);
         }
 
     }
@@ -498,7 +510,11 @@ public class KasperClient {
             response = builder.get(ClientResponse.class);
         }
 
-        return handleQueryResponse(response, mapTo);
+        try {
+            return handleQueryResponse(response, mapTo);
+        } finally {
+            closeClientResponse(response);
+        }
     }
 
     // --
@@ -609,14 +625,17 @@ public class KasperClient {
         return new TypeListener<ClientResponse>(ClientResponse.class) {
             @Override
             public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
+                ClientResponse clientResponse = null;
                 try {
-
-                    callback.done(handleQueryResponse(f.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS), mapTo));
-
+                    clientResponse = f.get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+                    callback.done(handleQueryResponse(clientResponse, mapTo));
                 } catch (final ExecutionException e) {
                     throw new KasperException("ERROR handling query[" + query.getClass() + "]", e);
                 } catch (TimeoutException e) {
+                    f.cancel(true);
                     throw new KasperException("ERROR handling query[" + query.getClass() + "]. Timeout exception", e);
+                } finally {
+                    closeClientResponse(clientResponse);
                 }
             }
         };
@@ -696,13 +715,6 @@ public class KasperClient {
 
             adapter.adapt(query, queryBuilder);
 
-        } catch (final KasperQueryAdapterException ex) {
-
-            throw new KasperException(String.format(
-                "ERROR generating query string for [%s]",
-                query.getClass()
-            ), ex);
-
         } catch (final Exception ex) {
 
             throw new KasperException(String.format(
@@ -739,9 +751,7 @@ public class KasperClient {
 
             return new URL(basePath, path).toURI();
 
-        } catch (final MalformedURLException e) {
-            throw cannotConstructURI(clazz, e);
-        } catch (final URISyntaxException e) {
+        } catch (final Exception e) {
             throw cannotConstructURI(clazz, e);
         }
     }
@@ -758,6 +768,16 @@ public class KasperClient {
             return Response.Status.INTERNAL_SERVER_ERROR;
         } else {
             return status;
+        }
+    }
+
+    void closeClientResponse(ClientResponse clientResponse) {
+        if (clientResponse != null) {
+            try {
+                clientResponse.close();
+            } catch (Throwable t) {
+                logger.error("Can't close client response", t);
+            }
         }
     }
 }

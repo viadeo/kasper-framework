@@ -41,7 +41,12 @@ class CommandResponseFuture extends ResponseFuture<CommandResponse> {
 
     public CommandResponse get(final long timeout, final TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
-        return kasperClient.handleCommandResponse(futureResponse().get(timeout, unit));
+        ClientResponse clientResponse = futureResponse().get(timeout, unit);
+        try {
+            return kasperClient.handleCommandResponse(clientResponse);
+        } finally {
+            kasperClient.closeClientResponse(clientResponse);
+        }
     }
 
 }
