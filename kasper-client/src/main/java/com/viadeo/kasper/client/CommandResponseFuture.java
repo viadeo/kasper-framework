@@ -35,6 +35,7 @@ class CommandResponseFuture extends ResponseFuture<CommandResponse> {
         try {
             return get(KasperClient.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
+            futureResponse().cancel(true);
             throw propagate(e);
         }
     }

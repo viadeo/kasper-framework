@@ -10,8 +10,6 @@ import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.api.component.query.QueryResponse;
 import com.viadeo.kasper.api.component.query.QueryResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -22,7 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 
 class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryResponse<P>> {
-    private static final Logger logger = LoggerFactory.getLogger(QueryResponseFuture.class);
     private final TypeToken<P> mapTo;
     private KasperClient kasperClient;
 
@@ -43,6 +40,7 @@ class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryRes
         try {
             return get(KasperClient.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
+            futureResponse().cancel(true);
             throw propagate(e);
         }
     }
