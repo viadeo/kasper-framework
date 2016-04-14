@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryResponse<P>> {
-
     private final TypeToken<P> mapTo;
     private KasperClient kasperClient;
 
@@ -37,12 +37,22 @@ class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryRes
     // ------------------------------------------------------------------------
 
     public QueryResponse<P> get() throws InterruptedException, ExecutionException {
-        return kasperClient.handleQueryResponse(futureResponse().get(), mapTo);
+        try {
+            return get(KasperClient.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            futureResponse().cancel(true);
+            throw propagate(e);
+        }
     }
 
     public QueryResponse<P> get(final long timeout, final TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
-        return kasperClient.handleQueryResponse(futureResponse().get(timeout, unit), mapTo);
+        ClientResponse clientResponse = futureResponse().get(timeout, unit);
+        try {
+            return kasperClient.handleQueryResponse(clientResponse, mapTo);
+        } finally {
+            kasperClient.closeClientResponse(clientResponse);
+        }
     }
 
 }
