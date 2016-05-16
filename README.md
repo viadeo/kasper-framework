@@ -8,14 +8,22 @@ KASPER - Kasper is the treasure keeper
 
 **Viadeo Framework for effective CQRS/DDD architecture**
 
+Parts of Kasper framework are based on meta-framework [Axon](http://www.axonframework.org/)
 
+Kasper framework is currently proposed to the community as-is, there is some work to be done in order to ensure its usability : updated documentation, tutorial, some spring refactoring, a better modules system.
+
+* **kasper-api**                    : API classes
 * **kasper-client**                 : Java client to access a Kasper platform
 * **kasper-common**                 : Common code to be shared between api and core modules
 * **kasper-core**                   : Kasper core : bootstrap, DDD modelisation, CQRS framework
 * **kasper-documentation**          : Automated documentation
+* **kasper-domain-sample**          : A sample Kasper domain
+* **kasper-eventbus-rabbitmq**      : An eventbus implementation using RabbitMQ
+* **kasper-exposition-jetty**       : An exposition layer implementation using jetty
+* **kasper-exposition**             : Exposition layer and helpers
 * **kasper-platform**               : The Kasper platform
+* **kasper-spring**                 : Spring module, to wire a Kasper platform using Spring
 * **kasper-test**                   : Functional/Integration end to end testing
-* **kasper-exposition**             : Web exposition and helpers
 * **doc**                           : Kasper developers documentation (cf README)
 * **tools**                         : Some Kasper developer tools
 
@@ -26,6 +34,8 @@ KASPER - Kasper is the treasure keeper
 2. Make your changes in a separate branch
 3. Rebase your branch on viadeo **develop** branch
 4. Submit a pull request on **develop** branch
-5. Edit the CHANGES.md
 
 * [Access to changes](./CHANGES.md)
+
+
+
