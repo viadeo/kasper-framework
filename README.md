@@ -29,4 +29,3 @@ KASPER - Kasper is the treasure keeper
 5. Edit the CHANGES.md
 
 * [Access to changes](./CHANGES.md)
-* [Access lastest master Kasper framework documentation](http://doc01.infra.paris.apvo/kasper-framework/latest/)
