@@ -115,7 +115,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
         }
 
         if (exception.isPresent()) {
-            logger.error("Handle method throws an Exception", exception.get());
+            logger.error("Handle method throws an Exception in handler " + handler.getClass().getName(), exception.get());
             throw exception.get();
         }
 
