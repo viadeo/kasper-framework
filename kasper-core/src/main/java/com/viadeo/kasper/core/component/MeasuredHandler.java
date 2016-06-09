@@ -17,6 +17,8 @@ import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.core.metrics.MetricNames;
 import org.axonframework.repository.ConflictingAggregateVersionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,6 +37,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
 
     protected final HANDLER handler;
     private final MetricRegistry metricRegistry;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private MetricNames inputMetricNames;
     private MetricNames domainMetricNames;
@@ -112,6 +115,7 @@ public abstract class MeasuredHandler<INPUT, MESSAGE extends KasperMessage<INPUT
         }
 
         if (exception.isPresent()) {
+            logger.error("Handle method throws an Exception", exception.get());
             throw exception.get();
         }
 
