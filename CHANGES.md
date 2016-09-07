@@ -1,5 +1,9 @@
 # Kasper Releases #
 
+### Version 1.5
+
+* Applied LGPL license
+
 ### Version 1.2.0-SNAPSHOT ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~1.2-SNAPSHOT~~))
 
 * [Pull 354](https://github.com/viadeo/kasper-framework/pull/354) Use Gradle 2.9

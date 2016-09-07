@@ -104,6 +104,10 @@ configure(subprojects) {
         from sourceSets.main.allSource
     }
 
+	javadoc {
+		failOnError = false
+	}
+
     // custom tasks for creating javadoc jar
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
