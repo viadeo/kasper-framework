@@ -84,7 +84,7 @@ public enum CoreReasonCode {
     // ------------------------------------------------------------------------
 
     CoreReasonCode(final int code) {
-        checkState(code < 10000, "Code must be high than 9999");
+        checkState(code < 10000, "Code must be higher than 9999");
         this.code = code;
         this.reason = new KasperReason(String.valueOf(this.code), this.name());
     }
