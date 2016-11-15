@@ -1,5 +1,8 @@
 # Kasper Releases #
 
+### Version 1.5.2
+* [Pull 368](https://github.com/viadeo/kasper-framework/pull/368) Set correct Response HTTP codes instead of 500
+
 ### Version 1.5
 
 * Applied LGPL license
