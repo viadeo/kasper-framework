@@ -56,7 +56,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageDeliveryMode;
@@ -70,8 +70,7 @@ import java.util.Map;
 
 import static com.viadeo.kasper.core.component.event.eventbus.EventBusMessageConverter.*;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -101,7 +100,7 @@ public class EventBusMessageConverterUTest {
     public void toMessage_withDomainEventMessage_isOk() throws Exception {
         // Given
         SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
-        when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
+        when(serializer.serialize(any(), any(Class.class))).thenReturn(serializedObject);
 
         GenericDomainEventMessage<String> axonMessage = new GenericDomainEventMessage<>("event-id", timestamp, "event-aggregate-id", 1L, "payload", properties);
 
@@ -136,7 +135,7 @@ public class EventBusMessageConverterUTest {
     public void toMessage_withEventMessage_isOk() throws Exception {
         // Given
         SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
-        when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
+        when(serializer.serialize(any(), any(Class.class))).thenReturn(serializedObject);
 
         GenericEventMessage<String> axonMessage = new GenericEventMessage<>("event-id", timestamp, "payload", properties);
 
@@ -156,7 +155,7 @@ public class EventBusMessageConverterUTest {
     public void toMessage_withEventMessage_containingEvent_isOk() throws Exception {
         // Given
         SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
-        when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
+        when(serializer.serialize(any(), any(Class.class))).thenReturn(serializedObject);
 
         TimeEvent timeEvent = new TimeEvent(DateTime.now());
 
@@ -183,7 +182,7 @@ public class EventBusMessageConverterUTest {
         String tooLargePayload = new String(chars);
 
         SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>(tooLargePayload.getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
-        when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
+        when(serializer.serialize(any(), any(Class.class))).thenReturn(serializedObject);
 
 
         GenericEventMessage<String> axonMessage = new GenericEventMessage<>("event-id", timestamp, tooLargePayload, properties);
@@ -210,7 +209,7 @@ public class EventBusMessageConverterUTest {
         properties.put("lolilou", null);
 
         final SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
-        when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
+        when(serializer.serialize(any(), any(Class.class))).thenReturn(serializedObject);
 
         final GenericEventMessage<String> axonMessage = new GenericEventMessage<>("event-id", timestamp, "payload", properties);
 

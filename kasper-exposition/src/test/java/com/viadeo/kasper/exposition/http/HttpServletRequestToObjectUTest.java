@@ -35,7 +35,6 @@ package com.viadeo.kasper.exposition.http;
 
 import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

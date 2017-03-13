@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.listener;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
@@ -97,7 +97,7 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         @SuppressWarnings("unchecked")
         final EventMessage<EVENT> message = new EventMessage<EVENT>(eventMessage);
         final EVENT event = message.getEvent();
-        final Context context = Objects.firstNonNull(message.getContext(), Contexts.empty());
+        final Context context = MoreObjects.firstNonNull(message.getContext(), Contexts.empty());
 
         EventResponse response;
 

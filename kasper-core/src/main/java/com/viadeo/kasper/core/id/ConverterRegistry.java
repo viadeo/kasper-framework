@@ -33,7 +33,7 @@
 // ----------------------------------------------------------------------------
 package com.viadeo.kasper.core.id;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -62,7 +62,7 @@ public class ConverterRegistry {
     }
 
     public Multimap<Format, Converter> getConvertersByFormats(String vendor) {
-        return Objects.firstNonNull(currentConvertersByFormatsByVendors.get(vendor), ArrayListMultimap.<Format, Converter>create());
+        return MoreObjects.firstNonNull(currentConvertersByFormatsByVendors.get(vendor), ArrayListMultimap.<Format, Converter>create());
     }
 
     public Collection<Converter> getConverters(String vendor, Format format) {

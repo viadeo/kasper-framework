@@ -9,7 +9,7 @@ ext.nexusCredentials = {
     password nexus_password
 }
 
-wrapper.gradleVersion = '2.9'
+wrapper.gradleVersion = '3.4.1'
 
 configure(allprojects) {
     apply plugin: 'idea'
@@ -18,27 +18,13 @@ configure(allprojects) {
 
 configure(rootProject) {
     idea.project {
-        languageLevel = '1.7'
+        languageLevel = 'JDK_1_7'
         ipr {
             withXml { provider ->
-                def mapping = provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping
-                mapping.@vcs = 'Git'
-                mapping.@directory = '$PROJECT_DIR$'
+                provider.node.component
+                    .find { it.@name == 'VcsDirectoryMappings' }
+                    .mapping.@vcs = 'Git'
             }
-        }
-    }
-
-    apply plugin: 'sonar-runner'
-
-    // Sonar configuration for root project
-    sonarRunner {
-        sonarProperties {
-            property "sonar.host.url", "http://${sonar_host}:8080/sonar/"
-            property "sonar.jdbc.url", "jdbc:mysql://${sonar_host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
-            property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
-            property "sonar.jdbc.username", "sonar"
-            property "sonar.jdbc.password", "sonar"
-            property "sonar.dynamicAnalysis", "true"
         }
     }
 }
@@ -50,17 +36,8 @@ configure(subprojects) {
     group = 'com.viadeo.kasper'
     version = '1.5.2'
 
-    if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
-        sourceCompatibility = 1.6
-        targetCompatibility = 1.6
-    } else {
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
-    }
-
-    idea.module.iml.withXml {
-        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.7'
-    }
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 
     configure([compileJava, compileTestJava]) {
         options.encoding = 'UTF-8'
@@ -76,7 +53,7 @@ configure(subprojects) {
     }
 
     repositories {
-//        mavenLocal()
+        mavenLocal()
 
         // Maven Central is first to be the default repository (ordering is important)
         mavenCentral()
@@ -131,18 +108,6 @@ configure(subprojects) {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    apply plugin: 'jacoco'
-
-    // Jacoco configuration
-    tasks.withType(Test) {
-        jacoco {
-            append = true
-            destinationFile = file("$rootDir/build/jacoco/jacocoTest.exec")
-        }
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
@@ -152,15 +117,6 @@ configure(subprojects) {
             snapshotRepository(url: "https://${nexus_host}/content/repositories/kasper-snapshots") {
                 authentication(userName: nexus_username, password: nexus_password)
             }
-        }
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
-    // Sonar configuration for sub-projects
-    sonarRunner {
-        sonarProperties {
-            property "sonar.sourceEncoding", "UTF-8"
         }
     }
 }

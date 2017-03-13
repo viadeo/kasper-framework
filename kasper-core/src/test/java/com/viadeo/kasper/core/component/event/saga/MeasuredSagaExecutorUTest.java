@@ -63,8 +63,8 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.*;
 
 
@@ -97,7 +97,7 @@ public class MeasuredSagaExecutorUTest {
         );
 
         sagaRepository = mock(SagaRepository.class);
-        when(sagaRepository.load(any(Class.class), anyObject())).thenReturn(Optional.absent());
+        when(sagaRepository.load(any(Class.class), any())).thenReturn(Optional.absent());
 
         sagaExecutor = new MeasuredSagaExecutor<>(
                 metricRegistry,

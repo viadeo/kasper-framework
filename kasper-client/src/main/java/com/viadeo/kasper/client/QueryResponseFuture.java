@@ -74,7 +74,7 @@ class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryRes
             return get(KasperClient.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             futureResponse().cancel(true);
-            throw propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

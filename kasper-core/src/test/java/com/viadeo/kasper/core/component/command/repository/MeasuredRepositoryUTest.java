@@ -54,13 +54,13 @@ import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.DefaultUnitOfWork;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class MeasuredRepositoryUTest {
@@ -104,7 +104,7 @@ public class MeasuredRepositoryUTest {
         repository.save(aggregate);
 
         //Then
-        verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.save-time"));
+        verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.save-time"));
         verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.saves");
     }
 
@@ -123,8 +123,8 @@ public class MeasuredRepositoryUTest {
         } catch (Exception e) {
             assertEquals(expectedException, e);
         } finally {
-            verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.save-time"));
-            verify(metricRegistry).meter(Matchers.matches("test\\.repository\\..*\\.save-errors"));
+            verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.save-time"));
+            verify(metricRegistry).meter(ArgumentMatchers.matches("test\\.repository\\..*\\.save-errors"));
             verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.saves");
             verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.save-errors");
         }
@@ -140,7 +140,7 @@ public class MeasuredRepositoryUTest {
         repository.save(aggregate);
 
         //Then
-        verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.save-time"));
+        verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.save-time"));
         verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.saves");
     }
 
@@ -155,7 +155,7 @@ public class MeasuredRepositoryUTest {
         repository.load(aggregateIdentifier);
 
         //Then
-        verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.load-time"));
+        verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.load-time"));
         verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.loads");
     }
 
@@ -175,8 +175,8 @@ public class MeasuredRepositoryUTest {
         } catch (Exception e) {
             assertEquals(expectedException, e);
         } finally {
-            verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.load-time"));
-            verify(metricRegistry).meter(Matchers.matches("test\\.repository\\..*\\.load-errors"));
+            verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.load-time"));
+            verify(metricRegistry).meter(ArgumentMatchers.matches("test\\.repository\\..*\\.load-errors"));
             verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.loads");
             verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.load-errors");
         }
@@ -192,7 +192,7 @@ public class MeasuredRepositoryUTest {
         repository.delete(aggregate);
 
         //Then
-        verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.delete-time"));
+        verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.delete-time"));
         verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.deletes");
     }
 
@@ -213,8 +213,8 @@ public class MeasuredRepositoryUTest {
         } catch (Exception e) {
             assertEquals(expectedException, e);
         } finally {
-            verify(metricRegistry).timer(Matchers.matches("test\\.repository\\..*\\.delete-time"));
-            verify(metricRegistry).meter(Matchers.matches("test\\.repository\\..*\\.delete-errors"));
+            verify(metricRegistry).timer(ArgumentMatchers.matches("test\\.repository\\..*\\.delete-time"));
+            verify(metricRegistry).meter(ArgumentMatchers.matches("test\\.repository\\..*\\.delete-errors"));
             verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.deletes");
             verify(metricRegistry).meter("com.viadeo.kasper.core.component.command.repository.repository.delete-errors");
         }

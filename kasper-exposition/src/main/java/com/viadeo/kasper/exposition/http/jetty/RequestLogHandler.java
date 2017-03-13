@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition.http.jetty;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.joda.time.DateTime;
@@ -62,7 +62,7 @@ public class RequestLogHandler extends HandlerWrapper {
             final HttpServletRequest request,
             final HttpServletResponse response) throws IOException, ServletException {
 
-        final String correlationId = Objects.firstNonNull(baseRequest.getHeader("X-KASPER-REQUEST-CID"), "-");
+        final String correlationId = MoreObjects.firstNonNull(baseRequest.getHeader("X-KASPER-REQUEST-CID"), "-");
         final String path = baseRequest.getRequestURI();
         final long timestamp = baseRequest.getTimeStamp();
         final DateTime time = new DateTime(timestamp);

@@ -42,6 +42,7 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Sets;
 import com.sun.jersey.api.client.AsyncWebResource;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
@@ -56,6 +57,7 @@ import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.common.serde.ObjectMapperProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -75,8 +77,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -244,7 +246,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // Then
         checkRoundTrip(query, response);
-        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
+        verify(contextSerializer).serialize(eq(context), any(WebResource.Builder.class));
     }
 
     @Test

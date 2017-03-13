@@ -41,7 +41,7 @@ package com.viadeo.kasper.core.interceptor.resilience;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.netflix.hystrix.*;
 import com.netflix.hystrix.contrib.codahalemetricspublisher.HystrixCodaHaleMetricsPublisher;
@@ -144,7 +144,7 @@ public abstract class ResilienceInterceptor<INPUT, OUTPUT extends KasperResponse
         checkNotNull(input);
 
         final String inputName = input.getClass().getName();
-        final String groupName = Objects.firstNonNull(getGroupName(), UNKNOWN_GROUP_NAME);
+        final String groupName = MoreObjects.firstNonNull(getGroupName(), UNKNOWN_GROUP_NAME);
 
         final ResilienceConfigurator.InputConfig config = configurer.configure(input);
 

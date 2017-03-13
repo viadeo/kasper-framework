@@ -168,9 +168,9 @@ public final class CallTypes {
 
             } catch (ExecutionException e) {
                 if (e.getCause() != null) {
-                    throw Throwables.propagate(e.getCause());
+                    throw new RuntimeException(e.getCause());
                 } else {
-                    throw Throwables.propagate(e);
+                    throw new RuntimeException(e);
                 }
 
             } finally {

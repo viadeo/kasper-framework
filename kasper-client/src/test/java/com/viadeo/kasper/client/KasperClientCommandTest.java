@@ -42,6 +42,7 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.ImmutableSet;
 import com.sun.jersey.api.client.AsyncWebResource;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -57,6 +58,7 @@ import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -80,8 +82,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.viadeo.kasper.api.response.KasperResponse.Status;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -241,7 +243,7 @@ public class KasperClientCommandTest extends JerseyTest {
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
         assertTrue(response.getAccessToken().isPresent());
         assertEquals(ACCESS_TOKEN, response.getAccessToken().get());
-        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
+        verify(contextSerializer).serialize(eq(context), any(WebResource.Builder.class));
     }
 
     // --

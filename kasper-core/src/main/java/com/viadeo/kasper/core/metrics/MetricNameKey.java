@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.metrics;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class MetricNameKey {
@@ -73,7 +74,7 @@ public class MetricNameKey {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("kind", kind)
                 .add("clazz", clazz)
                 .toString();

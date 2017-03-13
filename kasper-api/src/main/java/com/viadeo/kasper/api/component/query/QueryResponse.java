@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.query;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
@@ -200,7 +201,7 @@ public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(super.toString())
                 .addValue(this.result)
                 .toString();

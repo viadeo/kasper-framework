@@ -33,34 +33,40 @@
       "type": "Long"
     }
   ],
-  "sourceEvents": [{
-    "description": "The MemberCreated event",
-    "label": "MemberCreated",
-    "name": "MemberCreatedEvent",
-    "type": "event",
-    "typePlural": "events",
-    "url": "/domain/Facebook/event/MemberCreatedEvent"
-  }],
-  "sourceRelations": [{
-    "description": "The connected_to relation between FacebookMember and FacebookMember",
-    "label": "connected_to",
-    "name": "Member_connectedTo_Member",
-    "sourceConceptName": "Member",
-    "targetConceptName": "Member",
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Facebook/relation/Member_connectedTo_Member"
-  }],
-  "targetRelations": [{
-    "description": "The connected_to relation between FacebookMember and FacebookMember",
-    "label": "connected_to",
-    "name": "Member_connectedTo_Member",
-    "sourceConceptName": "Member",
-    "targetConceptName": "Member",
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Facebook/relation/Member_connectedTo_Member"
-  }],
+  "sourceEvents": [
+    {
+      "description": "The MemberCreated event",
+      "label": "MemberCreated",
+      "name": "MemberCreatedEvent",
+      "type": "event",
+      "typePlural": "events",
+      "url": "/domain/Facebook/event/MemberCreatedEvent"
+    }
+  ],
+  "sourceRelations": [
+    {
+      "description": "The connected_to relation between FacebookMember and FacebookMember",
+      "label": "connected_to",
+      "name": "Member_connectedTo_Member",
+      "sourceConceptName": "Member",
+      "targetConceptName": "Member",
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+    }
+  ],
+  "targetRelations": [
+    {
+      "description": "The connected_to relation between FacebookMember and FacebookMember",
+      "label": "connected_to",
+      "name": "Member_connectedTo_Member",
+      "sourceConceptName": "Member",
+      "targetConceptName": "Member",
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+    }
+  ],
   "type": "concept",
   "typePlural": "concepts",
   "url": "/domain/Facebook/concept/Member"

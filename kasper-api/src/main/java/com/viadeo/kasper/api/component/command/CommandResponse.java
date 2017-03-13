@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.command;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.api.id.ID;
@@ -331,7 +331,7 @@ public class CommandResponse extends KasperResponse {
 
     @Override
     public String toString() {
-        final Objects.ToStringHelper helper = com.google.common.base.Objects.toStringHelper(this)
+        final MoreObjects.ToStringHelper helper = MoreObjects.toStringHelper(this)
                            .addValue(super.toString());
         if (this.getSecurityToken().isPresent()) {
             helper.addValue(this.getSecurityToken().get());

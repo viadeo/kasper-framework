@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -252,7 +252,7 @@ public class FixtureUseCase {
 
         @Override
         public String toString() {
-            return Objects.toStringHelper(this)
+            return MoreObjects.toStringHelper(this)
                     .add("firstName", firstName)
                     .add("lastName", lastName)
                     .toString();

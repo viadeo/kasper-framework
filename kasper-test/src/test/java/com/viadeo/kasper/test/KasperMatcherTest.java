@@ -45,7 +45,6 @@ import com.viadeo.kasper.api.component.query.IndexedEntity;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
-import com.viadeo.kasper.test.platform.KasperMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.joda.time.DateTime;

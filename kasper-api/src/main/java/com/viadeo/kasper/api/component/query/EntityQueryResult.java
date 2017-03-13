@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.query;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.id.KasperID;
 import org.joda.time.DateTime;
@@ -114,7 +115,7 @@ public abstract class EntityQueryResult implements QueryResult {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(this.id)
                 .addValue(this.type)
                 .addValue(this.version)

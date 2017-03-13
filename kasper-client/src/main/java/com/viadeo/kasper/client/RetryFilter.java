@@ -81,7 +81,7 @@ public class RetryFilter extends ClientFilter {
                         e.getMessage(), cr.getURI(), numberOfRetries - i
                     );
                 } else {
-                    throw Throwables.propagate(e);
+                    throw new RuntimeException(e);
                 }
             }
         }

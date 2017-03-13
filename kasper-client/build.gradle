@@ -26,7 +26,6 @@ dependencies {
     // Test dependencies
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
-    testCompile libraries.POWER_MOCK
     testCompile libraries.JERSEY_TEST_CORE
     testCompile libraries.JERSEY_TEST_HTTP
     testCompile files('src/test/resources/libs/testManifest.jar')

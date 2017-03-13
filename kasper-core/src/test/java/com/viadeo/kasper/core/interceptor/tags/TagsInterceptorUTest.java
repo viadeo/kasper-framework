@@ -68,7 +68,7 @@ import static com.viadeo.kasper.api.context.Context.TAGS_SHORTNAME;
 import static com.viadeo.kasper.core.TestDomain.TestCommand;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;

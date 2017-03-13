@@ -40,6 +40,7 @@
 package com.viadeo.kasper.api.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -185,7 +186,7 @@ public final class KasperReason implements Serializable, Immutable {
     }
 
     public KasperReason(CoreReasonCode code, Exception exception) {
-        this(checkNotNull(code).toString(), Objects.firstNonNull(checkNotNull(exception).getMessage(), ""));
+        this(checkNotNull(code).toString(), MoreObjects.firstNonNull(checkNotNull(exception).getMessage(), ""));
         this.exception = exception;
     }
 
@@ -266,7 +267,7 @@ public final class KasperReason implements Serializable, Immutable {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(this.id)
                 .addValue(this.code)
                 .addValue(this.messages)

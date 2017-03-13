@@ -83,9 +83,9 @@ public class BaseValidationInterceptorUTest extends TestCase {
             fail();
         } catch (final JSR303ViolationException e) {
             // Then
-            assertEquals(true, e.getMessage().contains("One or more JSR303 constraints were violated."));
-            assertEquals(true, e.getMessage().contains("Field company = []: may not be empty"));
-            assertEquals(true, e.getMessage().contains("Field size = [0]: must be greater than or equal to 10"));
+            assertEquals(true, e.getMessage().equals("One or more JSR303 constraints were violated: \n" +
+                    "property company in class com.viadeo.kasper.core.interceptor.cache.BaseValidationInterceptorUTest$CommandToValidate may not be empty\n" +
+                    "property size in class com.viadeo.kasper.core.interceptor.cache.BaseValidationInterceptorUTest$CommandToValidate must be greater than or equal to 10"));
         }
     }
 
@@ -104,8 +104,8 @@ public class BaseValidationInterceptorUTest extends TestCase {
             fail();
         } catch (final JSR303ViolationException e) {
             // Then
-            assertEquals(true, e.getMessage().contains("One or more JSR303 constraints were violated."));
-            assertEquals(true, e.getMessage().contains("Field size = [0]: must be greater than or equal to 10"));
+            assertEquals(true, e.getMessage().contains("One or more JSR303 constraints were violated: \n" +
+                    "property size in class com.viadeo.kasper.core.interceptor.cache.BaseValidationInterceptorUTest$CommandToValidate must be greater than or equal to 10"));
         }
     }
 

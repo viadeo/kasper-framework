@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.query;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -130,7 +130,7 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("map", map)
                 .toString();
     }

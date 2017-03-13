@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.saga.step;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -185,7 +186,7 @@ public class BaseStep implements Step {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("saga", sagaMethod.getDeclaringClass())
                 .add("method", sagaMethod.getName())
                 .add("eventDescriptor", eventDescriptor)

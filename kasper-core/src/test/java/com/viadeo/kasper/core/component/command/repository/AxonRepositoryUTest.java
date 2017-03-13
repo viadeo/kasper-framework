@@ -51,8 +51,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class AxonRepositoryUTest {
@@ -117,7 +118,7 @@ public class AxonRepositoryUTest {
         // Given
         KasperID aggregateIdentifier = mock(KasperID.class);
         AggregateRoot<KasperID> aggregate = new TestAggregate(aggregateIdentifier) {};
-        doReturn(Optional.of(aggregate)).when(repository).doLoad(any(KasperID.class), anyLong());
+        doReturn(Optional.of(aggregate)).when(repository).doLoad(any(KasperID.class), nullable(Long.class));
 
         // When
         Optional<AggregateRoot<KasperID>> aggregateOptional = repository.load(aggregateIdentifier);
@@ -126,7 +127,7 @@ public class AxonRepositoryUTest {
         assertNotNull(aggregateOptional);
         assertTrue(aggregateOptional.isPresent());
         assertEquals(0L, (long) aggregateOptional.get().getVersion());
-        verify(repository).doLoad(eq(aggregateIdentifier), anyLong());
+        verify(repository).doLoad(eq(aggregateIdentifier), nullable(Long.class));
     }
 
     @Test
@@ -134,7 +135,7 @@ public class AxonRepositoryUTest {
         // Given
         KasperID aggregateIdentifier = mock(KasperID.class);
         AggregateRoot<KasperID> aggregate = new TestAggregate(aggregateIdentifier) {};
-        doReturn(Optional.of(aggregate)).when(repository).doLoad(eq(aggregateIdentifier), anyLong());
+        doReturn(Optional.of(aggregate)).when(repository).doLoad(eq(aggregateIdentifier), nullable(Long.class));
 
         // When
         Optional<AggregateRoot<KasperID>> aggregateOptional = repository.get(aggregateIdentifier);
@@ -143,7 +144,7 @@ public class AxonRepositoryUTest {
         assertNotNull(aggregateOptional);
         assertTrue(aggregateOptional.isPresent());
         assertEquals(0L, (long) aggregateOptional.get().getVersion());
-        verify(repository).doLoad(eq(aggregateIdentifier), anyLong());
+        verify(repository).doLoad(eq(aggregateIdentifier), nullable(Long.class));
     }
 
     // ------------------------------------------------------------------------

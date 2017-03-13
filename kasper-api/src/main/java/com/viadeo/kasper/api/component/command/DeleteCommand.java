@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.command;
 
+import com.google.common.base.MoreObjects;
 import com.viadeo.kasper.api.id.KasperID;
 
 import javax.validation.constraints.NotNull;
@@ -90,7 +91,7 @@ public abstract class DeleteCommand implements Command {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(this.id)
                 .toString();
     }

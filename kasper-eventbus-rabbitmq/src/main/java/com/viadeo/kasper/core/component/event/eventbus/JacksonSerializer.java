@@ -40,7 +40,6 @@
 package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 import org.axonframework.serializer.*;
 
 import java.io.IOException;
@@ -67,7 +66,7 @@ public class JacksonSerializer implements Serializer {
             final T convertedObject = convert(byte[].class, expectedRepresentation, objectMapper.writeValueAsBytes(object));
             return new SimpleSerializedObject<>(convertedObject, expectedRepresentation, typeForClass(object.getClass()));
         } catch (IOException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -90,7 +89,7 @@ public class JacksonSerializer implements Serializer {
             final Class<?> clazz = Class.forName(serializedObject.getType().getName());
             return (T) objectMapper.readValue(serializedData, clazz);
         } catch (IOException | ClassNotFoundException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

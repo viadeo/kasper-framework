@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.query;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -192,7 +193,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("list", list)
                 .add("count", getCount())
                 .toString();

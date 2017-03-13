@@ -45,6 +45,7 @@ import com.viadeo.kasper.domain.sample.hello.HelloBundle;
 import com.viadeo.kasper.spring.platform.Platforms;
 import com.viadeo.kasper.spring.platform.SpringPlatform;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;

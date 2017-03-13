@@ -60,15 +60,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.refEq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.*;
 
@@ -99,7 +99,7 @@ public class KasperCommandGatewayUTest {
     @Before
     public void setUp() {
         reset(domainLocator, decoratedCommandGateway);
-        when(domainLocator.getHandlerForCommandClass(Matchers.<Class<Command>>any()))
+        when(domainLocator.getHandlerForCommandClass(ArgumentMatchers.<Class<Command>>any()))
                 .thenReturn(Optional.<CommandHandler>absent());
         MDC.clear();
     }

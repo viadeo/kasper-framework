@@ -39,10 +39,9 @@
 // ============================================================================
 package com.viadeo.kasper.api.context;
 
-import com.google.common.base.Joiner;
+import com.google.common.base.*;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -372,7 +371,7 @@ public final class Context implements Serializable {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this).add("properties", properties).toString();
+        return MoreObjects.toStringHelper(this).add("properties", properties).toString();
     }
 
 
@@ -525,7 +524,7 @@ public final class Context implements Serializable {
         public Builder incrementSequence() {
             this.properties.put(
                     SEQ_INC_SHORTNAME,
-                    Objects.firstNonNull((Integer) this.properties.get(SEQ_INC_SHORTNAME), 1) + 1
+                    MoreObjects.firstNonNull((Integer) this.properties.get(SEQ_INC_SHORTNAME), 1) + 1
             );
             return this;
         }

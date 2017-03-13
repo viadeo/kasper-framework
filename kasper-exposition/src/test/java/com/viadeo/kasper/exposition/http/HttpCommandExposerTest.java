@@ -68,6 +68,7 @@ import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.core.component.query.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.platform.bundle.DefaultDomainBundle;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.validation.Valid;
@@ -175,6 +176,9 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         private static final long serialVersionUID = 674842094842929150L;
 
         private String contextName;
+
+        public ContextCheckCommand() {
+        }
 
         public ContextCheckCommand(final String contextName) {
             this.contextName = contextName;

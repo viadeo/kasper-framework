@@ -44,16 +44,19 @@ import com.viadeo.kasper.core.component.event.listener.EventListener;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaExecutor;
 import com.viadeo.kasper.core.component.event.saga.SagaWrapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.MessageConverter;
 
 import static com.viadeo.kasper.core.component.event.eventbus.MessageListenerContainerUTest.MessageListener;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +82,7 @@ public class DefaultMessageListenerContainerManagerUTest {
     @SuppressWarnings("unchecked")
     @Test
     public void register_twice_a_saga_manager_is_ok() {
-        when(messageListenerContainerFactory.create(any(String.class), any(EventListener.class), any(MessageListener.class))).thenReturn(mock(MessageListenerContainer.class));
+        when(messageListenerContainerFactory.create(anyString(), any(EventListener.class), any(MessageListenerAdapter.class))).thenReturn(mock(MessageListenerContainer.class));
 
         SagaExecutor sagaExecutorA = mock(SagaExecutor.class);
         when(sagaExecutorA.getSagaClass()).thenReturn(TestSaga.class);

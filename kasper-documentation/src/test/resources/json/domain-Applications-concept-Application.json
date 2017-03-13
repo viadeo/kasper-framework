@@ -1,12 +1,14 @@
 {
-  "componentConcepts": [{
-    "description": "The FacebookMember concept",
-    "label": "FacebookMember",
-    "name": "Member",
-    "type": "concept",
-    "typePlural": "concepts",
-    "url": "/domain/Facebook/concept/Member"
-  }],
+  "componentConcepts": [
+    {
+      "description": "The FacebookMember concept",
+      "label": "FacebookMember",
+      "name": "Member",
+      "type": "concept",
+      "typePlural": "concepts",
+      "url": "/domain/Facebook/concept/Member"
+    }
+  ],
   "description": "The Application concept",
   "domain": {
     "description": "Applications domain",
@@ -42,16 +44,18 @@
   ],
   "sourceEvents": [],
   "sourceRelations": [],
-  "targetRelations": [{
-    "description": "Tha Member is a big fan of this application",
-    "label": "fan_of",
-    "name": "Member_fanOf_Application",
-    "sourceConceptName": "Member",
-    "targetConceptName": "Application",
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Applications/relation/Member_fanOf_Application"
-  }],
+  "targetRelations": [
+    {
+      "description": "Tha Member is a big fan of this application",
+      "label": "fan_of",
+      "name": "Member_fanOf_Application",
+      "sourceConceptName": "Member",
+      "targetConceptName": "Application",
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Applications/relation/Member_fanOf_Application"
+    }
+  ],
   "type": "concept",
   "typePlural": "concepts",
   "url": "/domain/Applications/concept/Application"

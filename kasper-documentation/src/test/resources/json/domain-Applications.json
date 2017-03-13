@@ -1,14 +1,16 @@
 {
   "commandHandlers": [],
   "commands": [],
-  "concepts": [{
-    "description": "The Application concept",
-    "label": "Application",
-    "name": "Application",
-    "type": "concept",
-    "typePlural": "concepts",
-    "url": "/domain/Applications/concept/Application"
-  }],
+  "concepts": [
+    {
+      "description": "The Application concept",
+      "label": "Application",
+      "name": "Application",
+      "type": "concept",
+      "typePlural": "concepts",
+      "url": "/domain/Applications/concept/Application"
+    }
+  ],
   "description": "Applications domain",
   "eventListeners": [],
   "events": [],
@@ -18,16 +20,18 @@
   "queries": [],
   "queryHandlers": [],
   "queryResults": [],
-  "relations": [{
-    "description": "Tha Member is a big fan of this application",
-    "label": "fan_of",
-    "name": "Member_fanOf_Application",
-    "sourceConceptName": "Member",
-    "targetConceptName": "Application",
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Applications/relation/Member_fanOf_Application"
-  }],
+  "relations": [
+    {
+      "description": "Tha Member is a big fan of this application",
+      "label": "fan_of",
+      "name": "Member_fanOf_Application",
+      "sourceConceptName": "Member",
+      "targetConceptName": "Application",
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Applications/relation/Member_fanOf_Application"
+    }
+  ],
   "repositories": [
     {
       "description": "The applications repository",

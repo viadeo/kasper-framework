@@ -1,47 +1,49 @@
 {
   "count": 1,
   "itemType": "event",
-  "list": [{
-    "action": "created",
-    "description": "The MemberCreated event",
-    "domain": {
-      "description": "Root Facebook domain",
-      "label": "Facebook",
-      "name": "Facebook",
-      "type": "domain",
-      "typePlural": "domains",
-      "url": "/domain/Facebook"
-    },
-    "eventListener": {
-      "description": "The MemberCreated event listener",
+  "list": [
+    {
+      "action": "created",
+      "description": "The MemberCreated event",
+      "domain": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
+      },
+      "eventListener": {
+        "description": "The MemberCreated event listener",
+        "label": "MemberCreated",
+        "name": "MemberCreatedEventListener",
+        "type": "eventListener",
+        "typePlural": "eventListeners",
+        "url": "/domain/Facebook/eventListener/MemberCreatedEventListener"
+      },
       "label": "MemberCreated",
-      "name": "MemberCreatedEventListener",
-      "type": "eventListener",
-      "typePlural": "eventListeners",
-      "url": "/domain/Facebook/eventListener/MemberCreatedEventListener"
-    },
-    "label": "MemberCreated",
-    "name": "MemberCreatedEvent",
-    "properties": [
-      {
-        "list": false,
-        "name": "entityId",
-        "type": "KasperID"
-      },
-      {
-        "list": false,
-        "name": "uowEventId",
-        "type": "String"
-      },
-      {
-        "list": false,
-        "name": "type",
-        "type": "PersistencyType"
-      }
-    ],
-    "type": "event",
-    "typePlural": "events",
-    "url": "/domain/Facebook/event/MemberCreatedEvent"
-  }],
+      "name": "MemberCreatedEvent",
+      "properties": [
+        {
+          "list": false,
+          "name": "entityId",
+          "type": "KasperID"
+        },
+        {
+          "list": false,
+          "name": "uowEventId",
+          "type": "String"
+        },
+        {
+          "list": false,
+          "name": "type",
+          "type": "PersistencyType"
+        }
+      ],
+      "type": "event",
+      "typePlural": "events",
+      "url": "/domain/Facebook/event/MemberCreatedEvent"
+    }
+  ],
   "type": "list"
 }

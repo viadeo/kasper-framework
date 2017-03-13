@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.event;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.id.KasperID;
@@ -95,7 +96,7 @@ public abstract class EntityCreatedEvent<D extends Domain> implements EntityEven
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(this.entityId)
                 .toString();
     }

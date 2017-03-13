@@ -41,12 +41,11 @@ import com.viadeo.kasper.platform.bundle.fixture.command.handler.DummyCommandHan
 import com.viadeo.kasper.platform.bundle.fixture.command.listener.DummyCommandListener;
 import com.viadeo.kasper.platform.bundle.fixture.infra.DummyBackend;
 import com.viadeo.kasper.spring.core.ConfigPropertySource;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

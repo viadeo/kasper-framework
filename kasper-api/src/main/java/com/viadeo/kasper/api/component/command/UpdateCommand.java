@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.command;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.id.KasperID;
 
@@ -104,7 +105,7 @@ public abstract class UpdateCommand implements Command {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(this.id)
                 .addValue(this.version)
                 .toString();

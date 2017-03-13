@@ -70,7 +70,7 @@ public abstract class BaseValidationInterceptor<E> {
 
         if ( ! violations.isEmpty()) {
             final String exceptionMessage = buildExceptionMessage(violations);
-            throw new JSR303ViolationException(exceptionMessage, violations);
+            throw new JSR303ViolationException(violations);
         }
     }
 

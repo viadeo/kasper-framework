@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 
 import java.io.IOException;
 
-import static com.google.common.base.CharMatcher.WHITESPACE;
+import static com.google.common.base.CharMatcher.whitespace;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TrimDeserializer extends StdScalarDeserializer<String> {
@@ -67,7 +67,7 @@ public class TrimDeserializer extends StdScalarDeserializer<String> {
 
         String output = jacksonDeserializer.deserialize(jp, context);
         if (null != output) {
-            output = WHITESPACE.trimFrom(output);
+            output = whitespace().trimFrom(output);
         }
 
         return output;

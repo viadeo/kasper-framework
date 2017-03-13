@@ -61,7 +61,7 @@ import com.viadeo.kasper.core.component.query.AutowiredQueryHandler;
 import com.viadeo.kasper.core.component.query.QueryMessage;
 import com.viadeo.kasper.core.component.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.platform.bundle.DomainBundle;
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -85,6 +85,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     public static class SomeCollectionResponse extends CollectionQueryResult<SomeResponse> {
         private static final long serialVersionUID = 1433643086186132048L;
+
+        public SomeCollectionResponse() {}
 
         public SomeCollectionResponse(Collection<SomeResponse> list) {
             super(list);
@@ -114,6 +116,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         private boolean doThrowSomeException;
 
         private List<String> errorCodes;
+
+        public SomeQuery() {
+
+        }
 
         public int[] getIntArray() {
             return intArray;
@@ -219,6 +225,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         private static final long serialVersionUID = 674422094842929150L;
 
         private String contextName;
+
+        public ContextCheckQuery() {
+
+        }
 
         public ContextCheckQuery(final String contextName) {
             this.contextName = contextName;

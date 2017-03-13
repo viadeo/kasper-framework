@@ -1,72 +1,80 @@
 {
   "count": 1,
   "itemType": "concept",
-  "list": [{
-    "componentConcepts": [],
-    "description": "The FacebookMember concept",
-    "domain": {
-      "description": "Root Facebook domain",
-      "label": "Facebook",
-      "name": "Facebook",
-      "type": "domain",
-      "typePlural": "domains",
-      "url": "/domain/Facebook"
-    },
-    "label": "FacebookMember",
-    "name": "Member",
-    "properties": [
-      {
-        "list": false,
-        "name": "id",
-        "type": "KasperID"
+  "list": [
+    {
+      "componentConcepts": [],
+      "description": "The FacebookMember concept",
+      "domain": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
       },
-      {
-        "list": false,
-        "name": "version",
-        "type": "Long"
-      },
-      {
-        "list": false,
-        "name": "lastEventSequenceNumber",
-        "type": "Long"
-      },
-      {
-        "list": false,
-        "name": "version",
-        "type": "Long"
-      }
-    ],
-    "sourceEvents": [{
-      "description": "The MemberCreated event",
-      "label": "MemberCreated",
-      "name": "MemberCreatedEvent",
-      "type": "event",
-      "typePlural": "events",
-      "url": "/domain/Facebook/event/MemberCreatedEvent"
-    }],
-    "sourceRelations": [{
-      "description": "The connected_to relation between FacebookMember and FacebookMember",
-      "label": "connected_to",
-      "name": "Member_connectedTo_Member",
-      "sourceConceptName": "Member",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Facebook/relation/Member_connectedTo_Member"
-    }],
-    "targetRelations": [{
-      "description": "The connected_to relation between FacebookMember and FacebookMember",
-      "label": "connected_to",
-      "name": "Member_connectedTo_Member",
-      "sourceConceptName": "Member",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Facebook/relation/Member_connectedTo_Member"
-    }],
-    "type": "concept",
-    "typePlural": "concepts",
-    "url": "/domain/Facebook/concept/Member"
-  }],
+      "label": "FacebookMember",
+      "name": "Member",
+      "properties": [
+        {
+          "list": false,
+          "name": "id",
+          "type": "KasperID"
+        },
+        {
+          "list": false,
+          "name": "version",
+          "type": "Long"
+        },
+        {
+          "list": false,
+          "name": "lastEventSequenceNumber",
+          "type": "Long"
+        },
+        {
+          "list": false,
+          "name": "version",
+          "type": "Long"
+        }
+      ],
+      "sourceEvents": [
+        {
+          "description": "The MemberCreated event",
+          "label": "MemberCreated",
+          "name": "MemberCreatedEvent",
+          "type": "event",
+          "typePlural": "events",
+          "url": "/domain/Facebook/event/MemberCreatedEvent"
+        }
+      ],
+      "sourceRelations": [
+        {
+          "description": "The connected_to relation between FacebookMember and FacebookMember",
+          "label": "connected_to",
+          "name": "Member_connectedTo_Member",
+          "sourceConceptName": "Member",
+          "targetConceptName": "Member",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+        }
+      ],
+      "targetRelations": [
+        {
+          "description": "The connected_to relation between FacebookMember and FacebookMember",
+          "label": "connected_to",
+          "name": "Member_connectedTo_Member",
+          "sourceConceptName": "Member",
+          "targetConceptName": "Member",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+        }
+      ],
+      "type": "concept",
+      "typePlural": "concepts",
+      "url": "/domain/Facebook/concept/Member"
+    }
+  ],
   "type": "list"
 }

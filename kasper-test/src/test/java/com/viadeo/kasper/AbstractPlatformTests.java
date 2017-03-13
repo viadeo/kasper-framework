@@ -54,10 +54,10 @@ public abstract class AbstractPlatformTests {
     private Platform platform;
 
     protected Platform getPlatform() {
-        if(platform == null){
+        if (platform == null) {
             final DefaultPlatform.Builder platformBuilder = DefaultPlatform.builder(new KasperPlatformConfiguration());
 
-            for (final DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())) {
+            for (final DomainBundle domainBundle : Preconditions.checkNotNull(getBundles())) {
                 platformBuilder.addDomainBundle(domainBundle);
             }
 

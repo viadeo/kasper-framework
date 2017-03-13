@@ -44,7 +44,6 @@ import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.builder.PlatformContext;
 import com.viadeo.kasper.platform.bundle.descriptor.DomainDescriptor;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

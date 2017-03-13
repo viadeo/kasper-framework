@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.listener;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.event.Event;
 
@@ -85,7 +86,7 @@ public class EventDescriptor<EVENT extends Event> {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("eventClass", eventClass)
                 .add("deprecated", deprecated)
                 .toString();

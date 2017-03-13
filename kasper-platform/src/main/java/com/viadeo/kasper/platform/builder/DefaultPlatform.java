@@ -41,7 +41,7 @@ package com.viadeo.kasper.platform.builder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.DefaultRepositoryManager;
@@ -334,7 +334,7 @@ public class DefaultPlatform implements Platform {
             checkState((null != metricRegistry), "the metric registry cannot be null");
             checkState((null != sagaManager), "the saga manager cannot be null");
 
-            this.meta = Objects.firstNonNull(meta, Meta.UNKNOWN);
+            this.meta = MoreObjects.firstNonNull(meta, Meta.UNKNOWN);
 
             this.platformWirer = new PlatformWirer(
                     configuration,

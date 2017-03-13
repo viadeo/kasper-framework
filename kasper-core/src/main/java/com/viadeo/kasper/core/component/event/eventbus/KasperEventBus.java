@@ -42,7 +42,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 import com.codahale.metrics.InstrumentedExecutorService;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -308,7 +308,7 @@ public class KasperEventBus extends ClusteringEventBus {
         checkNotNull(messages);
         for (final EventMessage message : messages) {
             publish(
-                    Objects.firstNonNull((Context) message.getMetaData().get(Context.METANAME), Contexts.empty()),
+                    MoreObjects.firstNonNull((Context) message.getMetaData().get(Context.METANAME), Contexts.empty()),
                     (Event) message.getPayload()
             );
         }

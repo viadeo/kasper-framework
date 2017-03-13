@@ -124,7 +124,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
             return cacheEvents.get(clazz);
         }
 
-//        @SuppressWarnings("unchecked") // Safe
+        @SuppressWarnings("unchecked") // Safe
         final Optional<Class<? extends Event>> eventClazz =
                 (Optional<Class<? extends Event>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(

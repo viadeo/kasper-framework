@@ -39,23 +39,17 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.sun.jersey.api.client.AsyncWebResource;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.*;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.common.exposition.HttpContextHeaders;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -151,7 +145,7 @@ public class KasperClientEventTest {
         assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.ACCEPT).toString());
         assertEquals("boo", headers.getFirst(HttpContextHeaders.HEADER_USER_ID.toHeaderName()).toString());
         assertEquals(event, value.getEntity());
-        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
+        verify(contextSerializer).serialize(eq(context), any(WebResource.Builder.class));
     }
 
     @Test

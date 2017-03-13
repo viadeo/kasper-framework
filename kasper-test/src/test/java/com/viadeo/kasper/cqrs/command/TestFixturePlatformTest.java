@@ -43,7 +43,6 @@ import com.viadeo.kasper.api.id.DefaultKasperId;
 import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.api.response.CoreReasonCode;
 import com.viadeo.kasper.api.response.KasperReason;
-import com.viadeo.kasper.test.platform.KasperMatcher;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;

@@ -49,7 +49,7 @@ import com.codahale.metrics.servlets.AdminServlet;
 import com.codahale.metrics.servlets.HealthCheckServlet;
 import com.codahale.metrics.servlets.MetricsServlet;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
@@ -221,11 +221,11 @@ public class ServerBuilder {
 
         handler.setAttribute(
             HealthCheckServlet.HEALTH_CHECK_REGISTRY,
-            Objects.firstNonNull(healthCheckRegistry, new HealthCheckRegistry())
+            MoreObjects.firstNonNull(healthCheckRegistry, new HealthCheckRegistry())
         );
         handler.setAttribute(
             MetricsServlet.METRICS_REGISTRY,
-            Objects.firstNonNull(metricRegistry, new MetricRegistry())
+            MoreObjects.firstNonNull(metricRegistry, new MetricRegistry())
         );
 
         handler.addServlet(new ServletHolder(new AdminServlet()), "/*");
@@ -321,7 +321,7 @@ public class ServerBuilder {
     public static Optional<Connector> getConnectorByName(final String name, final Server server) {
         checkNotNull(name);
 
-        final Connector[] connectors = Objects.firstNonNull(server.getConnectors(), EMPTY_CONNECTORS);
+        final Connector[] connectors = MoreObjects.firstNonNull(server.getConnectors(), EMPTY_CONNECTORS);
 
         Optional<Connector> result = Optional.absent();
         for (final Connector connector : connectors) {

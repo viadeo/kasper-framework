@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.eventbus;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Sets;
 
@@ -119,7 +120,7 @@ public class RoutingKeys {
 
         @Override
         public String toString() {
-            return Objects.toStringHelper(this)
+            return MoreObjects.toStringHelper(this)
                     .add("route", route)
                     .add("deprecated", deprecated)
                     .toString();

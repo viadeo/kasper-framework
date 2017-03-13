@@ -41,11 +41,7 @@ package com.viadeo.kasper.core.id;
 
 import com.google.common.base.Functions;
 import com.google.common.base.Predicates;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import com.viadeo.kasper.api.id.Format;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.id.IDTransformer;

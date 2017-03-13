@@ -47,7 +47,6 @@ import com.viadeo.kasper.common.exposition.TypeAdapter;
 import com.viadeo.kasper.common.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.common.exposition.query.QueryBuilder;
 import com.viadeo.kasper.common.exposition.query.QueryParser;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;

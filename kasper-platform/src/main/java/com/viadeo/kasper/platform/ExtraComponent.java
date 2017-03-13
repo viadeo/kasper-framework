@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class ExtraComponent {
@@ -123,7 +124,7 @@ public class ExtraComponent {
 
         @Override
         public String toString() {
-            return Objects.toStringHelper(this)
+            return MoreObjects.toStringHelper(this)
                     .add("name", name)
                     .add("clazz", clazz)
                     .toString();

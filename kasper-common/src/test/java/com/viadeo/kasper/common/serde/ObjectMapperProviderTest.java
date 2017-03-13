@@ -54,6 +54,7 @@ import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -89,6 +90,9 @@ public class ObjectMapperProviderTest {
 
     static class SomeCollectionResponse extends CollectionQueryResult<SomeResult> {
         private static final long serialVersionUID = 7698126469953546332L;
+
+        public SomeCollectionResponse() {
+        }
 
         SomeCollectionResponse(Collection<SomeResult> list) {
             super(list);

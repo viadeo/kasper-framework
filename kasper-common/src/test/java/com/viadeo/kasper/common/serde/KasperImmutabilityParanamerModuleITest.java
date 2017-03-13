@@ -43,7 +43,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.test.platform.KasperMatcher;
 import org.junit.Before;
 import org.junit.Test;
 

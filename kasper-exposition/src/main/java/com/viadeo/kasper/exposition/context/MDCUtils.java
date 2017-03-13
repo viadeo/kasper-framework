@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition.context;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.context.Context;
@@ -56,7 +57,7 @@ public final class MDCUtils {
     public static void enrichMdcContextMap(final Context context) {
         checkNotNull(context);
         final Map initialContextMap = MDC.getCopyOfContextMap();
-        final Map contextMapEnrichedWithContext = context.asMap(Objects.firstNonNull(initialContextMap, Maps.newHashMap()));
+        final Map contextMapEnrichedWithContext = context.asMap(MoreObjects.firstNonNull(initialContextMap, Maps.newHashMap()));
         MDC.setContextMap(contextMapEnrichedWithContext);
     }
 

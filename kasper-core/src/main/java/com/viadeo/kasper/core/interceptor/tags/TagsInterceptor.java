@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor.tags;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -77,7 +77,7 @@ public class TagsInterceptor<I,O> implements Interceptor<I,O> {
                 .addTags(additionalTags)
                 .build();
 
-        final Map originalContextMap = Objects.firstNonNull(MDC.getCopyOfContextMap(), Collections.emptyMap());
+        final Map originalContextMap = MoreObjects.firstNonNull(MDC.getCopyOfContextMap(), Collections.emptyMap());
 
         MDC.setContextMap(newContextMapWithAdditionalTags(originalContextMap, additionalTags));
         try {

@@ -46,7 +46,6 @@ import com.viadeo.kasper.api.id.Format;
 import com.viadeo.kasper.api.id.FormatAdapter;
 import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

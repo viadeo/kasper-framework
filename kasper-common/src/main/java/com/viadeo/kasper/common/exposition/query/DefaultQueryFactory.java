@@ -134,8 +134,8 @@ public class DefaultQueryFactory implements QueryFactory {
         if (null == adapter) {
             for (final TypeAdapterFactory candidateFactory : factories) {
                 if (TypeToken.of(candidateFactory.getClass())
-                        .resolveType(TypeAdapterFactory.class.getTypeParameters()[0])
-                        .isAssignableFrom(typeToken)) {
+                        .resolveType(TypeAdapterFactory.class.getTypeParameters()[0]).getRawType()
+                        .isAssignableFrom(typeToken.getRawType())) {
 
                     final TypeAdapterFactory<T> factory = (TypeAdapterFactory<T>) candidateFactory;
                     final Optional<TypeAdapter<T>> adapterOpt = factory.create(typeToken, this);
@@ -333,7 +333,7 @@ public class DefaultQueryFactory implements QueryFactory {
         if (null == beanAdapter) {
             final TypeToken propertyTypeToken = property.getTypeToken();
             for (final Type knownType : beanAdapters.keySet()) {
-                if (TypeToken.of(knownType).isAssignableFrom(propertyTypeToken)) {
+                if (TypeToken.of(knownType).getRawType().isAssignableFrom(propertyTypeToken.getRawType())) {
                     beanAdapter = beanAdapters.get(knownType);
                     beanAdapters.put(propertyTypeToken.getType(), beanAdapter);
                     break;

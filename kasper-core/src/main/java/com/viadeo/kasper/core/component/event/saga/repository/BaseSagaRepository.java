@@ -41,7 +41,6 @@ package com.viadeo.kasper.core.component.event.saga.repository;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
 import com.viadeo.kasper.core.component.event.saga.Saga;
 import com.viadeo.kasper.core.component.event.saga.SagaMapper;
 import com.viadeo.kasper.core.component.event.saga.exception.SagaPersistenceException;
@@ -80,7 +79,7 @@ public abstract class BaseSagaRepository implements SagaRepository {
         try {
             properties = doLoad(sagaClass, identifier);
         } catch (SagaPersistenceException e) {
-            throw Throwables.propagate(e);
+            throw e;
         }
 
         if (properties == null || properties.isEmpty()) {

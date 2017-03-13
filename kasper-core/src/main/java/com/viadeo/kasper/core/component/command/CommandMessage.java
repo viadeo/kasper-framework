@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.command;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
@@ -65,7 +65,7 @@ public class CommandMessage<C extends Command> extends KasperMessage<C> {
 	 */
 	public CommandMessage(final org.axonframework.commandhandling.CommandMessage<C> decoredMessage) {
         this(
-                Objects.firstNonNull(
+                MoreObjects.firstNonNull(
                         (Context) decoredMessage.getMetaData().get(Context.METANAME),
                         Contexts.empty()
                 ),

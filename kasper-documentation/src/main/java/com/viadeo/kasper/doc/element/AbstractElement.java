@@ -40,7 +40,7 @@
 package com.viadeo.kasper.doc.element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -118,7 +118,7 @@ public abstract class AbstractElement implements WithType {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("label", label)
                 .add("referenceClass", referenceClass)

@@ -53,7 +53,7 @@ import java.util.Set;
 
 import static com.viadeo.kasper.test.platform.KasperMatcher.equalTo;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 

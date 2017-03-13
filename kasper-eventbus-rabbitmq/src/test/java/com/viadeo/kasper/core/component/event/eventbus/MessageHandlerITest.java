@@ -65,7 +65,7 @@ import static com.viadeo.kasper.core.component.event.eventbus.AMQPTopologyITest.
 import static com.viadeo.kasper.core.component.event.eventbus.AMQPTopologyITest.TestEventListener;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)

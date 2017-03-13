@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.component.event.listener;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.context.Context;
@@ -73,7 +73,7 @@ public class EventMessage<E extends Event> extends KasperMessage<E> {
 		this(
                 getEntityId(eventMessage),
                 eventMessage.getTimestamp(),
-                Objects.firstNonNull(
+                MoreObjects.firstNonNull(
                         (Context) eventMessage.getMetaData().get(Context.METANAME),
                         Contexts.empty()
                 ),
@@ -110,7 +110,7 @@ public class EventMessage<E extends Event> extends KasperMessage<E> {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("event", getEvent())
                 .add("context", getContext())
                 .add("version", getVersion())

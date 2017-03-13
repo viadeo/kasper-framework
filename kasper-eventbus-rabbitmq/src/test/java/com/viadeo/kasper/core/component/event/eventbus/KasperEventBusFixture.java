@@ -103,7 +103,7 @@ public interface KasperEventBusFixture {
             try {
                 countDownLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                throw Throwables.propagate(e);
+                throw new RuntimeException(e);
             }
         }
     }

@@ -1,61 +1,63 @@
 {
   "count": 1,
   "itemType": "relation",
-  "list": [{
-    "description": "The connected_to relation between FacebookMember and FacebookMember",
-    "domain": {
-      "description": "Root Facebook domain",
-      "label": "Facebook",
-      "name": "Facebook",
-      "type": "domain",
-      "typePlural": "domains",
-      "url": "/domain/Facebook"
-    },
-    "label": "connected_to",
-    "name": "Member_connectedTo_Member",
-    "properties": [
-      {
-        "list": false,
-        "name": "id",
-        "type": "KasperID"
+  "list": [
+    {
+      "description": "The connected_to relation between FacebookMember and FacebookMember",
+      "domain": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
       },
-      {
-        "list": false,
-        "name": "version",
-        "type": "Long"
+      "label": "connected_to",
+      "name": "Member_connectedTo_Member",
+      "properties": [
+        {
+          "list": false,
+          "name": "id",
+          "type": "KasperID"
+        },
+        {
+          "list": false,
+          "name": "version",
+          "type": "Long"
+        },
+        {
+          "list": false,
+          "name": "lastEventSequenceNumber",
+          "type": "Long"
+        },
+        {
+          "list": false,
+          "name": "version",
+          "type": "Long"
+        }
+      ],
+      "sourceConcept": {
+        "description": "The FacebookMember concept",
+        "label": "FacebookMember",
+        "name": "Member",
+        "type": "concept",
+        "typePlural": "concepts",
+        "url": "/domain/Facebook/concept/Member"
       },
-      {
-        "list": false,
-        "name": "lastEventSequenceNumber",
-        "type": "Long"
+      "sourceEvents": [],
+      "targetConcept": {
+        "description": "The FacebookMember concept",
+        "label": "FacebookMember",
+        "name": "Member",
+        "type": "concept",
+        "typePlural": "concepts",
+        "url": "/domain/Facebook/concept/Member"
       },
-      {
-        "list": false,
-        "name": "version",
-        "type": "Long"
-      }
-    ],
-    "sourceConcept": {
-      "description": "The FacebookMember concept",
-      "label": "FacebookMember",
-      "name": "Member",
-      "type": "concept",
-      "typePlural": "concepts",
-      "url": "/domain/Facebook/concept/Member"
-    },
-    "sourceEvents": [],
-    "targetConcept": {
-      "description": "The FacebookMember concept",
-      "label": "FacebookMember",
-      "name": "Member",
-      "type": "concept",
-      "typePlural": "concepts",
-      "url": "/domain/Facebook/concept/Member"
-    },
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Facebook/relation/Member_connectedTo_Member",
-    "verb": ""
-  }],
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Facebook/relation/Member_connectedTo_Member",
+      "verb": ""
+    }
+  ],
   "type": "list"
 }

@@ -86,7 +86,7 @@ public class Server implements SmartLifecycle {
             LOGGER.info("Http server started");
         } catch (Exception e) {
             LOGGER.error("Fail to start the Jetty server... please check the availability of the port.");
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -96,7 +96,7 @@ public class Server implements SmartLifecycle {
             this.server.stop();
         } catch (final Exception e) {
             LOGGER.error("An error occured while stopping the Jetty server", e);
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

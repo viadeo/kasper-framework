@@ -39,7 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -54,7 +54,7 @@ public class ResetMdcContextMap implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                Map<String,String> original = Objects.firstNonNull(MDC.getCopyOfContextMap(), Collections.<String,String>emptyMap());
+                Map<String,String> original = MoreObjects.firstNonNull(MDC.getCopyOfContextMap(), Collections.<String,String>emptyMap());
                 try {
                     base.evaluate();
                 } finally {

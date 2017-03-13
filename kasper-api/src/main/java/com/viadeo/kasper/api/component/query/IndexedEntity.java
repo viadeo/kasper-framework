@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.query;
 
+import com.google.common.base.MoreObjects;
 import com.viadeo.kasper.api.id.KasperID;
 import org.joda.time.DateTime;
 
@@ -133,7 +134,7 @@ public abstract class IndexedEntity implements Serializable {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(this.id)
                 .addValue(this.type)
                 .addValue(this.version)

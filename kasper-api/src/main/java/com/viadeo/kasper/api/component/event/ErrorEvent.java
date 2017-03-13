@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.component.event;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.api.response.CoreReasonCode;
@@ -147,7 +148,7 @@ public class ErrorEvent implements Event {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .addValue(super.toString())
                 .addValue(this.code)
                 .addValue(this.exception)

@@ -41,7 +41,7 @@ package com.viadeo.kasper.spring.core;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.core.component.command.RepositoryManager;
@@ -143,7 +143,7 @@ public class KasperPlatformConfiguration {
     ) {
         final List<DomainDescriptor> descriptors = Lists.newArrayList();
 
-        for (final DomainBundle bundle : Objects.firstNonNull(bundles, Lists.<DomainBundle>newArrayList())) {
+        for (final DomainBundle bundle : MoreObjects.firstNonNull(bundles, Lists.<DomainBundle>newArrayList())) {
 
             LOGGER.debug("Configuring bundle : {}", bundle.getName());
 

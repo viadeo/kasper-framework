@@ -39,6 +39,7 @@
 // ============================================================================
 package com.viadeo.kasper.domain.sample.hello.api.query;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.viadeo.kasper.api.annotation.XKasperQuery;
 import com.viadeo.kasper.api.component.query.Query;
 import org.hibernate.validator.constraints.Length;
@@ -59,6 +60,7 @@ public class GetAllHelloMessagesSentToBuddyQuery implements Query {
 
     // ------------------------------------------------------------------------
 
+    @JsonCreator
     public GetAllHelloMessagesSentToBuddyQuery(final String forBuddy) {
         this.forBuddy = checkNotNull(forBuddy);
     }
@@ -88,7 +90,7 @@ public class GetAllHelloMessagesSentToBuddyQuery implements Query {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .addValue(this.forBuddy)
                 .toString();
     }

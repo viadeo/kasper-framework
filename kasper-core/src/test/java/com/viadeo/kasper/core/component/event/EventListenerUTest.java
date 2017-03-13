@@ -40,7 +40,7 @@
 package com.viadeo.kasper.core.component.event;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.api.context.Context;
@@ -58,7 +58,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class EventListenerUTest {
@@ -177,14 +177,14 @@ public class EventListenerUTest {
     private static class TestEvent implements Event {
         @Override
         public String toString() {
-            return Objects.toStringHelper(this).toString();
+            return MoreObjects.toStringHelper(this).toString();
         }
     }
 
     private static class TestEvent2 implements Event {
         @Override
         public String toString() {
-            return Objects.toStringHelper(this).toString();
+            return MoreObjects.toStringHelper(this).toString();
         }
     }
 }

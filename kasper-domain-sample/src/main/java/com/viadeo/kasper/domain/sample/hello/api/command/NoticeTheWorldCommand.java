@@ -91,7 +91,7 @@ public class NoticeTheWorldCommand implements Command {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .addValue(this.notice)
                 .toString();
     }

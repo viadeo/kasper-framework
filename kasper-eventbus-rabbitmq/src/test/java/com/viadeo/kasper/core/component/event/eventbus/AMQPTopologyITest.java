@@ -35,6 +35,7 @@ package com.viadeo.kasper.core.component.event.eventbus;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.api.component.event.EventResponse;
@@ -264,7 +265,7 @@ public class AMQPTopologyITest {
 
         @Override
         public String toString() {
-            return Objects.toStringHelper(this)
+            return MoreObjects.toStringHelper(this)
                     .add("dateTime", dateTime)
                     .toString();
         }

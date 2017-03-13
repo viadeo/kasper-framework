@@ -40,6 +40,7 @@
 package com.viadeo.kasper.core.id;
 
 import com.google.common.base.Function;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.id.Format;
@@ -119,7 +120,7 @@ public final class Converters {
 
         @Override
         public String toString() {
-            return Objects.toStringHelper(this)
+            return MoreObjects.toStringHelper(this)
                     .add("firstConverter", firstConverter)
                     .add("nextConverter", nextConverter)
                     .toString();
@@ -184,7 +185,7 @@ public final class Converters {
 
         @Override
         public String toString() {
-            return Objects.toStringHelper(this)
+            return MoreObjects.toStringHelper(this)
                     .add("vendor", vendor)
                     .add("format", format)
                     .toString();

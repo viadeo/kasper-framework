@@ -1,31 +1,33 @@
 {
   "count": 1,
   "itemType": "command",
-  "list": [{
-    "commandHandler": {
-      "commandName": "AddConnectionToMemberCommand",
-      "description": "The AddConnectionToMember command handler",
+  "list": [
+    {
+      "commandHandler": {
+        "commandName": "AddConnectionToMemberCommand",
+        "description": "The AddConnectionToMember command handler",
+        "label": "AddConnectionToMember",
+        "name": "AddConnectionToMemberHandler",
+        "type": "commandHandler",
+        "typePlural": "commandHandlers",
+        "url": "/domain/Facebook/commandHandler/AddConnectionToMemberHandler"
+      },
+      "description": "The AddConnectionToMember command",
+      "domain": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
+      },
       "label": "AddConnectionToMember",
-      "name": "AddConnectionToMemberHandler",
-      "type": "commandHandler",
-      "typePlural": "commandHandlers",
-      "url": "/domain/Facebook/commandHandler/AddConnectionToMemberHandler"
-    },
-    "description": "The AddConnectionToMember command",
-    "domain": {
-      "description": "Root Facebook domain",
-      "label": "Facebook",
-      "name": "Facebook",
-      "type": "domain",
-      "typePlural": "domains",
-      "url": "/domain/Facebook"
-    },
-    "label": "AddConnectionToMember",
-    "name": "AddConnectionToMemberCommand",
-    "properties": [],
-    "type": "command",
-    "typePlural": "commands",
-    "url": "/domain/Facebook/command/AddConnectionToMemberCommand"
-  }],
+      "name": "AddConnectionToMemberCommand",
+      "properties": [],
+      "type": "command",
+      "typePlural": "commands",
+      "url": "/domain/Facebook/command/AddConnectionToMemberCommand"
+    }
+  ],
   "type": "list"
 }

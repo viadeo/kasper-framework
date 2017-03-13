@@ -90,7 +90,7 @@ public class ResiliencePolicyUTest {
     @Test
     public void manage_a_jsr303_voalation_exception_throws_a_hystrix_bad_request_exception() {
         exception.expect(HystrixBadRequestException.class);
-        policy.manage(new JSR303ViolationException("fake", Sets.<ConstraintViolation<Object>>newHashSet()));
+        policy.manage(new JSR303ViolationException(Sets.<ConstraintViolation<Object>>newHashSet()));
     }
 
 }

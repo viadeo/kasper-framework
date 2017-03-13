@@ -47,7 +47,7 @@ import com.viadeo.kasper.api.id.IDTransformer;
 import com.viadeo.kasper.api.id.SimpleIDBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 
 import java.util.List;
 import java.util.Map;
@@ -55,10 +55,7 @@ import java.util.UUID;
 
 import static com.viadeo.kasper.core.id.TestConverters.mockConverter;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyCollectionOf;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DefaultIDTransformerUTest {
 
@@ -113,7 +110,7 @@ public class DefaultIDTransformerUTest {
         ID id = new ID("viadeo", "member", TestFormats.ID, 42);
 
         Converter converter = mockConverter("glinglin", TestFormats.ID, TestFormats.UUID);
-        when(converter.convert(anyCollectionOf(ID.class)))
+        when(converter.convert(ArgumentMatchers.<ID>anyCollection()))
                 .thenThrow(new AssertionError("unexpected call"));
         converterRegistry.register(converter);
 
@@ -129,7 +126,7 @@ public class DefaultIDTransformerUTest {
         ID id = new ID("viadeo", "member", TestFormats.ID, 42);
 
         Converter converter = mockConverter("viadeo", TestFormats.UUID, TestFormats.UUID);
-        when(converter.convert(anyCollectionOf(ID.class)))
+        when(converter.convert(ArgumentMatchers.<ID>anyCollection()))
                 .thenThrow(new AssertionError("unexpected call"));
         converterRegistry.register(converter);
 
@@ -145,7 +142,7 @@ public class DefaultIDTransformerUTest {
         ID id = new ID("viadeo", "member", TestFormats.ID, 42);
 
         Converter converter = mockConverter("viadeo", TestFormats.ID, TestFormats.ID);
-        when(converter.convert(anyCollectionOf(ID.class)))
+        when(converter.convert(ArgumentMatchers.<ID>anyCollection()))
                 .thenThrow(new AssertionError("unexpected call"));
         converterRegistry.register(converter);
 
@@ -162,7 +159,7 @@ public class DefaultIDTransformerUTest {
         ID uuid = new ID("viadeo", "member", TestFormats.UUID, UUID.randomUUID());
 
         Converter converter = mockConverter("viadeo", TestFormats.ID, TestFormats.UUID);
-        when(converter.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.<ID, ID>builder().put(id, uuid).build());
+        when(converter.convert(ArgumentMatchers.<ID>anyCollection())).thenReturn(ImmutableMap.<ID, ID>builder().put(id, uuid).build());
         converterRegistry.register(converter);
 
         // When
@@ -182,7 +179,7 @@ public class DefaultIDTransformerUTest {
         when(mockedConverter.getTarget()).thenReturn(TestFormats.UUID);
         when(mockedConverter.getVendor()).thenReturn("viadeo");
         doThrow(new RuntimeException("Fake exception"))
-                .when(mockedConverter).convert(Matchers.anyCollectionOf(ID.class));
+                .when(mockedConverter).convert(ArgumentMatchers.<ID>anyCollection());
 
         converterRegistry.register(mockedConverter);
 
@@ -204,7 +201,7 @@ public class DefaultIDTransformerUTest {
         when(mockedConverter.getTarget()).thenReturn(TestFormats.UUID);
         when(mockedConverter.getVendor()).thenReturn("viadeo");
         doThrow(new FailedToTransformIDException("Fake exception"))
-                .when(mockedConverter).convert(Matchers.anyCollectionOf(ID.class));
+                .when(mockedConverter).convert(ArgumentMatchers.<ID>anyCollection());
 
         converterRegistry.register(mockedConverter);
 
@@ -226,7 +223,7 @@ public class DefaultIDTransformerUTest {
         ID uuid2 = new ID("viadeo", "member", TestFormats.UUID, UUID.randomUUID());
 
         Converter converter = mockConverter("viadeo", TestFormats.ID, TestFormats.UUID);
-        when(converter.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.<ID, ID>builder().put(id1, uuid1).put(id2, uuid2).build());
+        when(converter.convert(ArgumentMatchers.<ID>anyCollection())).thenReturn(ImmutableMap.<ID, ID>builder().put(id1, uuid1).put(id2, uuid2).build());
         converterRegistry.register(converter);
 
         // When
@@ -260,7 +257,7 @@ public class DefaultIDTransformerUTest {
         ID id2 = new ID("viadeo", "member", TestFormats.UUID, UUID.randomUUID());
 
         Converter converter = mockConverter("viadeo", TestFormats.ID, TestFormats.UUID);
-        when(converter.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.of(
+        when(converter.convert(ArgumentMatchers.<ID>anyCollection())).thenReturn(ImmutableMap.of(
                 id1, uuid1
         ));
         converterRegistry.register(converter);
@@ -286,13 +283,13 @@ public class DefaultIDTransformerUTest {
         ID uuid2 = new ID("glinglin", "member", TestFormats.UUID, UUID.randomUUID());
 
         Converter converter1 = mockConverter("viadeo", TestFormats.ID, TestFormats.UUID);
-        when(converter1.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.of(
+        when(converter1.convert(ArgumentMatchers.<ID>anyCollection())).thenReturn(ImmutableMap.of(
                 id1, uuid1
         ));
         converterRegistry.register(converter1);
 
         Converter converter2 = mockConverter("glinglin", TestFormats.ID, TestFormats.UUID);
-        when(converter2.convert(anyCollectionOf(ID.class))).thenReturn(ImmutableMap.of(
+        when(converter2.convert(ArgumentMatchers.<ID>anyCollection())).thenReturn(ImmutableMap.of(
                 id2, uuid2
         ));
         converterRegistry.register(converter2);

@@ -95,7 +95,7 @@ public class ChangeBuddyForExistingHelloCommand extends UpdateCommand {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .addValue(super.toString())
                 .addValue(this.forBuddy)
                 .toString();

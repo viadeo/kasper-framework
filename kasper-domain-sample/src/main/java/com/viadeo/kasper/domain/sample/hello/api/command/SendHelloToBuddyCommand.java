@@ -113,7 +113,7 @@ public class SendHelloToBuddyCommand extends CreateCommand {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
+        return com.google.common.base.MoreObjects.toStringHelper(this)
                 .addValue(super.toString())
                 .addValue(this.message)
                 .addValue(this.forBuddy)
