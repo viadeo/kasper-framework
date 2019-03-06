@@ -1,5 +1,5 @@
 rabbitmq:
-  image: "quay.io/viadeo/docker-rabbitmq"
+  image: "062010136920.dkr.ecr.us-west-1.amazonaws.com/viadeo/docker-rabbitmq"
   ports:
     - "5672:5672"
     - "15672:15672"
