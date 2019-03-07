@@ -1,0 +1,17 @@
+version: 2
+
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: 062010136920.dkr.ecr.us-west-1.amazonaws.com/viadeo/docker-awscli-jdk8:latest
+      - image: 062010136920.dkr.ecr.us-west-1.amazonaws.com/viadeo/docker-rabbitmq
+    environment:
+      NEXUS_USER: circleci
+      TZ: /usr/share/zoneinfo/Europe/Paris
+      TERM: dumb
+    steps:
+      - checkout
+      - run: ./gradlew --no-daemon compileJava compileTestJava assemble
+      - run: ./gradlew --no-daemon -a circleCheck
+      - run: ./gradlew --no-daemon uploadArchives
